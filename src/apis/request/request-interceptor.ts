@@ -7,6 +7,7 @@ export const requestSuccessInterceptor = (
   const accessToken = useAuthStore.getState().accessToken
 
   if (accessToken) {
+    console.log({ accessToken })
     config.headers.Authorization = `Bearer ${accessToken}`
   }
 

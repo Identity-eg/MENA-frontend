@@ -23,7 +23,7 @@ export function RequestScreeningPackageButton({
     if (selectedReportIds.length === 0) return
     createRequest.mutate(
       {
-        companyReports: [
+        companiesReports: [
           { companyId, reportIds: selectedReportIds },
         ],
       },

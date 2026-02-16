@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import {
   Building2,
   CheckCircle2,
@@ -32,6 +32,9 @@ import {
   getReportsQueryOptions,
   useGetReports,
 } from '@/apis/reports/get-reports'
+import { createUnlockPaymentSession } from '@/apis/unlocks/create-unlock-payment-session'
+import { useQueryClient } from '@tanstack/react-query'
+import { getUnlocksQueryOptions } from '@/apis/unlocks/get-unlocks'
 
 function CompanyDetailsLoadingFallback() {
   return (
@@ -80,12 +83,27 @@ export const Route = createFileRoute('/_protected/companies/$companyId')({
 function CompanyDetailsContent() {
   const { companyId } = Route.useParams()
   const id = Number(companyId)
+  const queryClient = useQueryClient()
   const { data: companyData } = useGetCompany(id)
   const { data: reportsData } = useGetReports({ isActive: true })
   const company = companyData.data
   const reports = reportsData.data
 
   const [selectedReports, setSelectedReports] = useState<Array<number>>([])
+  const [unlockingFieldId, setUnlockingFieldId] = useState<number | null>(null)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('unlock') === 'success') {
+      queryClient.invalidateQueries({
+        queryKey: getCompanyQueryOptions(id).queryKey,
+      })
+      queryClient.invalidateQueries({
+        queryKey: getUnlocksQueryOptions().queryKey,
+      })
+      window.history.replaceState(null, '', window.location.pathname)
+    }
+  }, [id, queryClient])
 
   const toggleReport = (reportId: number) => {
     setSelectedReports((prev) =>
@@ -139,6 +157,21 @@ function CompanyDetailsContent() {
     const locked = getLockedFieldByFieldName(key)
     return sum + (locked?.price ?? 0)
   }, 0)
+
+  const handleUnlock = async (lockedFieldId: number) => {
+    setUnlockingFieldId(lockedFieldId)
+    try {
+      const base = window.location.origin
+      const { url } = await createUnlockPaymentSession(
+        lockedFieldId,
+        `${base}/companies/${id}?unlock=success`,
+        `${base}/companies/${id}?unlock=cancelled`,
+      )
+      window.location.href = url
+    } catch {
+      setUnlockingFieldId(null)
+    }
+  }
 
   const getFieldIcon = (key: string) => {
     switch (key) {
@@ -275,7 +308,12 @@ function CompanyDetailsContent() {
                               'shrink-0 transition-all duration-200',
                               'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow',
                             )}
+                            disabled={unlockingFieldId === locked.id}
+                            onClick={() => handleUnlock(locked.id)}
                           >
+                            {unlockingFieldId === locked.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : null}
                             Unlock · ${locked.price.toFixed(2)}
                           </Button>
                         </div>
@@ -298,9 +336,24 @@ function CompanyDetailsContent() {
                           Get full access in one click
                         </p>
                       </div>
-                      <Button size="default">
+                      <Button
+                        size="default"
+                        disabled={
+                          unlockingFieldId != null || lockedFields.length === 0
+                        }
+                        onClick={() => {
+                          const first = lockedFields[0]
+                          if (!first) return
+                          const locked = getLockedFieldByFieldName(first.key)
+                          if (locked) handleUnlock(locked.id)
+                        }}
+                      >
+                        {unlockingFieldId != null ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <ChevronRight className="ml-1 h-4 w-4" />
+                        )}{' '}
                         Unlock all · ${totalUnlockPrice.toFixed(2)}
-                        <ChevronRight className="ml-1 h-4 w-4" />
                       </Button>
                     </div>
                   </div>

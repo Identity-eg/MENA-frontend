@@ -25,6 +25,7 @@ import { Route as ProtectedCompaniesIndexRouteImport } from './routes/_protected
 import { Route as AdminRequestsRequestIdRouteImport } from './routes/admin.requests.$requestId'
 import { Route as ProtectedRequestsRequestIdRouteImport } from './routes/_protected/requests/$requestId'
 import { Route as ProtectedCompaniesCompanyIdRouteImport } from './routes/_protected/companies/$companyId'
+import { Route as ProtectedRequestsPaymentFailedRequestIdRouteImport } from './routes/_protected/requests/payment-failed.$requestId'
 import { Route as ProtectedRequestsNewIndividualsRouteImport } from './routes/_protected/requests/new.individuals'
 
 const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
@@ -108,6 +109,12 @@ const ProtectedCompaniesCompanyIdRoute =
     path: '/companies/$companyId',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
+const ProtectedRequestsPaymentFailedRequestIdRoute =
+  ProtectedRequestsPaymentFailedRequestIdRouteImport.update({
+    id: '/requests/payment-failed/$requestId',
+    path: '/requests/payment-failed/$requestId',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
 const ProtectedRequestsNewIndividualsRoute =
   ProtectedRequestsNewIndividualsRouteImport.update({
     id: '/requests/new/individuals',
@@ -132,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/unlocks/': typeof ProtectedUnlocksIndexRoute
   '/admin/requests/': typeof AdminRequestsIndexRoute
   '/requests/new/individuals': typeof ProtectedRequestsNewIndividualsRoute
+  '/requests/payment-failed/$requestId': typeof ProtectedRequestsPaymentFailedRequestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,6 +158,7 @@ export interface FileRoutesByTo {
   '/unlocks': typeof ProtectedUnlocksIndexRoute
   '/admin/requests': typeof AdminRequestsIndexRoute
   '/requests/new/individuals': typeof ProtectedRequestsNewIndividualsRoute
+  '/requests/payment-failed/$requestId': typeof ProtectedRequestsPaymentFailedRequestIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,6 +179,7 @@ export interface FileRoutesById {
   '/_protected/unlocks/': typeof ProtectedUnlocksIndexRoute
   '/admin/requests/': typeof AdminRequestsIndexRoute
   '/_protected/requests/new/individuals': typeof ProtectedRequestsNewIndividualsRoute
+  '/_protected/requests/payment-failed/$requestId': typeof ProtectedRequestsPaymentFailedRequestIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/unlocks/'
     | '/admin/requests/'
     | '/requests/new/individuals'
+    | '/requests/payment-failed/$requestId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -208,6 +219,7 @@ export interface FileRouteTypes {
     | '/unlocks'
     | '/admin/requests'
     | '/requests/new/individuals'
+    | '/requests/payment-failed/$requestId'
   id:
     | '__root__'
     | '/'
@@ -227,6 +239,7 @@ export interface FileRouteTypes {
     | '/_protected/unlocks/'
     | '/admin/requests/'
     | '/_protected/requests/new/individuals'
+    | '/_protected/requests/payment-failed/$requestId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -356,6 +369,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedCompaniesCompanyIdRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/requests/payment-failed/$requestId': {
+      id: '/_protected/requests/payment-failed/$requestId'
+      path: '/requests/payment-failed/$requestId'
+      fullPath: '/requests/payment-failed/$requestId'
+      preLoaderRoute: typeof ProtectedRequestsPaymentFailedRequestIdRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_protected/requests/new/individuals': {
       id: '/_protected/requests/new/individuals'
       path: '/requests/new/individuals'
@@ -374,6 +394,7 @@ interface ProtectedRouteRouteChildren {
   ProtectedRequestsIndexRoute: typeof ProtectedRequestsIndexRoute
   ProtectedUnlocksIndexRoute: typeof ProtectedUnlocksIndexRoute
   ProtectedRequestsNewIndividualsRoute: typeof ProtectedRequestsNewIndividualsRoute
+  ProtectedRequestsPaymentFailedRequestIdRoute: typeof ProtectedRequestsPaymentFailedRequestIdRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
@@ -384,6 +405,8 @@ const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedRequestsIndexRoute: ProtectedRequestsIndexRoute,
   ProtectedUnlocksIndexRoute: ProtectedUnlocksIndexRoute,
   ProtectedRequestsNewIndividualsRoute: ProtectedRequestsNewIndividualsRoute,
+  ProtectedRequestsPaymentFailedRequestIdRoute:
+    ProtectedRequestsPaymentFailedRequestIdRoute,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(

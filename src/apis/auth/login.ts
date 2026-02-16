@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate, useRouter } from '@tanstack/react-router'
+import { useMutation } from '@tanstack/react-query'
+import { useRouter } from '@tanstack/react-router'
 import { request } from '../request'
 import { setServerCredentials, useSetClientAccessToken } from '@/lib/auth'
 
@@ -18,8 +18,6 @@ const login = async ({
 }
 
 export const useLogin = () => {
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const setAccessToken = useSetClientAccessToken()
   const router = useRouter()
 

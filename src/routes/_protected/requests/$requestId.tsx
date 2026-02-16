@@ -6,15 +6,17 @@ import {
   Building2,
   CheckCircle2,
   CreditCard,
-  Download,
-  FileText,
+  FileDown,
   Loader2,
   Send,
   User,
 } from 'lucide-react'
-import type { TCompany } from '@/types/company'
-import type { TIndividual } from '@/types/individual'
-import type { TReport } from '@/types/report'
+import { RequestReportRow } from './request-report-row'
+import type {
+  RequestReport,
+  RequestReportItem,
+  RequestReportUploadItem,
+} from '@/types/request'
 import type { RequestStatusValue, TRequest } from '@/types/request'
 import { REQUEST_STATUS } from '@/types/request'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -27,6 +29,8 @@ import {
   getRequestQueryOptions,
   useGetRequest,
 } from '@/apis/requests/get-request'
+import { downloadRequestInvoicePdf } from '@/apis/requests/download-request-invoice-pdf'
+import { createRequestPaymentSession } from '@/apis/requests/create-request-payment-session'
 
 /** Aligned with Prisma RequestStatus enum */
 const statusConfig: Record<
@@ -82,34 +86,194 @@ function formatRequestDate(iso: string) {
   }
 }
 
+type ReportWithPriceAndUploads = RequestReport & {
+  price: number
+  upload?: RequestReportUploadItem | null
+}
+
 type SubjectItem = {
   id: string
   name: string
   type: 'Company' | 'Individual'
   nationality: string
-  reports: Array<TReport>
+  reports: Array<ReportWithPriceAndUploads>
 }
 
+/** Normalize to unified request reports (from requestReports or legacy requestCompanyReports + requestIndividualReports) */
+function getRequestReports(request: TRequest): Array<RequestReportItem> {
+  if (request.requestReports?.length) return request.requestReports
+  const company = (request.requestCompanyReports ?? []).map((rcr) => ({
+    id: 0,
+    requestId: rcr.requestId,
+    reportId: rcr.reportId,
+    companyId: rcr.companyId,
+    individualId: null as number | null,
+    company: rcr.company,
+    individual: null,
+    report: rcr.report,
+    upload: rcr.upload ?? null,
+  }))
+  const individual = (request.requestIndividualReports ?? []).map((rir) => ({
+    id: 0,
+    requestId: rir.requestId,
+    reportId: rir.reportId,
+    companyId: null as number | null,
+    individualId: rir.individualId,
+    company: null,
+    individual: rir.individual,
+    report: rir.report,
+    upload: rir.upload ?? null,
+  }))
+  return [...company, ...individual]
+}
+
+/** Build subjects from unified requestReports (or legacy arrays). Falls back to companies/individuals + all reports if none. */
 function buildSubjects(request: TRequest): Array<SubjectItem> {
-  const companies: Array<SubjectItem> = request.companies.map(
-    (c: TCompany) => ({
-      id: `company-${c.id}`,
-      name: c.nameAr || c.nameEn,
-      type: 'Company',
-      nationality: c?.country?.nameEn,
-      reports: request.reports,
-    }),
-  )
-  const individuals: Array<SubjectItem> = request.individuals.map(
-    (i: TIndividual) => ({
-      id: `individual-${i.id}`,
-      name: i.fullName,
-      type: 'Individual',
-      nationality: i.nationality ?? '—',
-      reports: request.reports,
-    }),
-  )
-  return [...companies, ...individuals]
+  const requestReports = getRequestReports(request)
+  const hasJunction = requestReports.length > 0
+
+  if (!hasJunction) {
+    const reports: Array<RequestReport & { price: number }> = (
+      request.reports ?? []
+    ).map((r) => {
+      const price =
+        (r as { price?: number }).price ??
+        (r as RequestReport).estimatedPrice ??
+        0
+      return {
+        id: r.id,
+        name: r.name,
+        description: r.description,
+        turnaround: r.turnaround,
+        estimatedPrice: (r as RequestReport).estimatedPrice ?? price,
+        price,
+      }
+    })
+    const companies: Array<SubjectItem> = (request.companies ?? []).map(
+      (c) => ({
+        id: `company-${c.id}`,
+        name: c.nameAr ?? c.nameEn,
+        type: 'Company' as const,
+        nationality:
+          c && 'country' in c && c.country ? String(c.country.nameEn) : '—',
+        reports,
+      }),
+    )
+    const individuals: Array<SubjectItem> = (request.individuals ?? []).map(
+      (i) => ({
+        id: `individual-${i.id}`,
+        name: i.fullName,
+        type: 'Individual' as const,
+        nationality: i.nationality ?? '—',
+        reports,
+      }),
+    )
+    return [...companies, ...individuals]
+  }
+
+  const companyMap = new Map<
+    number,
+    {
+      name: string
+      nationality: string
+      reports: Array<ReportWithPriceAndUploads>
+    }
+  >()
+  const individualMap = new Map<
+    number,
+    {
+      name: string
+      nationality: string
+      reports: Array<ReportWithPriceAndUploads>
+    }
+  >()
+
+  for (const rr of requestReports) {
+    const price = rr.report.price ?? rr.report.estimatedPrice ?? 0
+    const reportWithUploads: ReportWithPriceAndUploads = {
+      ...rr.report,
+      estimatedPrice: rr.report.estimatedPrice ?? price,
+      price,
+      upload: rr.upload ?? null,
+    }
+
+    if (rr.companyId != null && rr.company != null) {
+      const existing = companyMap.get(rr.companyId)
+      const name = rr.company.nameAr ?? rr.company.nameEn
+      const nationality = rr.company.country
+        ? String(rr.company.country.nameEn)
+        : '—'
+      if (existing) {
+        const idx = existing.reports.findIndex(
+          (r) => r.id === reportWithUploads.id,
+        )
+        if (idx >= 0) {
+          const existingReport = existing.reports[
+            idx
+          ] as ReportWithPriceAndUploads
+          if (!existingReport.upload && reportWithUploads.upload) {
+            existingReport.upload = reportWithUploads.upload
+          }
+        } else {
+          existing.reports.push(reportWithUploads)
+        }
+      } else {
+        companyMap.set(rr.companyId, {
+          name,
+          nationality,
+          reports: [reportWithUploads],
+        })
+      }
+    }
+
+    if (rr.individualId != null && rr.individual != null) {
+      const existing = individualMap.get(rr.individualId)
+      const name = rr.individual.fullName
+      const nationality = rr.individual.nationality ?? '—'
+      if (existing) {
+        const idx = existing.reports.findIndex(
+          (r) => r.id === reportWithUploads.id,
+        )
+        if (idx >= 0) {
+          const existingReport = existing.reports[
+            idx
+          ] as ReportWithPriceAndUploads
+          if (!existingReport.upload && reportWithUploads.upload) {
+            existingReport.upload = reportWithUploads.upload
+          }
+        } else {
+          existing.reports.push(reportWithUploads)
+        }
+      } else {
+        individualMap.set(rr.individualId, {
+          name,
+          nationality,
+          reports: [reportWithUploads],
+        })
+      }
+    }
+  }
+
+  const companySubjects: Array<SubjectItem> = Array.from(
+    companyMap.entries(),
+  ).map(([companyId, { name, nationality, reports }]) => ({
+    id: `company-${companyId}`,
+    name,
+    type: 'Company' as const,
+    nationality,
+    reports,
+  }))
+  const individualSubjects: Array<SubjectItem> = Array.from(
+    individualMap.entries(),
+  ).map(([individualId, { name, nationality, reports }]) => ({
+    id: `individual-${individualId}`,
+    name,
+    type: 'Individual' as const,
+    nationality,
+    reports,
+  }))
+
+  return [...companySubjects, ...individualSubjects]
 }
 
 /** Ordered flow for timeline (Prisma RequestStatus) */
@@ -169,6 +333,7 @@ function RequestDetailsPage() {
 
   const subjects = useMemo(() => buildSubjects(request), [request])
   const [activeSubjectId, setActiveSubjectId] = useState<string>('')
+  const [isPaymentRedirecting, setIsPaymentRedirecting] = useState(false)
 
   useEffect(() => {
     if (subjects.length > 0) {
@@ -192,6 +357,7 @@ function RequestDetailsPage() {
   const isRejectedOrCancelled =
     status === REQUEST_STATUS.REJECTED || status === REQUEST_STATUS.CANCELLED
   const submittedDate = formatRequestDate(request.createdAt)
+  const updatedDate = formatRequestDate(request.updatedAt)
   const timeline = useMemo(
     () =>
       TIMELINE_STATUSES.map((s, idx) => {
@@ -200,7 +366,7 @@ function RequestDetailsPage() {
           active && !isRejectedOrCancelled
             ? idx === 0
               ? submittedDate
-              : '—'
+              : updatedDate
             : 'Pending'
         return {
           status: s,
@@ -209,7 +375,7 @@ function RequestDetailsPage() {
           active: active || (idx === currentStepIndex && isRejectedOrCancelled),
         }
       }),
-    [currentStepIndex, isRejectedOrCancelled, submittedDate],
+    [currentStepIndex, isRejectedOrCancelled, submittedDate, updatedDate],
   )
 
   return (
@@ -241,12 +407,40 @@ function RequestDetailsPage() {
           <div className="flex flex-wrap items-stretch gap-4">
             <div className="flex h-full items-center gap-2">
               {status === REQUEST_STATUS.INVOICE_GENERATED && (
-                <Button
-                  size="sm"
-                  className="gap-2 bg-orange-500 hover:bg-orange-600 focus-visible:ring-orange-500 border-none shadow-sm"
-                >
-                  <CreditCard className="h-4 w-4" /> Pay ${estimatedPrice}
-                </Button>
+                <>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-2"
+                    onClick={() => downloadRequestInvoicePdf(request.id)}
+                  >
+                    <FileDown className="h-4 w-4" />
+                    Download invoice
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="gap-2 bg-orange-500 hover:bg-orange-600 focus-visible:ring-orange-500 border-none shadow-sm"
+                    disabled={isPaymentRedirecting}
+                    onClick={async () => {
+                      setIsPaymentRedirecting(true)
+                      try {
+                        const { url } = await createRequestPaymentSession(
+                          request.id,
+                        )
+                        window.location.href = url
+                      } catch {
+                        setIsPaymentRedirecting(false)
+                      }
+                    }}
+                  >
+                    {isPaymentRedirecting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <CreditCard className="h-4 w-4" />
+                    )}{' '}
+                    Pay ${finalPrice ?? estimatedPrice}
+                  </Button>
+                </>
               )}
             </div>
 
@@ -417,34 +611,11 @@ function RequestDetailsPage() {
                 </h3>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {selectedSubject.reports.map((report) => (
-                    <div
+                    <RequestReportRow
                       key={report.id}
-                      className="flex items-center justify-between gap-4 rounded-xl border bg-card p-4 transition-colors hover:border-primary/20 hover:bg-muted/20"
-                    >
-                      <div className="min-w-0 space-y-1.5">
-                        <p className="text-sm font-semibold leading-tight">
-                          {report.name}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-xs tabular-nums text-muted-foreground">
-                            ${report?.price?.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                      {status === REQUEST_STATUS.COMPLETED ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-8 shrink-0 gap-1.5 text-primary border-primary/30 hover:bg-primary/10 hover:border-primary"
-                        >
-                          <Download className="h-3.5 w-3.5" /> Report
-                        </Button>
-                      ) : (
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center text-muted-foreground">
-                          <Activity className="h-4 w-4 animate-pulse" />
-                        </span>
-                      )}
-                    </div>
+                      report={report}
+                      status={status}
+                    />
                   ))}
                 </div>
               </CardContent>
