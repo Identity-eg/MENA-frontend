@@ -1,5 +1,5 @@
-import { Link, createFileRoute, notFound } from '@tanstack/react-router'
-import { useEffect, useMemo, useState } from 'react'
+import { Link, createFileRoute, notFound, useRouteContext } from '@tanstack/react-router'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Activity,
   ArrowLeft,
@@ -8,6 +8,7 @@ import {
   CreditCard,
   FileDown,
   Loader2,
+  MessageCircle,
   Send,
   User,
 } from 'lucide-react'
@@ -31,6 +32,8 @@ import {
 } from '@/apis/requests/get-request'
 import { downloadRequestInvoicePdf } from '@/apis/requests/download-request-invoice-pdf'
 import { createRequestPaymentSession } from '@/apis/requests/create-request-payment-session'
+import { useGetMessages } from '@/apis/messages/get-messages'
+import { useSendMessage } from '@/apis/messages/send-message'
 
 /** Aligned with Prisma RequestStatus enum */
 const statusConfig: Record<
@@ -80,6 +83,31 @@ function formatRequestDate(iso: string) {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+    })
+  } catch {
+    return iso
+  }
+}
+
+function formatMessageTime(iso: string) {
+  try {
+    const d = new Date(iso)
+    const now = new Date()
+    const isToday =
+      d.getDate() === now.getDate() &&
+      d.getMonth() === now.getMonth() &&
+      d.getFullYear() === now.getFullYear()
+    if (isToday) {
+      return d.toLocaleTimeString(undefined, {
+        hour: 'numeric',
+        minute: '2-digit',
+      })
+    }
+    return d.toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
     })
   } catch {
     return iso
@@ -349,6 +377,9 @@ function RequestDetailsPage() {
     }
   }, [subjects])
 
+  const { user: rootUser } = useRouteContext({ from: '__root__' })
+  const currentUserId = rootUser?.user?.id ?? null
+
   const status = request.status
   const config = statusConfig[status]
   const foundSubject = subjects.find((s) => s.id === activeSubjectId)
@@ -356,6 +387,18 @@ function RequestDetailsPage() {
   const selectedSubject = subjects.length > 0 ? activeSubject : null
   const estimatedPrice = request.estimatedPrice
   const amountDue = request.invoice?.amount ?? estimatedPrice
+
+  const { data: messagesData, isLoading: messagesLoading } = useGetMessages(
+    request.id,
+  )
+  const messages = messagesData?.data ?? []
+  const sendMessageMutation = useSendMessage(request.id)
+  const [messageDraft, setMessageDraft] = useState('')
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages.length])
 
   const currentStepIndex = TIMELINE_STATUSES.indexOf(status)
   const isRejectedOrCancelled =
@@ -660,22 +703,108 @@ function RequestDetailsPage() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-xl bg-muted/30">
-              <CardContent className="flex flex-col gap-4 p-5">
-                <p className="text-xs italic leading-relaxed text-muted-foreground">
-                  {selectedSubject
-                    ? `"Reports for ${selectedSubject.name} are ready for download."`
-                    : 'Ask a question about this request.'}
+            <Card className="rounded-xl">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4 text-primary" />
+                  Messages
+                </CardTitle>
+                <p className="text-sm text-muted-foreground font-normal mt-0.5">
+                  Questions about this request? Reply here.
                 </p>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Ask about this subject…"
-                    className="h-9 flex-1 text-sm"
-                  />
-                  <Button size="sm" className="h-9 shrink-0 px-3">
-                    <Send className="h-3.5 w-3.5" aria-hidden />
-                  </Button>
-                </div>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4 p-5 pt-0">
+                {messagesLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex flex-col gap-3 max-h-[280px] min-h-[120px] overflow-y-auto rounded-lg border bg-muted/20 p-3">
+                      {messages.length === 0 ? (
+                        <p className="text-sm text-muted-foreground py-4 text-center">
+                          No messages yet. Send a message to start the conversation.
+                        </p>
+                      ) : (
+                        messages.map((msg) => {
+                          const isOwn = msg.senderId === currentUserId
+                          return (
+                            <div
+                              key={msg.id}
+                              className={cn(
+                                'flex flex-col gap-0.5 max-w-[85%]',
+                                isOwn ? 'self-end items-end' : 'self-start items-start',
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  'rounded-xl px-3 py-2 text-sm',
+                                  isOwn
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-muted border',
+                                )}
+                              >
+                                {!isOwn && (
+                                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                                    {msg.sender.name}
+                                    {msg.sender.role === 'ADMIN' && (
+                                      <span className="ml-1.5 text-primary">· Support</span>
+                                    )}
+                                  </p>
+                                )}
+                                <p className="whitespace-pre-wrap wrap-break-word">
+                                  {msg.content}
+                                </p>
+                              </div>
+                              <span
+                                className={cn(
+                                  'text-[10px] text-muted-foreground',
+                                  isOwn ? 'mr-1' : 'ml-1',
+                                )}
+                              >
+                                {formatMessageTime(msg.createdAt)}
+                              </span>
+                            </div>
+                          )
+                        })
+                      )}
+                      <div ref={messagesEndRef} />
+                    </div>
+                    <form
+                      className="flex gap-2"
+                      onSubmit={(e) => {
+                        e.preventDefault()
+                        const content = messageDraft.trim()
+                        if (!content || sendMessageMutation.isPending) return
+                        sendMessageMutation.mutate(content, {
+                          onSuccess: () => setMessageDraft(''),
+                        })
+                      }}
+                    >
+                      <Input
+                        placeholder="Type a message…"
+                        className="h-9 flex-1 text-sm"
+                        value={messageDraft}
+                        onChange={(e) => setMessageDraft(e.target.value)}
+                        disabled={sendMessageMutation.isPending}
+                      />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        className="h-9 shrink-0 px-3"
+                        disabled={
+                          !messageDraft.trim() || sendMessageMutation.isPending
+                        }
+                      >
+                        {sendMessageMutation.isPending ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Send className="h-3.5 w-3.5" aria-hidden />
+                        )}
+                      </Button>
+                    </form>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
