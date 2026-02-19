@@ -1,13 +1,16 @@
 import { Link, useRouter } from '@tanstack/react-router'
 import { ShieldCheck } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button } from './ui/button'
 import type { TUser } from '@/types/user'
 import { clearServerCredentials } from '@/lib/auth'
-import { useQueryClient } from '@tanstack/react-query'
+import { useAuthStore } from '@/stores/auth'
 
 export function HomeHeader({ user }: { user?: TUser | null }) {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { clearAccessToken } = useAuthStore()
+
   return (
     <header className="relative border-b bg-background/60 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -52,10 +55,8 @@ export function HomeHeader({ user }: { user?: TUser | null }) {
             size="sm"
             onClick={async () => {
               await clearServerCredentials()
-              queryClient.removeQueries({
-                queryKey: ['me'],
-                type: 'all',
-              })
+              clearAccessToken()
+              queryClient.removeQueries({ queryKey: ['me'] })
               router.invalidate()
             }}
           >

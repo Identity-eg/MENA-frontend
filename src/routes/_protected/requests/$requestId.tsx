@@ -1,4 +1,9 @@
-import { Link, createFileRoute, notFound, useRouteContext } from '@tanstack/react-router'
+import {
+  Link,
+  createFileRoute,
+  notFound,
+  useRouteContext,
+} from '@tanstack/react-router'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Activity,
@@ -12,7 +17,7 @@ import {
   Send,
   User,
 } from 'lucide-react'
-import { RequestReportRow } from './request-report-row'
+import { RequestReportRow } from './-request-report-row'
 import type {
   RequestReport,
   RequestReportItem,
@@ -677,9 +682,9 @@ function RequestDetailsPage() {
             </Card>
           )}
 
-          <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2">
+          <div className="grid gap-6 items-start sm:grid-cols-1 lg:grid-cols-2">
             <Card className="rounded-xl">
-              <CardContent className="flex items-start gap-4 p-5">
+              <CardContent className="flex items-start gap-4">
                 <span
                   className={cn(
                     'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl',
@@ -723,7 +728,8 @@ function RequestDetailsPage() {
                     <div className="flex flex-col gap-3 max-h-[280px] min-h-[120px] overflow-y-auto rounded-lg border bg-muted/20 p-3">
                       {messages.length === 0 ? (
                         <p className="text-sm text-muted-foreground py-4 text-center">
-                          No messages yet. Send a message to start the conversation.
+                          No messages yet. Send a message to start the
+                          conversation.
                         </p>
                       ) : (
                         messages.map((msg) => {
@@ -733,7 +739,9 @@ function RequestDetailsPage() {
                               key={msg.id}
                               className={cn(
                                 'flex flex-col gap-0.5 max-w-[85%]',
-                                isOwn ? 'self-end items-end' : 'self-start items-start',
+                                isOwn
+                                  ? 'self-end items-end'
+                                  : 'self-start items-start',
                               )}
                             >
                               <div
@@ -748,7 +756,9 @@ function RequestDetailsPage() {
                                   <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                                     {msg.sender.name}
                                     {msg.sender.role === 'ADMIN' && (
-                                      <span className="ml-1.5 text-primary">· Support</span>
+                                      <span className="ml-1.5 text-primary">
+                                        · Support
+                                      </span>
                                     )}
                                   </p>
                                 )}

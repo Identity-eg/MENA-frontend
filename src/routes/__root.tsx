@@ -6,6 +6,9 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
+import { useEffect } from 'react'
+import { getCookie } from '@tanstack/react-start/server'
+import { createServerFn } from '@tanstack/react-start'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
@@ -13,17 +16,24 @@ import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import type { TUser } from '@/types/user'
 import { getMeQueryOptions } from '@/apis/user/get-me'
-import { useEffect } from 'react'
-import { getServerAccessToken } from '@/lib/auth'
 import { useAuthStore } from '@/stores/auth'
+import { getIsomorphicAccessToken } from '@/apis/request/request-interceptor'
 
 interface MyRouterContext {
   queryClient: QueryClient
   user: TUser | null
 }
 
+const getTokenFromServer = createServerFn().handler(() => {
+  return getCookie('accessToken')
+})
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   beforeLoad: async ({ context }) => {
+    const accessToken = getIsomorphicAccessToken()
+    if (!accessToken) {
+      return { user: null }
+    }
     const user = await context.queryClient.ensureQueryData(getMeQueryOptions())
     return { user }
   },
@@ -56,8 +66,10 @@ const useSyncClientCredentials = () => {
   const { setAccessToken } = useAuthStore()
 
   const fetchAccessToken = async () => {
-    const tokenFromServer = await getServerAccessToken()
-    setAccessToken(tokenFromServer)
+    const tokenFromServer = await getTokenFromServer()
+    if (tokenFromServer) {
+      setAccessToken(tokenFromServer)
+    }
   }
 
   useEffect(() => {
@@ -67,6 +79,7 @@ const useSyncClientCredentials = () => {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   useSyncClientCredentials()
+
   return (
     <html lang="en">
       <head>

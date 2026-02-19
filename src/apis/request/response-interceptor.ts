@@ -2,9 +2,8 @@
 import { refreshToken } from '../auth/refresh-token'
 import { apiClient } from './api-client'
 import { getErrorMessage } from './error-handler'
+import { setIsomorphicAccessToken } from './request-interceptor'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
-import { useAuthStore } from '@/stores/auth'
-// import { useAuthStore } from '@/store/auth'
 
 let isRefreshing = false
 let failedQueue: Array<{
@@ -50,7 +49,7 @@ export const responseErrorInterceptor = async (error: AxiosError) => {
 
       if (refreshResponse?.accessToken) {
         originalRequest.headers.Authorization = `Bearer ${refreshResponse.accessToken}`
-        useAuthStore.getState().setAccessToken(refreshResponse.accessToken)
+        setIsomorphicAccessToken({ accessToken: refreshResponse.accessToken })
 
         processQueue(null)
         return apiClient(originalRequest)

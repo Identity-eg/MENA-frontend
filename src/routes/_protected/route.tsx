@@ -1,5 +1,6 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import { DashboardLayout } from '@/components/dashboard-layout'
+import { getIsomorphicAccessToken } from '@/apis/request/request-interceptor'
 
 export const Route = createFileRoute('/_protected')({
   beforeLoad: ({ context }) => {

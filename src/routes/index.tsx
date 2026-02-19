@@ -1,4 +1,4 @@
-import { createFileRoute, useRouteContext } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { HeroSection } from '@/components/hero-section'
 import { PlatformFeaturesSection } from '@/components/platform-features-section'
 import { StatusSection } from '@/components/status-section'
@@ -14,9 +14,7 @@ export const Route = createFileRoute('/')({
 })
 
 export default function HomePage() {
-  const { user } = useRouteContext({ from: '__root__' })
-
-  console.log('user', user)
+  const user = Route.useLoaderData()
 
   return (
     <div className="min-h-screen bg-background">
