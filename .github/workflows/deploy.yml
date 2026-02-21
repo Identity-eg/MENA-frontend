@@ -16,7 +16,7 @@
 #                            e.g. https://api.your-domain.com  or  http://<EC2-IP>
 #   EC2_HOST                 Public IP or DNS of the EC2 instance
 #   EC2_USERNAME             SSH user (ubuntu / ec2-user)
-#   EC2_SSH_KEY              Full contents of the PEM private key
+#   EC2_SSH_KEY              Base64-encoded PEM private key (see below)
 ##############################################################################
 
 name: Build & Deploy Frontend
@@ -28,9 +28,9 @@ on:
   workflow_dispatch:
 
 env:
-  AWS_REGION:   ${{ secrets.AWS_REGION }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-  ECR_REPO:     ${{ secrets.ECR_REPO }}
+  ECR_REPO: ${{ secrets.ECR_REPO }}
 
 jobs:
   build-and-deploy:
@@ -45,12 +45,17 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region:            ${{ env.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Docker login to ECR (explicit)
+        run: |
+          aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
+            docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
 
       - name: Set image tag
         run: echo "IMAGE_TAG=${GITHUB_SHA::8}" >> $GITHUB_ENV
@@ -70,12 +75,13 @@ jobs:
 
       - name: Set up SSH key
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ec2-key.pem
+          # EC2_SSH_KEY must be base64-encoded: base64 -w 0 your-key.pem
+          echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > /tmp/ec2-key.pem
           chmod 600 /tmp/ec2-key.pem
 
       - name: Deploy to EC2
         env:
-          EC2_HOST:     ${{ secrets.EC2_HOST }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
         run: |
           ssh -i /tmp/ec2-key.pem \
@@ -87,7 +93,7 @@ jobs:
                 aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
                   docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
 
-                cd ~/mena-infra
+                cd ~/mena
 
                 export ECR_REGISTRY=${{ env.ECR_REGISTRY }}
                 export FRONTEND_TAG=$IMAGE_TAG
