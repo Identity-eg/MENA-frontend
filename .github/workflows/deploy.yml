@@ -99,7 +99,7 @@ jobs:
                 export FRONTEND_TAG=$IMAGE_TAG
 
                 docker compose pull frontend
-                docker compose up -d --force-recreate --no-build --no-deps frontend
+                docker compose up -d --no-build --no-deps frontend
 
                 docker image prune -f
 
