@@ -49,6 +49,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region:            ${{ env.AWS_REGION }}
 
+      # ECR registry must be plain hostname only (no https://, no path, no trailing slash)
+      - name: Set ECR registry URL
+        run: |
+          REGISTRY="${{ secrets.ECR_REGISTRY }}"
+          REGISTRY="${REGISTRY#https://}"
+          REGISTRY="${REGISTRY#http://}"
+          REGISTRY="${REGISTRY%%/*}"
+          REGISTRY="${REGISTRY%/}"
+          echo "ECR_REGISTRY=$REGISTRY" >> $GITHUB_ENV
+          echo "Using registry: $REGISTRY"
+
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
