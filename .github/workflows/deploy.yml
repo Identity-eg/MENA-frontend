@@ -16,7 +16,7 @@
 #                            e.g. https://api.your-domain.com  or  http://<EC2-IP>
 #   EC2_HOST                 Public IP or DNS of the EC2 instance
 #   EC2_USERNAME             SSH user (ubuntu / ec2-user)
-#   EC2_SSH_KEY              Full contents of the PEM private key
+#   EC2_SSH_KEY              Base64-encoded PEM private key (see below)
 ##############################################################################
 
 name: Build & Deploy Frontend
@@ -75,7 +75,8 @@ jobs:
 
       - name: Set up SSH key
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ec2-key.pem
+          # EC2_SSH_KEY must be base64-encoded: base64 -w 0 your-key.pem
+          echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > /tmp/ec2-key.pem
           chmod 600 /tmp/ec2-key.pem
 
       - name: Deploy to EC2
