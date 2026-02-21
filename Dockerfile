@@ -3,7 +3,7 @@ FROM node:22-alpine AS deps
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
 RUN npm ci
 
 # ─── Stage 2: Build TanStack Start (Nitro SSR) ────────────────────────────────
