@@ -25,7 +25,7 @@ export default function LoginPage() {
             <ShieldCheck className="h-6 w-6 text-primary" />
           </Link>
           <h1 className="text-2xl font-semibold tracking-tight">
-            Welcome Back hady
+            Welcome Back
           </h1>
           <p className="text-sm text-muted-foreground">
             Access your compliance intelligence portal
@@ -70,7 +70,6 @@ const LoginForm = () => {
   })
 
   const loginMutation = useLogin()
-  console.log(loginMutation)
 
   const onSubmit = async (data: LoginValues) => {
     await loginMutation.mutateAsync({ data })
