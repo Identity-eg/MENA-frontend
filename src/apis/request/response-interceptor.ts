@@ -23,6 +23,7 @@ const processQueue = (error: AxiosError | null = null) => {
 }
 
 export const responseErrorInterceptor = async (error: AxiosError) => {
+  console.log('error', error)
   const originalRequest =
     error.config as unknown as InternalAxiosRequestConfig & {
       _retry?: boolean
