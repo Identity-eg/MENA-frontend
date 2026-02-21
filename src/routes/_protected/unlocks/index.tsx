@@ -50,68 +50,75 @@ function UnlocksPage() {
         />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {unlocks.map((unlock) => (
-          <Card className="p-0" key={unlock.id}>
-            <CardHeader className="bg-muted/30 border-b p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Building2 className="h-5 w-5" />
+      {unlocks.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-16 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+            <Unlock className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <h3 className="mt-4 text-base font-semibold">No unlocks yet</h3>
+          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+            You haven't unlocked any company fields. Browse companies and unlock
+            premium data to see it here.
+          </p>
+          <Link to="/companies">
+            <Button className="mt-5" size="sm">
+              <Search className="mr-2 h-4 w-4" />
+              Browse Companies
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {unlocks.map((unlock) => (
+            <Card className="p-0" key={unlock.id}>
+              <CardHeader className="bg-muted/30 border-b p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Building2 className="h-5 w-5" />
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className="font-semibold bg-green-50 text-green-600 border-green-400 dark:bg-green-950/50 dark:text-green-400 dark:border-green-700"
+                  >
+                    Unlocked
+                  </Badge>
                 </div>
-                <Badge
-                  variant="outline"
-                  className="font-semibold bg-green-50 text-green-600 border-green-400 dark:bg-green-950/50 dark:text-green-400 dark:border-green-700"
+                <CardTitle className="text-lg mt-3 font-sans" dir="rtl">
+                  {unlock.lockedField.company.nameAr ??
+                    unlock.lockedField.company.nameEn}
+                </CardTitle>
+                <div className="text-sm text-muted-foreground font-medium">
+                  {unlock.lockedField.company.nameEn}
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div className="flex flex-col gap-1">
+                  <span className="text-muted-foreground flex items-center gap-2">
+                    <Unlock size={16} />
+                    {formatFieldName(unlock.lockedField.lockedType.fieldName)}
+                  </span>
+                  <span className="font-medium">
+                    {formatUnlockedValue(unlock.unlockedValue)}
+                  </span>
+                </div>
+              </CardContent>
+              <CardFooter className="bg-transparent p-2">
+                <Link
+                  to="/companies/$companyId"
+                  params={{
+                    companyId: String(unlock.lockedField.company.id),
+                  }}
                 >
-                  Unlocked
-                </Badge>
-              </div>
-              <CardTitle className="text-lg mt-3 font-sans" dir="rtl">
-                {unlock.lockedField.company.nameAr ??
-                  unlock.lockedField.company.nameEn}
-              </CardTitle>
-              <div className="text-sm text-muted-foreground font-medium">
-                {unlock.lockedField.company.nameEn}
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground flex items-center gap-2">
-                  <Unlock size={16} />
-                  {formatFieldName(unlock.lockedField.lockedType.fieldName)}
-                </span>
-                <span className="font-medium">
-                  {formatUnlockedValue(unlock.unlockedValue)}
-                </span>
-              </div>
-            </CardContent>
-            <CardFooter className="bg-transparent p-2">
-              <Link
-                to="/companies/$companyId"
-                params={{
-                  companyId: String(unlock.lockedField.company.id),
-                }}
-              >
-                <Button variant="ghost">
-                  View Full Profile
-                  <ExternalLink size={16} />
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        ))}
-        <Link to="/companies">
-          <Card className="h-full flex items-center justify-center hover:ring-primary/50 transition-all">
-            <div className="text-center space-y-2">
-              <div className="mx-auto size-10 rounded-full bg-primary/5 flex items-center justify-center">
-                <Search className="h-5 w-5 text-primary" />
-              </div>
-              <div className="text-xs font-medium text-muted-foreground">
-                Search to Unlock More
-              </div>
-            </div>
-          </Card>
-        </Link>
-      </div>
+                  <Button variant="ghost">
+                    View Full Profile
+                    <ExternalLink size={16} />
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

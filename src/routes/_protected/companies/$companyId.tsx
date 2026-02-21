@@ -1,6 +1,5 @@
 import { Suspense, useEffect, useState } from 'react'
 import {
-  Building2,
   CheckCircle2,
   ChevronRight,
   FileSearch,
@@ -398,31 +397,34 @@ function CompanyDetailsContent() {
             </Card>
           )}
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-primary" /> Company Profile
+          <Card className="border-border/60">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-semibold tracking-tight">
+                Company Profile
               </CardTitle>
-              <p className="text-sm text-muted-foreground font-normal mt-1">
+              <p className="text-xs text-muted-foreground">
                 Public information
               </p>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent>
               {publicFields.length > 0 ? (
-                <div className="grid gap-6 sm:grid-cols-2">
+                <div className="divide-y">
                   {publicFields.map(({ key, label, value }) => (
-                    <div key={key} className="space-y-1">
-                      <span className="text-xs font-bold text-muted-foreground mb-2 inline-block uppercase tracking-wider">
+                    <div
+                      key={key}
+                      className="flex flex-col gap-0.5 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-baseline sm:gap-4"
+                    >
+                      <span className="w-36 shrink-0 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
                         {label}
                       </span>
-                      <div className="flex items-center gap-2 min-h-6 text-sm">
+                      <p className="text-sm text-foreground wrap-break-word">
                         {value ?? '—'}
-                      </div>
+                      </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground py-2">
+                <p className="py-6 text-center text-sm text-muted-foreground">
                   No public details available.
                 </p>
               )}

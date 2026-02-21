@@ -1,7 +1,9 @@
-import { Suspense, useState } from 'react'
-import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
+import { Suspense, useState, useEffect } from 'react'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { ChevronRight, Loader2, Plus, Search } from 'lucide-react'
 import z from 'zod'
+import { parseAsString, useQueryState } from 'nuqs'
+import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -118,8 +120,8 @@ function CompanySearchResults({ q }: { q: string }) {
               </p>
             </div>
             <Link to="/requests/new/individuals">
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" /> Request Company Screening
+              <Button className="gap-2 px-6">
+                <Plus className="h-4 w-4" /> Request Company
               </Button>
             </Link>
           </CardContent>
@@ -130,11 +132,22 @@ function CompanySearchResults({ q }: { q: string }) {
 }
 
 export default function CompanySearchPage() {
-  const search = Route.useSearch()
-  const navigate = useNavigate()
-  const [query, setQuery] = useState(search.q ?? '')
+  const [searchParam, setSearchParam] = useQueryState(
+    'q',
+    parseAsString.withDefault('').withOptions({
+      shallow: false,
+      clearOnDefault: true,
+    }),
+  )
 
-  const searchQuery = search.q?.trim() ?? ''
+  const [input, setInput] = useState(searchParam)
+  const debouncedInput = useDebounce(input.trim(), 800)
+
+  useEffect(() => {
+    setSearchParam(debouncedInput || null)
+  }, [debouncedInput, setSearchParam])
+
+  const searchQuery = searchParam.trim()
   const hasQuery = searchQuery.length > 0
 
   return (
@@ -144,27 +157,14 @@ export default function CompanySearchPage() {
         subtitle="Search and verify companies across the MENA region."
       />
 
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            className="pl-9"
-            placeholder="Search by name, registration number, or keywords..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
-        <Button
-          onClick={() => {
-            navigate({
-              to: '/companies',
-              search: { q: (query && query.trim()) || undefined },
-            })
-          }}
-          disabled={!query.trim()}
-        >
-          Search
-        </Button>
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          className="pl-9 h-10"
+          placeholder="Search by name, registration number, or keywords..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+        />
       </div>
 
       {hasQuery ? (
