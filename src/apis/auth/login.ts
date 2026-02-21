@@ -3,9 +3,9 @@ import { useRouter } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { setCookie } from '@tanstack/react-start/server'
 import z from 'zod'
+import { request } from '../request'
 import { useAuthStore } from '@/stores/auth'
 import { getAuthCookieOptions } from '@/lib/cookie-options'
-import { request } from '../request'
 
 const login = async ({
   email,
