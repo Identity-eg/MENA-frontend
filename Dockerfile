@@ -31,13 +31,10 @@ ENV PORT=3000
 
 # Copy only the Nitro output (server + public assets)
 COPY --from=builder /app/.output ./.output
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
   CMD wget -qO- http://localhost:3000/ || exit 1
 
-# Populate shared volume with public assets so Nginx can serve /assets/ from same files
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["node", ".output/server/index.mjs"]
