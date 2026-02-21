@@ -1,4 +1,5 @@
-@import 'tailwindcss';
+/* source() ensures client and SSR builds scan the same paths → same CSS hash (fixes Docker 404 on assets) */
+@import 'tailwindcss' source('./');
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 @import '@fontsource-variable/inter';
