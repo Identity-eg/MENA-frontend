@@ -35,10 +35,6 @@ jobs:
     name: Build, Push & Deploy
     runs-on: ubuntu-latest
     environment: production
-    defaults:
-      run:
-        working-directory: frontend
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
