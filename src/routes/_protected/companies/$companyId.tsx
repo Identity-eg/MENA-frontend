@@ -1,5 +1,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import {
+  ArrowLeft,
+  Building2,
   CheckCircle2,
   ChevronRight,
   FileSearch,
@@ -12,7 +14,7 @@ import {
   Sparkles,
   Unlock,
 } from 'lucide-react'
-import { createFileRoute, notFound } from '@tanstack/react-router'
+import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import {
   Card,
   CardContent,
@@ -22,7 +24,9 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 import { RequestScreeningPackageButton } from '@/components/request-screening-package-button'
+import { EmptyState } from '@/components/EmptyState'
 import { cn } from '@/lib/utils'
 import {
   getCompanyQueryOptions,
@@ -33,16 +37,25 @@ import {
   useGetReports,
 } from '@/apis/reports/get-reports'
 import { createUnlockPaymentSession } from '@/apis/unlocks/create-unlock-payment-session'
+import { createUnlockAllPaymentSession } from '@/apis/unlocks/create-unlock-all-payment-session'
 import { useQueryClient } from '@tanstack/react-query'
 import { getUnlocksQueryOptions } from '@/apis/unlocks/get-unlocks'
 
 function CompanyDetailsLoadingFallback() {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 py-24">
-      <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
-      <p className="text-sm font-medium text-muted-foreground">
-        Loading company...
-      </p>
+    <div className="flex flex-col items-center justify-center gap-6 py-32">
+      <div className="relative">
+        <div className="h-14 w-14 rounded-2xl bg-muted/80 animate-pulse" />
+        <Loader2 className="absolute inset-0 m-auto h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+      <div className="space-y-1 text-center">
+        <p className="text-sm font-medium text-foreground">
+          Loading company details...
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Fetching profile and compliance data
+        </p>
+      </div>
     </div>
   )
 }
@@ -65,16 +78,47 @@ export const Route = createFileRoute('/_protected/companies/$companyId')({
     )
   },
   errorComponent() {
-    return <div>Error loading company</div>
+    return (
+      <div className="flex flex-col items-center justify-center gap-6 py-24">
+        <div className="rounded-full bg-destructive/10 p-4">
+          <Building2 className="h-10 w-10 text-destructive" />
+        </div>
+        <div className="space-y-2 text-center">
+          <h2 className="text-lg font-semibold">Something went wrong</h2>
+          <p className="text-sm text-muted-foreground max-w-sm">
+            We couldn’t load this company. Please try again or return to the
+            search.
+          </p>
+        </div>
+        <Link to="/companies">
+          <Button variant="outline">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to companies
+          </Button>
+        </Link>
+      </div>
+    )
   },
-  pendingComponent: () => <div>Loading company...</div>,
+  pendingComponent: () => <CompanyDetailsLoadingFallback />,
   notFoundComponent() {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
-        <p className="text-lg font-medium">Company not found</p>
-        <p className="text-sm text-muted-foreground">
-          The company you’re looking for doesn’t exist or you don’t have access.
-        </p>
+      <div className="flex flex-col items-center justify-center gap-6 py-24">
+        <div className="rounded-full bg-muted p-4">
+          <Building2 className="h-10 w-10 text-muted-foreground" />
+        </div>
+        <div className="space-y-2 text-center">
+          <h2 className="text-lg font-semibold">Company not found</h2>
+          <p className="text-sm text-muted-foreground max-w-sm">
+            The company you’re looking for doesn’t exist or you don’t have
+            access to view it.
+          </p>
+        </div>
+        <Link to="/companies">
+          <Button variant="outline">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to companies
+          </Button>
+        </Link>
       </div>
     )
   },
@@ -91,10 +135,13 @@ function CompanyDetailsContent() {
 
   const [selectedReports, setSelectedReports] = useState<Array<number>>([])
   const [unlockingFieldId, setUnlockingFieldId] = useState<number | null>(null)
+  const [unlockingAll, setUnlockingAll] = useState(false)
+  const [showUnlockSuccessBanner, setShowUnlockSuccessBanner] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('unlock') === 'success') {
+      setShowUnlockSuccessBanner(true)
       queryClient.invalidateQueries({
         queryKey: getCompanyQueryOptions(id).queryKey,
       })
@@ -102,6 +149,8 @@ function CompanyDetailsContent() {
         queryKey: getUnlocksQueryOptions().queryKey,
       })
       window.history.replaceState(null, '', window.location.pathname)
+      const t = setTimeout(() => setShowUnlockSuccessBanner(false), 5000)
+      return () => clearTimeout(t)
     }
   }, [id, queryClient])
 
@@ -178,6 +227,25 @@ function CompanyDetailsContent() {
     }
   }
 
+  const handleUnlockAll = async () => {
+    const ids = lockedFields
+      .map(({ key }) => getLockedFieldByFieldName(key)?.id)
+      .filter((id): id is number => id != null)
+    if (ids.length === 0) return
+    setUnlockingAll(true)
+    try {
+      const base = window.location.origin
+      const { url } = await createUnlockAllPaymentSession(
+        ids,
+        `${base}/companies/${id}?unlock=success`,
+        `${base}/companies/${id}?unlock=cancelled`,
+      )
+      window.location.href = url
+    } catch {
+      setUnlockingAll(false)
+    }
+  }
+
   const getFieldIcon = (key: string) => {
     switch (key) {
       case 'phone':
@@ -186,34 +254,80 @@ function CompanyDetailsContent() {
         return MapPin
       case 'email':
         return Mail
+      case 'website':
+        return Globe
       default:
         return Lock
     }
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b pb-6">
-        <div className="space-y-1">
-          <h1
-            className="text-3xl font-serif font-bold tracking-tight"
-            dir="rtl"
-          >
-            {company.nameAr ?? company.nameEn}
-          </h1>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <span className="font-medium">{company.nameEn}</span>
-            <span className="text-muted-foreground/30">•</span>
-            <span className="flex items-center gap-1 text-xs">
-              <Globe className="h-3 w-3" />
-              {company.country.nameEn}
-            </span>
+    <div className="space-y-6 pb-12">
+      {/* Breadcrumb & back */}
+      <nav className="flex items-center gap-2 text-sm">
+        <Link
+          to="/companies"
+          className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Companies
+        </Link>
+        <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
+        <span className="font-medium text-foreground truncate max-w-[200px] sm:max-w-none">
+          {company.nameEn}
+        </span>
+      </nav>
+
+      {/* Success banner */}
+      {showUnlockSuccessBanner && (
+        <div
+          role="status"
+          className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300 dark:bg-emerald-500/10 dark:border-emerald-500/20"
+        >
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+          <p className="font-medium">Unlock successful. Your data is now visible below.</p>
+        </div>
+      )}
+
+      {/* Hero header */}
+      <header className="relative overflow-hidden rounded-2xl border bg-linear-to-br from-card via-card to-muted/30 px-6 py-8 shadow-sm sm:px-8 sm:py-10">
+        <div className="absolute right-0 top-0 h-32 w-48 bg-linear-to-bl from-primary/5 to-transparent rounded-bl-full pointer-events-none" />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Building2 className="h-6 w-6" />
+              </div>
+              <div className="min-w-0">
+                <h1
+                  className="text-2xl font-bold tracking-tight sm:text-3xl"
+                  dir="rtl"
+                >
+                  {company.nameAr ?? company.nameEn}
+                </h1>
+                <p className="text-sm text-muted-foreground truncate">
+                  {company.nameEn}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <Globe className="h-3.5 w-3.5" />
+                {company.country.nameEn}
+              </span>
+              {company.industry && (
+                <>
+                  <span className="hidden sm:inline text-muted-foreground/40">•</span>
+                  <span>{company.industry}</span>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="space-y-6 min-w-0">
           {lockedFields.length > 0 && (
             <Card className="relative overflow-hidden rounded-2xl border-0 bg-linear-to-b from-primary/8 via-primary/5 to-transparent shadow-lg ring-1 ring-primary/10 dark:from-primary/15 dark:via-primary/10 dark:to-transparent dark:ring-primary/20">
               {/* Subtle grid pattern */}
@@ -285,7 +399,9 @@ function CompanyDetailsContent() {
                               'shrink-0 transition-all duration-200',
                               'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow',
                             )}
-                            disabled={unlockingFieldId === locked.id}
+                            disabled={
+                              unlockingFieldId === locked.id || unlockingAll
+                            }
                             onClick={() => handleUnlock(locked.id)}
                           >
                             {unlockingFieldId === locked.id ? (
@@ -316,16 +432,13 @@ function CompanyDetailsContent() {
                       <Button
                         size="default"
                         disabled={
-                          unlockingFieldId != null || lockedFields.length === 0
+                          unlockingFieldId != null ||
+                          unlockingAll ||
+                          lockedFields.length === 0
                         }
-                        onClick={() => {
-                          const first = lockedFields[0]
-                          if (!first) return
-                          const locked = getLockedFieldByFieldName(first.key)
-                          if (locked) handleUnlock(locked.id)
-                        }}
+                        onClick={handleUnlockAll}
                       >
-                        {unlockingFieldId != null ? (
+                        {unlockingAll ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                           <ChevronRight className="ml-1 h-4 w-4" />
@@ -397,24 +510,31 @@ function CompanyDetailsContent() {
             </Card>
           )}
 
-          <Card className="border-border/60">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold tracking-tight">
-                Company Profile
-              </CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Public information
-              </p>
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold tracking-tight">
+                    Company Profile
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground">
+                    Public information
+                  </p>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               {publicFields.length > 0 ? (
-                <div className="divide-y">
+                <div className="space-y-1">
                   {publicFields.map(({ key, label, value }) => (
                     <div
                       key={key}
-                      className="flex flex-col gap-0.5 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-baseline sm:gap-4"
+                      className="flex flex-col gap-0.5 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50 sm:flex-row sm:items-baseline sm:gap-4"
                     >
-                      <span className="w-36 shrink-0 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                      <span className="w-36 shrink-0 text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
                         {label}
                       </span>
                       <p className="text-sm text-foreground wrap-break-word">
@@ -424,76 +544,91 @@ function CompanyDetailsContent() {
                   ))}
                 </div>
               ) : (
-                <p className="py-6 text-center text-sm text-muted-foreground">
-                  No public details available.
-                </p>
+                <EmptyState
+                  icon={Building2}
+                  title="No public details"
+                  description="This company has no public profile information available."
+                />
               )}
             </CardContent>
           </Card>
 
-          <Card className="shadow-soft border-border bg-card">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <FileSearch className="h-4 w-4 text-primary" /> Available
-                Compliance Reports
-              </CardTitle>
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <FileSearch className="h-5 w-5" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg font-semibold tracking-tight">
+                    Compliance Reports
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Request screening packages for due diligence
+                  </p>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {reports.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-4 text-center">
-                  No reports available for this company.
-                </p>
+                <EmptyState
+                  icon={FileSearch}
+                  title="No reports available"
+                  description="There are no compliance reports available for this company at the moment."
+                />
               ) : (
                 <div className="grid gap-3">
-                  {reports.map((report) => (
-                    <div
-                      key={report.id}
-                      onClick={() => toggleReport(report.id)}
-                      className={cn(
-                        'group relative flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer bg-white',
-                        selectedReports.includes(report.id)
-                          ? 'border-primary ring-1 ring-primary/20'
-                          : 'hover:border-primary/30 hover:bg-accent/50',
-                      )}
-                    >
-                      <div className="flex items-start gap-4">
-                        <div
-                          className={cn(
-                            'mt-0.5 h-5 w-5 rounded-full border flex items-center justify-center transition-colors',
-                            selectedReports.includes(report.id)
-                              ? 'bg-primary border-primary'
-                              : 'bg-background',
-                          )}
-                        >
-                          {selectedReports.includes(report.id) && (
-                            <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
-                          )}
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-sm">{report.name}</h4>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {report.description}
-                          </p>
-                          <div className="flex items-center gap-3 mt-2">
+                  {reports.map((report) => {
+                    const isSelected = selectedReports.includes(report.id)
+                    return (
+                      <button
+                        key={report.id}
+                        type="button"
+                        onClick={() => toggleReport(report.id)}
+                        className={cn(
+                          'group relative flex w-full items-center justify-between gap-4 rounded-xl border p-4 text-left transition-all',
+                          isSelected
+                            ? 'border-primary bg-primary/5 ring-1 ring-primary/20 dark:bg-primary/10'
+                            : 'border-border hover:border-primary/40 hover:bg-muted/50',
+                        )}
+                      >
+                        <div className="flex min-w-0 flex-1 items-start gap-4">
+                          <div
+                            className={cn(
+                              'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
+                              isSelected
+                                ? 'border-primary bg-primary'
+                                : 'border-muted-foreground/30 group-hover:border-primary/50',
+                            )}
+                          >
+                            {isSelected && (
+                              <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-semibold text-sm">{report.name}</h4>
+                            <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                              {report.description}
+                            </p>
                             <Badge
-                              variant="outline"
-                              className="text-[10px] font-bold px-1.5 text-muted-foreground"
+                              variant="secondary"
+                              className="mt-2 text-[10px] font-medium"
                             >
                               TAT: {report.turnaround}
                             </Badge>
                           </div>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-bold text-primary">
-                          ${report.price}
+                        <div className="shrink-0 text-right">
+                          <span className="text-sm font-bold text-primary">
+                            ${report.price}
+                          </span>
+                          <p className="text-[10px] text-muted-foreground">
+                            Est.
+                          </p>
                         </div>
-                        <div className="text-[10px] uppercase text-muted-foreground/60 font-bold mt-1">
-                          Estimated
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                      </button>
+                    )
+                  })}
                 </div>
               )}
             </CardContent>
@@ -525,23 +660,49 @@ function CompanyDetailsContent() {
           </Card>
         </div>
 
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Summary</CardTitle>
+        <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
+          <Card className="overflow-hidden">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold">Quick info</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm">
-              <div className="flex justify-between">
+            <CardContent className="space-y-0">
+              <div className="flex justify-between py-3 text-sm">
                 <span className="text-muted-foreground">Country</span>
-                <span className="font-medium">{company.country.nameEn}</span>
+                <span className="font-medium text-right">{company.country.nameEn}</span>
               </div>
-              <div className="flex justify-between">
+              <Separator />
+              <div className="flex justify-between py-3 text-sm">
                 <span className="text-muted-foreground">Industry</span>
-                <span className="font-medium">{company.industry}</span>
+                <span className="font-medium text-right">{company.industry ?? '—'}</span>
               </div>
+              {company.legalForm && (
+                <>
+                  <Separator />
+                  <div className="flex justify-between py-3 text-sm">
+                    <span className="text-muted-foreground">Legal type</span>
+                    <span className="font-medium text-right">{company.legalForm}</span>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
-        </div>
+
+          {lockedFields.length > 0 && (
+            <Card className="border-primary/20 bg-primary/5 dark:bg-primary/10">
+              <CardContent className="pt-4 pb-4">
+                <p className="text-xs font-medium text-muted-foreground mb-2">
+                  Premium fields available
+                </p>
+                <p className="text-2xl font-bold text-primary">
+                  {lockedFields.length} locked
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Unlock individually or all at once below
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </aside>
       </div>
     </div>
   )

@@ -23,7 +23,7 @@ function DashboardPage() {
           title="Dashboard"
           subtitle="Welcome back, John. Here's your compliance overview."
         />
-        <Link to="/requests/new/individuals">
+        <Link to="/requests/new/individual">
           <Button>New Request</Button>
         </Link>
       </div>

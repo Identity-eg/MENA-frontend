@@ -9,7 +9,6 @@ import {
   X,
 } from 'lucide-react'
 import { DashboardLayout } from '@/components/dashboard-layout'
-import { ServiceCard } from '@/components/ServiceCard'
 import { SubjectsTable } from '@/components/SubjectsTable'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

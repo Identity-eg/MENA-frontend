@@ -10,8 +10,10 @@ import {
   ArrowLeft,
   Building2,
   CheckCircle2,
+  ChevronRight,
   CreditCard,
   FileDown,
+  FileText,
   Loader2,
   MessageCircle,
   Send,
@@ -28,9 +30,9 @@ import { REQUEST_STATUS } from '@/types/request'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { EmptyState } from '@/components/EmptyState'
 import { cn } from '@/lib/utils'
 import { StatusPill } from '@/components/StatusPill'
-import { PageHeader } from '@/components/page-header'
 import {
   getRequestQueryOptions,
   useGetRequest,
@@ -324,11 +326,19 @@ const TIMELINE_STATUSES: Array<RequestStatusValue> = [
 
 function RequestDetailsLoadingFallback() {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 py-24">
-      <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
-      <p className="text-sm font-medium text-muted-foreground">
-        Loading request...
-      </p>
+    <div className="flex flex-col items-center justify-center gap-6 py-32">
+      <div className="relative">
+        <div className="h-14 w-14 rounded-2xl bg-muted/80 animate-pulse" />
+        <Loader2 className="absolute inset-0 m-auto h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+      <div className="space-y-1 text-center">
+        <p className="text-sm font-medium text-foreground">
+          Loading request details...
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Fetching status and deliverables
+        </p>
+      </div>
     </div>
   )
 }
@@ -346,15 +356,42 @@ export const Route = createFileRoute('/_protected/requests/$requestId')({
       throw notFound()
     }
   },
+  errorComponent: () => (
+    <div className="flex flex-col items-center justify-center gap-6 py-24">
+      <div className="rounded-full bg-destructive/10 p-4">
+        <FileText className="h-10 w-10 text-destructive" />
+      </div>
+      <div className="space-y-2 text-center">
+        <h2 className="text-lg font-semibold">Something went wrong</h2>
+        <p className="text-sm text-muted-foreground max-w-sm">
+          We couldn&apos;t load this request. Please try again or return to your
+          requests.
+        </p>
+      </div>
+      <Link to="/requests">
+        <Button variant="outline">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to requests
+        </Button>
+      </Link>
+    </div>
+  ),
   pendingComponent: RequestDetailsLoadingFallback,
   notFoundComponent: () => (
-    <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
-      <p className="text-lg font-medium">Request not found</p>
-      <p className="text-sm text-muted-foreground">
-        This request doesn&apos;t exist or you don&apos;t have access to it.
-      </p>
+    <div className="flex flex-col items-center justify-center gap-6 py-24">
+      <div className="rounded-full bg-muted p-4">
+        <FileText className="h-10 w-10 text-muted-foreground" />
+      </div>
+      <div className="space-y-2 text-center">
+        <h2 className="text-lg font-semibold">Request not found</h2>
+        <p className="text-sm text-muted-foreground max-w-sm">
+          This request doesn&apos;t exist or you don&apos;t have access to view
+          it.
+        </p>
+      </div>
       <Link to="/requests">
-        <Button variant="outline" className="mt-4">
+        <Button variant="outline">
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back to requests
         </Button>
       </Link>
@@ -431,151 +468,185 @@ function RequestDetailsPage() {
   )
 
   return (
-    <div className="space-y-8">
-      {/* Page header */}
-      <header className="space-y-6 border-b pb-6">
-        <div className="flex flex-wrap items-start justify-between gap-6">
+    <div className="space-y-6 pb-12">
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-2 text-sm">
+        <Link
+          to="/requests"
+          className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Requests
+        </Link>
+        <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
+        <span className="font-medium text-foreground">
+          {formatRequestId(request.id)}
+        </span>
+      </nav>
+
+      {/* Hero header */}
+      <header className="relative overflow-hidden rounded-2xl border bg-linear-to-br from-card via-card to-muted/30 px-6 py-6 shadow-sm sm:px-8 sm:py-7">
+        <div className="absolute right-0 top-0 h-24 w-40 bg-linear-to-bl from-primary/5 to-transparent rounded-bl-full pointer-events-none" />
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-3">
-              <Link
-                to="/requests"
-                aria-label="Back to requests"
-                className="inline-flex items-center justify-center rounded-lg outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <Button variant="ghost" size="icon" className="h-9 w-9 -ml-2">
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-              </Link>
-              <PageHeader title={formatRequestId(request.id)} />
-              <StatusPill status={status} className="shrink-0" />
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <FileText className="h-5 w-5" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  {formatRequestId(request.id)}
+                </h1>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <StatusPill status={status} className="shrink-0" />
+                  <span className="text-sm text-muted-foreground">
+                    {subjects.length > 0
+                      ? `${subjects.length} subject${subjects.length === 1 ? '' : 's'} · ${submittedDate}`
+                      : submittedDate}
+                  </span>
+                </div>
+              </div>
             </div>
-            <p className="text-sm text-muted-foreground pl-11">
-              {subjects.length > 0
-                ? `${subjects.length} subject${subjects.length === 1 ? '' : 's'} submitted on ${submittedDate}`
-                : `Submitted on ${submittedDate}`}
-            </p>
           </div>
 
-          <div className="flex flex-wrap items-stretch gap-4">
-            <div className="flex h-full items-center gap-2">
-              {status === REQUEST_STATUS.INVOICE_GENERATED && (
-                <>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="gap-2"
-                    onClick={() => downloadRequestInvoicePdf(request.id)}
-                  >
-                    <FileDown className="h-4 w-4" />
-                    Download invoice
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="gap-2 bg-orange-500 hover:bg-orange-600 focus-visible:ring-orange-500 border-none shadow-sm"
-                    disabled={isPaymentRedirecting}
-                    onClick={async () => {
-                      setIsPaymentRedirecting(true)
-                      try {
-                        const { url } = await createRequestPaymentSession(
-                          request.id,
-                        )
-                        window.location.href = url
-                      } catch {
-                        setIsPaymentRedirecting(false)
-                      }
-                    }}
-                  >
-                    {isPaymentRedirecting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <CreditCard className="h-4 w-4" />
-                    )}{' '}
-                    Pay ${amountDue.toLocaleString()}
-                  </Button>
-                </>
-              )}
-            </div>
-
-            {/* Price summary */}
-            <div className="flex flex-wrap items-center gap-3 rounded-xl border px-4 py-3">
-              <div className="space-y-0.5">
-                <p className="text-[11px] text-muted-foreground">
-                  Estimated total
+          <div className="flex flex-wrap items-stretch gap-3">
+            {status === REQUEST_STATUS.INVOICE_GENERATED && (
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => downloadRequestInvoicePdf(request.id)}
+                >
+                  <FileDown className="h-4 w-4" />
+                  Invoice
+                </Button>
+                <Button
+                  size="sm"
+                  className="gap-2 bg-orange-500 hover:bg-orange-600 focus-visible:ring-orange-500 border-none shadow-sm"
+                  disabled={isPaymentRedirecting}
+                  onClick={async () => {
+                    setIsPaymentRedirecting(true)
+                    try {
+                      const { url } = await createRequestPaymentSession(
+                        request.id,
+                      )
+                      window.location.href = url
+                    } catch {
+                      setIsPaymentRedirecting(false)
+                    }
+                  }}
+                >
+                  {isPaymentRedirecting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <CreditCard className="h-4 w-4" />
+                  )}{' '}
+                  Pay ${amountDue.toLocaleString()}
+                </Button>
+              </div>
+            )}
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="rounded-xl border px-4 py-2.5">
+                <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                  Estimated
                 </p>
-                <p className="text-xl font-bold tabular-nums tracking-tight">
+                <p className="text-lg font-bold tabular-nums tracking-tight">
                   ${estimatedPrice}
                 </p>
               </div>
-            </div>
-            {request.invoice != null && (
-              <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
-                <div className="space-y-0.5">
-                  <p className="text-[11px] font-semibold text-muted-foreground">
+              {request.invoice != null && (
+                <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5">
+                  <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                     Amount due
                   </p>
-                  <p className="text-xl font-bold tabular-nums tracking-tight text-primary">
+                  <p className="text-lg font-bold tabular-nums tracking-tight text-primary">
                     ${request.invoice.amount.toLocaleString()}
                   </p>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Timeline stepper (read-only) */}
-      <nav aria-label="Request status" className="overflow-x-auto pb-2">
-        <div className="flex min-w-max justify-between gap-1 px-1">
+      {/* Timeline stepper */}
+      <nav
+        aria-label="Request status"
+        className="overflow-x-auto rounded-xl border bg-card px-4 py-4"
+      >
+        <div className="flex min-w-max items-start">
           {timeline.map((step, idx) => (
-            <div
-              key={step.status}
-              role="listitem"
-              aria-current={status === step.status ? 'step' : undefined}
-              className={cn(
-                'flex min-w-[100px] max-w-[140px] flex-col items-center gap-2 rounded-lg p-2 text-center',
-                status === step.status && 'bg-muted/50',
-              )}
-            >
-              <span
+            <div key={step.status} className="flex items-start">
+              <div
+                role="listitem"
+                aria-current={status === step.status ? 'step' : undefined}
                 className={cn(
-                  'flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold transition-all',
-                  step.active
-                    ? 'border-primary bg-primary text-primary-foreground'
-                    : 'border-muted bg-muted/30 text-muted-foreground',
-                  status === step.status &&
-                    'ring-2 ring-primary ring-offset-2 ring-offset-background',
+                  'flex min-w-[88px] max-w-[120px] flex-col items-center gap-2 text-center',
+                  idx < timeline.length - 1 && 'mr-2 sm:mr-4',
                 )}
               >
-                {idx + 1}
-              </span>
-              <span
-                className={cn(
-                  'text-xs font-medium leading-tight',
-                  step.active ? 'text-foreground' : 'text-muted-foreground',
-                )}
-              >
-                {step.label}
-              </span>
-              <span className="text-[10px] text-muted-foreground">
-                {step.date}
-              </span>
+                <div className="relative flex flex-col items-center">
+                  <span
+                    className={cn(
+                      'relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold transition-all',
+                      step.active
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-muted bg-muted/30 text-muted-foreground',
+                      status === step.status &&
+                        'ring-2 ring-primary ring-offset-2 ring-offset-background',
+                    )}
+                  >
+                    {idx + 1}
+                  </span>
+                  {idx < timeline.length - 1 && (
+                    <div
+                      className={cn(
+                        'absolute left-1/2 top-5 h-0.5 w-full min-w-[24px] -translate-x-1/2',
+                        step.active ? 'bg-primary/50' : 'bg-muted',
+                      )}
+                      style={{ width: 'calc(100% + 1rem)' }}
+                    />
+                  )}
+                </div>
+                <span
+                  className={cn(
+                    'text-xs font-medium leading-tight',
+                    step.active ? 'text-foreground' : 'text-muted-foreground',
+                  )}
+                >
+                  {step.label}
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  {step.date}
+                </span>
+              </div>
             </div>
           ))}
         </div>
       </nav>
 
-      <div className="grid gap-8 lg:grid-cols-4">
+      <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         {/* Sidebar: Subject selection */}
-        <aside className="lg:col-span-1 space-y-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground px-1">
-            Subjects in Request
-          </h2>
-          <div className="space-y-2" role="tablist" aria-label="Subjects">
-            {subjects.length === 0 ? (
-              <p className="text-sm text-muted-foreground px-1 py-4">
-                No subjects in this request.
+        <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold">
+                Subjects in Request
+              </CardTitle>
+              <p className="text-xs text-muted-foreground font-normal">
+                {subjects.length} subject{subjects.length !== 1 ? 's' : ''}
               </p>
-            ) : (
+            </CardHeader>
+            <CardContent className="space-y-2 pt-0" role="tablist" aria-label="Subjects">
+              {subjects.length === 0 ? (
+                <EmptyState
+                  icon={User}
+                  title="No subjects"
+                  description="This request has no subjects yet."
+                  className="py-8"
+                />
+              ) : (
               subjects.map((s) => (
                 <button
                   key={s.id}
@@ -626,11 +697,12 @@ function RequestDetailsPage() {
                 </button>
               ))
             )}
-          </div>
+            </CardContent>
+          </Card>
         </aside>
 
         {/* Main: Active subject & deliverables */}
-        <main className="lg:col-span-3 space-y-6">
+        <main className="space-y-6 min-w-0">
           {selectedSubject ? (
             <Card className="overflow-hidden rounded-xl">
               <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-4 border-b bg-muted/5">
@@ -673,23 +745,33 @@ function RequestDetailsPage() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="rounded-xl">
-              <CardContent className="py-12 text-center text-sm text-muted-foreground">
-                {subjects.length === 0
-                  ? 'No subjects in this request.'
-                  : 'Select a subject from the list.'}
+            <Card>
+              <CardContent className="py-12">
+                <EmptyState
+                  icon={Building2}
+                  title={
+                    subjects.length === 0
+                      ? 'No subjects in this request'
+                      : 'Select a subject'
+                  }
+                  description={
+                    subjects.length === 0
+                      ? 'This request has no subjects yet.'
+                      : 'Choose a subject from the sidebar to view their reports.'
+                  }
+                />
               </CardContent>
             </Card>
           )}
 
           <div className="grid gap-6 items-start sm:grid-cols-1 lg:grid-cols-2">
-            <Card className="rounded-xl">
-              <CardContent className="flex items-start gap-4">
+            <Card>
+              <CardContent className="flex items-start gap-4 pt-6">
                 <span
                   className={cn(
                     'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl',
                     status === REQUEST_STATUS.COMPLETED
-                      ? 'bg-green-100 text-green-600 dark:bg-green-950/50 dark:text-green-400'
+                      ? 'bg-emerald-500/15 text-emerald-600 dark:bg-emerald-400/20 dark:text-emerald-400'
                       : 'bg-primary/10 text-primary',
                   )}
                 >
@@ -708,15 +790,21 @@ function RequestDetailsPage() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-xl">
+            <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <MessageCircle className="h-4 w-4 text-primary" />
-                  Messages
-                </CardTitle>
-                <p className="text-sm text-muted-foreground font-normal mt-0.5">
-                  Questions about this request? Reply here.
-                </p>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <MessageCircle className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base font-semibold tracking-tight">
+                      Messages
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Questions about this request? Reply here.
+                    </p>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="flex flex-col gap-4 p-5 pt-0">
                 {messagesLoading ? (
@@ -725,12 +813,19 @@ function RequestDetailsPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="flex flex-col gap-3 max-h-[280px] min-h-[120px] overflow-y-auto rounded-lg border bg-muted/20 p-3">
+                    <div className="flex flex-col gap-3 max-h-[280px] min-h-[120px] overflow-y-auto rounded-xl border bg-muted/20 p-3">
                       {messages.length === 0 ? (
-                        <p className="text-sm text-muted-foreground py-4 text-center">
-                          No messages yet. Send a message to start the
-                          conversation.
-                        </p>
+                        <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
+                          <div className="rounded-full bg-muted p-3">
+                            <MessageCircle className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                          <p className="mt-3 text-sm font-medium text-foreground">
+                            No messages yet
+                          </p>
+                          <p className="mt-0.5 text-xs text-muted-foreground">
+                            Send a message to start the conversation
+                          </p>
+                        </div>
                       ) : (
                         messages.map((msg) => {
                           const isOwn = msg.senderId === currentUserId

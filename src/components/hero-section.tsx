@@ -33,7 +33,7 @@ export function HeroSection() {
       </p>
 
       <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <Link to="/requests/new/individuals" data-testid="hero-cta-primary">
+        <Link to="/individuals" data-testid="hero-cta-primary">
           <Button size="lg" className="w-50">
             Search Individual
             <ArrowRight />
