@@ -26,7 +26,7 @@ function CompaniesLoadingFallback() {
 
 function CompaniesStartSearchingState() {
   return (
-    <Card className="border-dashed border-2 py-12">
+    <Card className="border-dashed py-12">
       <CardContent className="flex flex-col items-center text-center gap-4">
         <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
           <Search className="h-6 w-6 text-muted-foreground" />

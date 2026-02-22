@@ -15,7 +15,7 @@ function AboutUsPage() {
         <HomeHeader user={user?.user} />
 
         <main className="relative p-6">
-          <h1 className="text-2xl font-bold">About Usشسشسشسشس</h1>
+          <h1 className="text-2xl font-bold">About us</h1>
           <p className="mt-2 text-muted-foreground">About us content.</p>
         </main>
 
