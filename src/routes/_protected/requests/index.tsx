@@ -46,32 +46,39 @@ function formatPrice(estimatedPrice: number, invoiceAmount?: number | null) {
   return `$${amount}`
 }
 
-/** Normalize to unified request reports (from requestReports or legacy requestCompanyReports + requestIndividualReports) */
+/** Get request reports (Prisma RequestReport). Source of truth per schema. */
 function getRequestReports(req: TRequest): Array<RequestReportItem> {
-  if (req.requestReports?.length) return req.requestReports
-  const company = (req.requestCompanyReports ?? []).map((rcr) => ({
-    id: 0,
-    requestId: rcr.requestId,
-    reportId: rcr.reportId,
-    companyId: rcr.companyId,
-    individualId: null as number | null,
-    company: rcr.company,
-    individual: null,
-    report: rcr.report,
-    upload: rcr.upload ?? null,
-  }))
-  const individual = (req.requestIndividualReports ?? []).map((rir) => ({
-    id: 0,
-    requestId: rir.requestId,
-    reportId: rir.reportId,
-    companyId: null as number | null,
-    individualId: rir.individualId,
-    company: null,
-    individual: rir.individual,
-    report: rir.report,
-    upload: rir.upload ?? null,
-  }))
-  return [...company, ...individual]
+  return req.requestReports ?? []
+}
+
+/** Derive companies for search (from requestReports when req.companies not present) */
+function getCompaniesForSearch(req: TRequest): Array<{ nameEn: string; nameAr: string | null }> {
+  if (req.companies?.length) return req.companies
+  const reports = getRequestReports(req)
+  const seen = new Set<number>()
+  return reports
+    .filter((rr) => rr.companyId != null && rr.company != null)
+    .map((rr) => rr.company!)
+    .filter((c) => {
+      if (seen.has(c.id)) return false
+      seen.add(c.id)
+      return true
+    })
+}
+
+/** Derive individuals for search (from requestReports when req.individuals not present) */
+function getIndividualsForSearch(req: TRequest): Array<{ fullName: string }> {
+  if (req.individuals?.length) return req.individuals
+  const reports = getRequestReports(req)
+  const seen = new Set<number>()
+  return reports
+    .filter((rr) => rr.individualId != null && rr.individual != null)
+    .map((rr) => rr.individual!)
+    .filter((i) => {
+      if (seen.has(i.id)) return false
+      seen.add(i.id)
+      return true
+    })
 }
 
 /** Per-company reports (derived from requestReports) */
@@ -153,12 +160,14 @@ function RequestsPage() {
     return requests.filter((req) => {
       const requestIdStr = formatRequestId(req.id)
       const searchLower = search.toLowerCase()
-      const companyMatch = (req.companies ?? []).some(
+      const companies = getCompaniesForSearch(req)
+      const individuals = getIndividualsForSearch(req)
+      const companyMatch = companies.some(
         (c) =>
           c.nameEn.toLowerCase().includes(searchLower) ||
           (c.nameAr != null && c.nameAr.toLowerCase().includes(searchLower)),
       )
-      const individualMatch = (req.individuals ?? []).some((i) =>
+      const individualMatch = individuals.some((i) =>
         i.fullName.toLowerCase().includes(searchLower),
       )
       const matchSearch =

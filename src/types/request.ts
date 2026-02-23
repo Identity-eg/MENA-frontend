@@ -154,18 +154,14 @@ export type TRequest = {
   notes: string | null
   createdAt: string
   updatedAt: string
-  /** Present when request has an invoice (e.g. GET /api/requests/:id) */
+  /** Present when request has an invoice */
   invoice?: TRequestInvoice | null
-  /** Unique companies in this request */
-  companies: Array<TCompany | TRequestCompany>
-  /** Individuals in this request */
-  individuals: Array<TIndividual>
-  /** All unique reports in this request */
-  reports: Array<TReport>
-  /** Unified report lines (backend model: RequestReport). Prefer this over the legacy arrays. */
+  /** Report lines (Prisma RequestReport). Source of truth for companies, individuals, reports. */
   requestReports?: Array<RequestReportItem>
-  /** @deprecated Use requestReports filtered by companyId. Per-company report assignments. */
-  requestCompanyReports?: Array<RequestCompanyReportItem>
-  /** @deprecated Use requestReports filtered by individualId. Per-individual report assignments. */
-  requestIndividualReports?: Array<RequestIndividualReportItem>
+  /** Optional: derived companies (GET /api/requests list adds these) */
+  companies?: Array<TCompany | TRequestCompany>
+  /** Optional: derived individuals (derive from requestReports when absent) */
+  individuals?: Array<TIndividual>
+  /** Optional: derived reports (GET /api/requests list adds these) */
+  reports?: Array<TReport>
 }

@@ -136,77 +136,15 @@ type SubjectItem = {
   reports: Array<ReportWithPriceAndUploads>
 }
 
-/** Normalize to unified request reports (from requestReports or legacy requestCompanyReports + requestIndividualReports) */
-function getRequestReports(request: TRequest): Array<RequestReportItem> {
-  if (request.requestReports?.length) return request.requestReports
-  const company = (request.requestCompanyReports ?? []).map((rcr) => ({
-    id: 0,
-    requestId: rcr.requestId,
-    reportId: rcr.reportId,
-    companyId: rcr.companyId,
-    individualId: null as number | null,
-    company: rcr.company,
-    individual: null,
-    report: rcr.report,
-    upload: rcr.upload ?? null,
-  }))
-  const individual = (request.requestIndividualReports ?? []).map((rir) => ({
-    id: 0,
-    requestId: rir.requestId,
-    reportId: rir.reportId,
-    companyId: null as number | null,
-    individualId: rir.individualId,
-    company: null,
-    individual: rir.individual,
-    report: rir.report,
-    upload: rir.upload ?? null,
-  }))
-  return [...company, ...individual]
+/** Unified request reports (prefer requestReports; empty when none). */
+function getRequestReports(request: TRequest | undefined): Array<RequestReportItem> {
+  return request?.requestReports ?? []
 }
 
-/** Build subjects from unified requestReports (or legacy arrays). Falls back to companies/individuals + all reports if none. */
-function buildSubjects(request: TRequest): Array<SubjectItem> {
+/** Build subjects from requestReports. Backend only returns requestReports (no companies/individuals/reports). */
+function buildSubjects(request: TRequest | undefined): Array<SubjectItem> {
   const requestReports = getRequestReports(request)
-  const hasJunction = requestReports.length > 0
-
-  if (!hasJunction) {
-    const reports: Array<RequestReport & { price: number }> = (
-      request.reports ?? []
-    ).map((r) => {
-      const price =
-        (r as { price?: number }).price ??
-        (r as RequestReport).estimatedPrice ??
-        0
-      return {
-        id: r.id,
-        name: r.name,
-        description: r.description,
-        turnaround: r.turnaround,
-        estimatedPrice: (r as RequestReport).estimatedPrice ?? price,
-        price,
-      }
-    })
-    const companies: Array<SubjectItem> = (request.companies ?? []).map(
-      (c) => ({
-        id: `company-${c.id}`,
-        name: c.nameAr ?? c.nameEn,
-        type: 'Company' as const,
-        nationality:
-          c && 'country' in c && c.country ? String(c.country.nameEn) : '—',
-        reports,
-      }),
-    )
-    const individuals: Array<SubjectItem> = (request.individuals ?? []).map(
-      (i) => ({
-        id: `individual-${i.id}`,
-        name: i.fullName,
-        type: 'Individual' as const,
-        nationality: i.nationality ?? '—',
-        reports,
-      }),
-    )
-    return [...companies, ...individuals]
-  }
+  if (requestReports.length === 0) return []
 
   const companyMap = new Map<
     number,
@@ -229,7 +167,7 @@ function buildSubjects(request: TRequest): Array<SubjectItem> {
     const price = rr.report.price ?? rr.report.estimatedPrice ?? 0
     const reportWithUploads: ReportWithPriceAndUploads = {
       ...rr.report,
-      estimatedPrice: rr.report.estimatedPrice ?? price,
+      totalEstimatedPrice: rr.report.totalEstimatedPrice ?? price,
       price,
       upload: rr.upload ?? null,
       reportStatus: rr.status,
@@ -427,8 +365,8 @@ function RequestDetailsPage() {
   const foundSubject = subjects.find((s) => s.id === activeSubjectId)
   const activeSubject = foundSubject ?? subjects[0]
   const selectedSubject = subjects.length > 0 ? activeSubject : null
-  const estimatedPrice = request.estimatedPrice
-  const amountDue = request.invoice?.amount ?? estimatedPrice
+  const totalEstimatedPrice = request.totalEstimatedPrice
+  const amountDue = request.invoice?.amount ?? totalEstimatedPrice
 
   const { data: messagesData, isLoading: messagesLoading } = useGetMessages(
     request.id,
@@ -552,7 +490,7 @@ function RequestDetailsPage() {
                   Estimated
                 </p>
                 <p className="text-lg font-bold tabular-nums tracking-tight">
-                  ${estimatedPrice}
+                  ${totalEstimatedPrice.toLocaleString()}
                 </p>
               </div>
               {request.invoice != null && (

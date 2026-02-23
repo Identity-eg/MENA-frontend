@@ -1,9 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Eye } from 'lucide-react'
-import {
-  getRequestsQueryOptions,
-  useGetRequests,
-} from '@/apis/requests/get-requests'
+import { useGetRequests } from '@/apis/requests/get-requests'
 import type { TRequest } from '@/types/request'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -18,6 +15,38 @@ import { Button } from '@/components/ui/button'
 import { StatusPill } from '@/components/StatusPill'
 
 const RECENT_LIMIT = 5
+
+/** Derive company names from requestReports when companies not present */
+function getCompanyNames(req: TRequest): string[] {
+  if (req.companies?.length) {
+    return req.companies.map((c) =>
+      c.nameAr ? `${c.nameEn} (${c.nameAr})` : c.nameEn,
+    )
+  }
+  const seen = new Set<number>()
+  return (req.requestReports ?? [])
+    .filter((rr) => rr.companyId != null && rr.company != null)
+    .map((rr) => rr.company!)
+    .filter((c) => {
+      if (seen.has(c.id)) return false
+      seen.add(c.id)
+      return true
+    })
+    .map((c) => (c.nameAr ? `${c.nameEn} (${c.nameAr})` : c.nameEn))
+}
+
+/** Derive individual count from requestReports when individuals not present */
+function getIndividualCount(req: TRequest): number {
+  if (req.individuals?.length !== undefined) return req.individuals.length
+  const seen = new Set<number>()
+  return (req.requestReports ?? [])
+    .filter((rr) => rr.individualId != null && rr.individual != null)
+    .filter((rr) => {
+      if (seen.has(rr.individualId!)) return false
+      seen.add(rr.individualId!)
+      return true
+    }).length
+}
 
 function formatRequestId(id: number) {
   return `REQ-${String(id).padStart(6, '0')}`
@@ -71,19 +100,15 @@ export function DashboardRecentRequests() {
                     {formatRequestId(req.id)}
                   </TableCell>
                   <TableCell>
-                    {req.companies
-                      .map((c) =>
-                        c.nameAr ? `${c.nameEn} (${c.nameAr})` : c.nameEn,
-                      )
-                      .join(', ') || '—'}
-                    {req.individuals?.length > 0 &&
-                      ` · ${req.individuals?.length} individual${req.individuals?.length !== 1 ? 's' : ''}`}
+                    {getCompanyNames(req).join(', ') || '—'}
+                    {getIndividualCount(req) > 0 &&
+                      ` · ${getIndividualCount(req)} individual${getIndividualCount(req) !== 1 ? 's' : ''}`}
                   </TableCell>
                   <TableCell>
                     <StatusPill status={req.status} />
                   </TableCell>
                   <TableCell className="text-right font-medium">
-                    {formatPrice(req.estimatedPrice, req.invoice?.amount)}
+                    {formatPrice(req.totalEstimatedPrice, req.invoice?.amount)}
                   </TableCell>
                   <TableCell className="text-right">
                     <Link
