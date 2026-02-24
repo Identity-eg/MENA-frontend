@@ -511,18 +511,21 @@ function RequestDetailsPage() {
       {/* Timeline stepper */}
       <nav
         aria-label="Request status"
-        className="overflow-x-auto rounded-xl border bg-card px-4 py-4"
+        className="rounded-xl border bg-card px-4 py-4"
       >
-        <div className="flex min-w-max items-start">
+        <div className="flex w-full items-start">
           {timeline.map((step, idx) => (
-            <div key={step.status} className="flex items-start">
+            <div
+              key={step.status}
+              className={cn(
+                'flex flex-1 min-w-0 flex-col items-center gap-2 text-center',
+                idx < timeline.length - 1 && 'mr-2 sm:mr-4',
+              )}
+            >
               <div
                 role="listitem"
                 aria-current={status === step.status ? 'step' : undefined}
-                className={cn(
-                  'flex min-w-[88px] max-w-[120px] flex-col items-center gap-2 text-center',
-                  idx < timeline.length - 1 && 'mr-2 sm:mr-4',
-                )}
+                className="flex w-full flex-col items-center gap-2"
               >
                 <div className="relative flex flex-col items-center">
                   <span

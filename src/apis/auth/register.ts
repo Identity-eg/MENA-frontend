@@ -2,11 +2,19 @@ import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { request } from '../request'
 
-const register = async ({ email, name }: { email: string; name: string }) => {
+type RegisterPayload = {
+  email: string
+  name: string
+  companyName: string
+  roleInCompany?: string
+  phone: string
+}
+
+const register = async (payload: RegisterPayload) => {
   await request<{ accessToken: string }>({
     url: '/auth/register',
     method: 'POST',
-    data: { email, name },
+    data: payload,
   })
 }
 

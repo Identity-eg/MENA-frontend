@@ -21,12 +21,21 @@ export const Route = createFileRoute('/auth/signup')({
 
 const signupSchema = z.object({
   name: z
-    .string()
+    .string({ error: 'Full name is required' })
     .min(1, 'Full name is required')
     .min(2, 'Full name must be at least 2 characters'),
   email: z
     .email('Please enter a valid work email.')
     .min(1, 'Email is required'),
+  companyName: z
+    .string({ error: 'Company name is required' })
+    .min(1, 'Company name is required')
+    .min(2, 'Company name must be at least 2 characters'),
+  roleInCompany: z.string().optional(),
+  phone: z
+    .string({ error: 'Phone number is required' })
+    .min(1, 'Phone number is required')
+    .min(6, 'Please enter a valid phone number'),
 })
 
 type SignupValues = z.infer<typeof signupSchema>
@@ -34,7 +43,13 @@ type SignupValues = z.infer<typeof signupSchema>
 export default function SignupPage() {
   const form = useForm<SignupValues>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { name: '', email: '' },
+    defaultValues: {
+      name: '',
+      email: '',
+      companyName: '',
+      roleInCompany: '',
+      phone: '',
+    },
     mode: 'onTouched',
   })
 
@@ -74,7 +89,9 @@ export default function SignupPage() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={!!fieldState.error}>
-                  <FieldLabel htmlFor="signup-fullName">Full Name</FieldLabel>
+                  <FieldLabel htmlFor="signup-fullName" required>
+                    Full Name
+                  </FieldLabel>
                   <Input
                     {...field}
                     id="signup-fullName"
@@ -94,7 +111,9 @@ export default function SignupPage() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={!!fieldState.error}>
-                  <FieldLabel htmlFor="signup-email">Work Email</FieldLabel>
+                  <FieldLabel htmlFor="signup-email" required>
+                    Work Email
+                  </FieldLabel>
                   <Input
                     {...field}
                     id="signup-email"
@@ -103,6 +122,69 @@ export default function SignupPage() {
                     autoComplete="email"
                     aria-invalid={!!fieldState.error}
                     data-testid="input-email"
+                  />
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="companyName"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={!!fieldState.error}>
+                  <FieldLabel htmlFor="signup-companyName" required>
+                    Company Name
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id="signup-companyName"
+                    placeholder="Acme Inc."
+                    autoComplete="organization"
+                    aria-invalid={!!fieldState.error}
+                    data-testid="input-company-name"
+                  />
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="roleInCompany"
+              control={form.control}
+              render={({ field }) => (
+                <Field>
+                  <FieldLabel htmlFor="signup-roleInCompany">
+                    Role in Company
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id="signup-roleInCompany"
+                    placeholder="Compliance Officer"
+                    autoComplete="organization-title"
+                    data-testid="input-role"
+                  />
+                </Field>
+              )}
+            />
+            <Controller
+              name="phone"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={!!fieldState.error}>
+                  <FieldLabel htmlFor="signup-phone" required>
+                    Phone Number
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id="signup-phone"
+                    type="tel"
+                    placeholder="+1 234 567 8900"
+                    autoComplete="tel"
+                    aria-invalid={!!fieldState.error}
+                    data-testid="input-phone"
                   />
                   {fieldState.error && (
                     <FieldError errors={[fieldState.error]} />
