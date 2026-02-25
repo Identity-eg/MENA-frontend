@@ -60,9 +60,7 @@ export function HomeHeader({ user }: { user?: TUser | null }) {
 
         {user ? (
           <DropdownMenu>
-            <DropdownMenuTrigger
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground cursor-pointer ring-offset-background transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
+            <DropdownMenuTrigger className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground cursor-pointer ring-offset-background transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
               {user.name
                 .split(' ')
                 .map((w) => w[0])
@@ -74,8 +72,12 @@ export function HomeHeader({ user }: { user?: TUser | null }) {
               <DropdownMenuGroup>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col gap-1">
-                    <p className="text-sm font-medium leading-none">{user.name}</p>
-                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                    <p className="text-sm font-medium leading-none">
+                      {user.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {user.email}
+                    </p>
                   </div>
                 </DropdownMenuLabel>
               </DropdownMenuGroup>
@@ -95,7 +97,7 @@ export function HomeHeader({ user }: { user?: TUser | null }) {
                   onClick={async () => {
                     await clearServerCredentials()
                     clearAccessToken()
-                    queryClient.removeQueries({ queryKey: ['me'] })
+                    queryClient.clear()
                     router.invalidate()
                   }}
                 >

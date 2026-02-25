@@ -1,9 +1,4 @@
-import {
-  Link,
-  createFileRoute,
-  notFound,
-  useRouteContext,
-} from '@tanstack/react-router'
+import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Activity,
@@ -137,7 +132,9 @@ type SubjectItem = {
 }
 
 /** Unified request reports (prefer requestReports; empty when none). */
-function getRequestReports(request: TRequest | undefined): Array<RequestReportItem> {
+function getRequestReports(
+  request: TRequest | undefined,
+): Array<RequestReportItem> {
   return request?.requestReports ?? []
 }
 
@@ -357,9 +354,6 @@ function RequestDetailsPage() {
     }
   }, [subjects])
 
-  const { user: rootUser } = useRouteContext({ from: '__root__' })
-  const currentUserId = rootUser?.user?.id ?? null
-
   const status = request.status
   const config = statusConfig[status]
   const foundSubject = subjects.find((s) => s.id === activeSubjectId)
@@ -371,7 +365,13 @@ function RequestDetailsPage() {
   const { data: messagesData, isLoading: messagesLoading } = useGetMessages(
     request.id,
   )
-  const messages = messagesData?.data ?? []
+  const messages = useMemo(() => {
+    const list = messagesData?.data ?? []
+    return [...list].sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    )
+  }, [messagesData?.data])
   const sendMessageMutation = useSendMessage(request.id)
   const [messageDraft, setMessageDraft] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -579,7 +579,11 @@ function RequestDetailsPage() {
                 {subjects.length} subject{subjects.length !== 1 ? 's' : ''}
               </p>
             </CardHeader>
-            <CardContent className="space-y-2 pt-0" role="tablist" aria-label="Subjects">
+            <CardContent
+              className="space-y-2 pt-0"
+              role="tablist"
+              aria-label="Subjects"
+            >
               {subjects.length === 0 ? (
                 <EmptyState
                   icon={User}
@@ -588,56 +592,56 @@ function RequestDetailsPage() {
                   className="py-8"
                 />
               ) : (
-              subjects.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeSubjectId === s.id}
-                  onClick={() => setActiveSubjectId(s.id)}
-                  className={cn(
-                    'w-full rounded-xl border p-3 text-left transition-all flex items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                    activeSubjectId === s.id
-                      ? 'border-primary bg-primary text-primary-foreground shadow-md'
-                      : 'border-border bg-card hover:border-primary/40 hover:bg-muted/30 text-foreground',
-                  )}
-                >
-                  <span
+                subjects.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeSubjectId === s.id}
+                    onClick={() => setActiveSubjectId(s.id)}
                     className={cn(
-                      'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
+                      'w-full rounded-xl border p-3 text-left transition-all flex items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                       activeSubjectId === s.id
-                        ? 'bg-primary-foreground/20'
-                        : 'bg-muted',
+                        ? 'border-primary bg-primary text-primary-foreground shadow-md'
+                        : 'border-border bg-card hover:border-primary/40 hover:bg-muted/30 text-foreground',
                     )}
                   >
-                    {s.type === 'Individual' ? (
-                      <User className="h-4 w-4" />
-                    ) : (
-                      <Building2 className="h-4 w-4" />
-                    )}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span
-                      className="block truncate text-sm font-semibold"
-                      dir={s.type === 'Individual' ? 'rtl' : 'ltr'}
-                    >
-                      {s.name}
-                    </span>
                     <span
                       className={cn(
-                        'text-[10px] font-medium uppercase tracking-wider',
+                        'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
                         activeSubjectId === s.id
-                          ? 'text-primary-foreground/80'
-                          : 'text-muted-foreground',
+                          ? 'bg-primary-foreground/20'
+                          : 'bg-muted',
                       )}
                     >
-                      {s.type} · {s.reports.length} report
-                      {s.reports.length !== 1 ? 's' : ''}
+                      {s.type === 'Individual' ? (
+                        <User className="h-4 w-4" />
+                      ) : (
+                        <Building2 className="h-4 w-4" />
+                      )}
                     </span>
-                  </span>
-                </button>
-              ))
-            )}
+                    <span className="min-w-0 flex-1">
+                      <span
+                        className="block truncate text-sm font-semibold"
+                        dir={s.type === 'Individual' ? 'rtl' : 'ltr'}
+                      >
+                        {s.name}
+                      </span>
+                      <span
+                        className={cn(
+                          'text-[10px] font-medium uppercase tracking-wider',
+                          activeSubjectId === s.id
+                            ? 'text-primary-foreground/80'
+                            : 'text-muted-foreground',
+                        )}
+                      >
+                        {s.type} · {s.reports.length} report
+                        {s.reports.length !== 1 ? 's' : ''}
+                      </span>
+                    </span>
+                  </button>
+                ))
+              )}
             </CardContent>
           </Card>
         </aside>
@@ -769,7 +773,8 @@ function RequestDetailsPage() {
                         </div>
                       ) : (
                         messages.map((msg) => {
-                          const isOwn = msg.senderId === currentUserId
+                          const isOwn =
+                            Number(msg.senderId) === Number(request.userId)
                           return (
                             <div
                               key={msg.id}

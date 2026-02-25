@@ -8,8 +8,11 @@ import {
   Users,
 } from 'lucide-react'
 
-import { Link } from '@tanstack/react-router'
+import { Link, useRouter } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button } from './ui/button'
+import { clearServerCredentials } from '@/lib/auth'
+import { useAuthStore } from '@/stores/auth'
 
 const items = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -20,6 +23,10 @@ const items = [
 ]
 
 export function DashboardSidebar() {
+  const router = useRouter()
+  const queryClient = useQueryClient()
+  const { clearAccessToken } = useAuthStore()
+
   return (
     <aside className="fixed left-0 top-0 hidden h-full w-64 border-r bg-card lg:block">
       <div className="flex h-full flex-col">
@@ -48,6 +55,12 @@ export function DashboardSidebar() {
         <div className="border-t p-4">
           <Link to="/">
             <Button
+              onClick={async () => {
+                await clearServerCredentials()
+                clearAccessToken()
+                queryClient.clear()
+                router.invalidate()
+              }}
               variant="ghost"
               className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive"
             >
