@@ -10,7 +10,7 @@ import {
 
 import { Link, useRouter } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
 import { clearServerCredentials } from '@/lib/auth'
 import { useAuthStore } from '@/stores/auth'
 

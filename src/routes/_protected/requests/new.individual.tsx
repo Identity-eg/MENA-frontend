@@ -8,7 +8,7 @@ import {
   UserPlus,
   X,
 } from 'lucide-react'
-import { DashboardLayout } from '@/components/dashboard-layout'
+import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { SubjectsTable } from '@/components/SubjectsTable'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
