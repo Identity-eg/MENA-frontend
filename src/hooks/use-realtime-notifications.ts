@@ -16,13 +16,21 @@ const SOCKET_EVENTS = [
 
 type NotificationPayload = {
   requestId?: number
-  message?: { id: number; requestId: number; content?: string; sender?: { name: string } }
+  message?: {
+    id: number
+    requestId: number
+    content?: string
+    sender?: { name: string }
+  }
   status?: string
   previousStatus?: string
   invoice?: { id: number; requestId: number; invoiceNumber?: string }
 }
 
-function invalidateRequestQueries(queryClient: ReturnType<typeof useQueryClient>, requestId?: number) {
+function invalidateRequestQueries(
+  queryClient: ReturnType<typeof useQueryClient>,
+  requestId?: number,
+) {
   queryClient.invalidateQueries({ queryKey: ['requests'] })
   queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY })
   if (requestId != null) {
@@ -45,17 +53,22 @@ export function useRealtimeNotifications() {
     if (!wsUrl || !token) return
 
     const socket = io(wsUrl, {
-      path: '/socket.io',
+      path: '/api/socket.io',
       auth: { accessToken: token },
       withCredentials: true,
     })
     socketRef.current = socket
 
-    const onPayload = (_event: (typeof SOCKET_EVENTS)[number], payload: NotificationPayload) => {
+    const onPayload = (
+      _event: (typeof SOCKET_EVENTS)[number],
+      payload: NotificationPayload,
+    ) => {
       invalidateRequestQueries(queryClient, payload.requestId)
     }
     SOCKET_EVENTS.forEach((event) => {
-      socket.on(event, (payload: NotificationPayload) => onPayload(event, payload))
+      socket.on(event, (payload: NotificationPayload) =>
+        onPayload(event, payload),
+      )
     })
 
     return () => {
