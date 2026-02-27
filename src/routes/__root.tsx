@@ -20,6 +20,7 @@ import { getMeQueryOptions } from '@/apis/user/get-me'
 import { useAuthStore } from '@/stores/auth'
 import { getIsomorphicAccessToken } from '@/apis/request/request-interceptor'
 import { NotFoundPage } from '@/components/layout/not-found-page'
+import { ACCESS_TOKEN_NAME } from '@/constants/auth'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -27,7 +28,7 @@ interface MyRouterContext {
 }
 
 const getTokenFromServer = createServerFn().handler(() => {
-  return getCookie('accessToken')
+  return getCookie(ACCESS_TOKEN_NAME)
 })
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({

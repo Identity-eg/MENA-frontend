@@ -6,6 +6,7 @@ import z from 'zod'
 import { request } from '../request'
 import { useAuthStore } from '@/stores/auth'
 import { getAuthCookieOptions } from '@/lib/cookie-options'
+import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/constants/auth'
 
 const login = async ({
   email,
@@ -37,8 +38,8 @@ const loginServerAction = createServerFn()
     const response = await login({ email, password })
 
     const cookieOptions = getAuthCookieOptions({ maxAge: 60 * 60 * 24 * 7 }) // 7 days
-    setCookie('frntAccTkn', response.accessToken, cookieOptions as any)
-    setCookie('frntRfrTkn', response.refreshToken, cookieOptions as any)
+    setCookie(ACCESS_TOKEN_NAME, response.accessToken, cookieOptions as any)
+    setCookie(REFRESH_TOKEN_NAME, response.refreshToken, cookieOptions as any)
 
     return { accessToken: response.accessToken, message: response.message }
   })
