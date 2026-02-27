@@ -12,6 +12,7 @@ const SOCKET_EVENTS = [
   'invoice:created',
   'invoice:updated',
   'request:paid',
+  'request-report:uploaded',
 ] as const
 
 type NotificationPayload = {
