@@ -2,7 +2,8 @@ import { createMiddleware } from '@tanstack/react-start'
 import { logger } from '../lib/logger'
 
 export const loggingMiddleware = createMiddleware().server(
-    async ({ next, request }: { next: () => Promise<any>; request: Request }) => {
+    async (options) => {
+        const { next, request } = options;
         const url = new URL(request.url)
         const method = request.method
         const timestamp = new Date().toISOString()
