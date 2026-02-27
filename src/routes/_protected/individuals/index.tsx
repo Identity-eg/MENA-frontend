@@ -1,9 +1,8 @@
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { ChevronRight, Loader2, Plus, Search, User } from 'lucide-react'
 import z from 'zod'
 import { parseAsString, useQueryState } from 'nuqs'
-import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -12,6 +11,7 @@ import {
   getIndividualsQueryOptions,
   useGetIndividuals,
 } from '@/apis/individual/get-individuals'
+import { useDebounceCallback } from '@/hooks/use-debounce-cb'
 
 function IndividualsLoadingFallback() {
   return (
@@ -141,12 +141,7 @@ export default function IndividualSearchPage() {
     }),
   )
 
-  const [input, setInput] = useState(searchParam)
-  const debouncedInput = useDebounce(input.trim(), 800)
-
-  useEffect(() => {
-    setSearchParam(debouncedInput || null)
-  }, [debouncedInput, setSearchParam])
+  const debounce = useDebounceCallback((e) => setSearchParam(e.target.value))
 
   const searchQuery = searchParam.trim()
   const hasQuery = searchQuery.length > 0
@@ -163,8 +158,8 @@ export default function IndividualSearchPage() {
         <Input
           className="pl-9 h-10"
           placeholder="Search by name, ID number, or keywords..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          value={searchParam}
+          onChange={(e) => debounce(e.target.value)}
         />
       </div>
 
