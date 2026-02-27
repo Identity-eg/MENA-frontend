@@ -32,10 +32,7 @@ import {
   getCompanyQueryOptions,
   useGetCompany,
 } from '@/apis/company/get-company'
-import {
-  getReportsQueryOptions,
-  useGetReports,
-} from '@/apis/reports/get-reports'
+import type { TReport } from '@/types/report'
 import { createUnlockPaymentSession } from '@/apis/unlocks/create-unlock-payment-session'
 import { createUnlockAllPaymentSession } from '@/apis/unlocks/create-unlock-all-payment-session'
 import { useQueryClient } from '@tanstack/react-query'
@@ -72,10 +69,6 @@ export const Route = createFileRoute('/_protected/companies/$companyId')({
     } catch (err) {
       throw notFound()
     }
-
-    await context.queryClient.ensureQueryData(
-      getReportsQueryOptions({ isActive: true }),
-    )
   },
   errorComponent() {
     return (
@@ -129,9 +122,8 @@ function CompanyDetailsContent() {
   const id = Number(companyId)
   const queryClient = useQueryClient()
   const { data: companyData } = useGetCompany(id)
-  const { data: reportsData } = useGetReports({ isActive: true })
   const company = companyData.data
-  const reports = reportsData.data
+  const reports: TReport[] = company.reports ?? []
 
   const [selectedReports, setSelectedReports] = useState<Array<number>>([])
   const [unlockingFieldId, setUnlockingFieldId] = useState<number | null>(null)
@@ -164,7 +156,7 @@ function CompanyDetailsContent() {
 
   const totalPrice = reports
     .filter((r) => selectedReports.includes(r.id))
-    .reduce((acc, r) => acc + r.price, 0)
+    .reduce((acc: number, r) => acc + r.price, 0)
 
   const getLockedFieldByFieldName = (fieldName: string) =>
     company.lockedFields.find((lf) => lf.lockedType.fieldName === fieldName)
@@ -285,7 +277,9 @@ function CompanyDetailsContent() {
           className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300 dark:bg-emerald-500/10 dark:border-emerald-500/20"
         >
           <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-          <p className="font-medium">Unlock successful. Your data is now visible below.</p>
+          <p className="font-medium">
+            Unlock successful. Your data is now visible below.
+          </p>
         </div>
       )}
 
@@ -317,7 +311,9 @@ function CompanyDetailsContent() {
               </span>
               {company.industry && (
                 <>
-                  <span className="hidden sm:inline text-muted-foreground/40">•</span>
+                  <span className="hidden sm:inline text-muted-foreground/40">
+                    •
+                  </span>
                   <span>{company.industry}</span>
                 </>
               )}
@@ -606,7 +602,9 @@ function CompanyDetailsContent() {
                             )}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h4 className="font-semibold text-sm">{report.name}</h4>
+                            <h4 className="font-semibold text-sm">
+                              {report.name}
+                            </h4>
                             <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
                               {report.description}
                             </p>
@@ -663,24 +661,32 @@ function CompanyDetailsContent() {
         <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
           <Card className="overflow-hidden">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold">Quick info</CardTitle>
+              <CardTitle className="text-sm font-semibold">
+                Quick info
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-0">
               <div className="flex justify-between py-3 text-sm">
                 <span className="text-muted-foreground">Country</span>
-                <span className="font-medium text-right">{company.country.nameEn}</span>
+                <span className="font-medium text-right">
+                  {company.country.nameEn}
+                </span>
               </div>
               <Separator />
               <div className="flex justify-between py-3 text-sm">
                 <span className="text-muted-foreground">Industry</span>
-                <span className="font-medium text-right">{company.industry ?? '—'}</span>
+                <span className="font-medium text-right">
+                  {company.industry ?? '—'}
+                </span>
               </div>
               {company.legalForm && (
                 <>
                   <Separator />
                   <div className="flex justify-between py-3 text-sm">
                     <span className="text-muted-foreground">Legal type</span>
-                    <span className="font-medium text-right">{company.legalForm}</span>
+                    <span className="font-medium text-right">
+                      {company.legalForm}
+                    </span>
                   </div>
                 </>
               )}

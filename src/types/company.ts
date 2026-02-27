@@ -1,4 +1,5 @@
 import type { TLockedField } from './locked-field'
+import type { TReport } from './report'
 
 export type TCompany = {
   id: number
@@ -22,5 +23,6 @@ export type TCompany = {
   description: string | null
   services: Array<string>
   lockedFields: Array<TLockedField>
+  reports: Array<TReport>
   createdAt: string
 }
