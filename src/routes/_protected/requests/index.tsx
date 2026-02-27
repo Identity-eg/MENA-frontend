@@ -41,11 +41,6 @@ function formatRequestId(id: number) {
   return `REQ-${String(id).padStart(6, '0')}`
 }
 
-function formatPrice(estimatedPrice: number, invoiceAmount?: number | null) {
-  const amount = invoiceAmount ?? estimatedPrice
-  return `$${amount}`
-}
-
 /** Get request reports (Prisma RequestReport). Source of truth per schema. */
 function getRequestReports(req: TRequest): Array<RequestReportItem> {
   return req.requestReports ?? []
@@ -237,11 +232,15 @@ function RequestsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Request ID</TableHead>
+                    <TableHead>Date created</TableHead>
                     <TableHead>Companies & reports</TableHead>
                     <TableHead>Individuals & reports</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">
                       Estimated price
+                    </TableHead>
+                    <TableHead className="text-right">
+                      Final price
                     </TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -254,6 +253,13 @@ function RequestsPage() {
                       <TableRow key={req.id}>
                         <TableCell className="font-mono font-medium">
                           {formatRequestId(req.id)}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {new Intl.DateTimeFormat('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          }).format(new Date(req.createdAt))}
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col gap-2">
@@ -321,10 +327,10 @@ function RequestsPage() {
                           <StatusPill status={req.status} />
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {formatPrice(
-                            req.totalEstimatedPrice,
-                            req.invoice?.amount,
-                          )}
+                          ${req.totalEstimatedPrice ?? 0}
+                        </TableCell>
+                        <TableCell className="text-right font-medium">
+                          {req.invoice?.amount != null ? `$${req.invoice.amount}` : '—'}
                         </TableCell>
                         <TableCell className="text-right">
                           <Link
