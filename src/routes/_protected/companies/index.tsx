@@ -133,23 +133,23 @@ function CompanySearchResults({ q }: { q: string }) {
 }
 
 export default function CompanySearchPage() {
-  const [searchParam, setSearchParam] = useQueryState(
-    'q',
-    parseAsString.withDefault('').withOptions({
-      shallow: false,
-      clearOnDefault: true,
-    }),
-  )
+  // const [searchParam, setSearchParam] = useQueryState(
+  //   'q',
+  //   parseAsString.withDefault('').withOptions({
+  //     shallow: false,
+  //     clearOnDefault: true,
+  //   }),
+  // )
 
-  const [input, setInput] = useState(searchParam)
-  const debouncedInput = useDebounce(input.trim(), 800)
+  // const [input, setInput] = useState(searchParam)
+  // const debouncedInput = useDebounce(input.trim(), 800)
 
-  useEffect(() => {
-    setSearchParam(debouncedInput || null)
-  }, [debouncedInput, setSearchParam])
+  // useEffect(() => {
+  //   setSearchParam(debouncedInput || null)
+  // }, [debouncedInput, setSearchParam])
 
-  const searchQuery = searchParam.trim()
-  const hasQuery = searchQuery.length > 0
+  // const searchQuery = searchParam.trim()
+  // const hasQuery = searchQuery.length > 0
 
   return (
     <div className="space-y-8">
