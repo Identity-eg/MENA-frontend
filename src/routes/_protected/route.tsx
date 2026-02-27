@@ -1,6 +1,6 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
-import { useRealtimeNotifications } from '@/hooks/use-realtime-notifications'
+// import { useRealtimeNotifications } from '@/hooks/use-realtime-notifications'
 
 export const Route = createFileRoute('/_protected')({
   beforeLoad: ({ context }) => {
@@ -13,7 +13,7 @@ export const Route = createFileRoute('/_protected')({
 })
 
 function RouteComponent() {
-  useRealtimeNotifications()
+  // useRealtimeNotifications()
   return (
     <DashboardLayout>
       <Outlet />
