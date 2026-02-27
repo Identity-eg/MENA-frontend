@@ -22,7 +22,7 @@ export function DashboardHeader() {
         </Link>
       </div>
       <div className="flex flex-1 items-center justify-end gap-4">
-        <NotificationDropdown />
+        {/* <NotificationDropdown /> */}
 
         <div className="flex items-center gap-2">
           {user?.user && <UserNav user={user.user} />}

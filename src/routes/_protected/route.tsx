@@ -5,9 +5,9 @@ import { useRealtimeNotifications } from '@/hooks/use-realtime-notifications'
 export const Route = createFileRoute('/_protected')({
   beforeLoad: ({ context }) => {
     const user = context.user
-    // if (!user) {
-    //   throw redirect({ to: '/auth/login' })
-    // }
+    if (!user) {
+      throw redirect({ to: '/auth/login' })
+    }
   },
   component: RouteComponent,
 })
