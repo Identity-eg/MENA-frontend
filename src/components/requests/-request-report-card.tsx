@@ -15,8 +15,8 @@ export type RequestReportRowReport = {
   price?: number
   estimatedPrice?: number
   upload?: { id: number } | null
-  /** Request-report-level status */
-  reportStatus?: RequestReportStatusValue
+  /** Request-report-level status (null = pending) */
+  reportStatus?: RequestReportStatusValue | null
   /** Request-report-level final price (overrides price when set) */
   finalPrice?: number | null
 }
@@ -30,33 +30,30 @@ const reportStatusVariant: Record<
   RequestReportStatusValue,
   'secondary' | 'default' | 'outline'
 > = {
-  [REQUEST_REPORT_STATUS.UNDER_REVIEW]: 'secondary',
-  [REQUEST_REPORT_STATUS.PROCESSING]: 'default',
-  [REQUEST_REPORT_STATUS.COMPLETED]: 'default',
-  [REQUEST_REPORT_STATUS.CANCELLED]: 'outline',
-  [REQUEST_REPORT_STATUS.NEED_CLARIFICATION]: 'outline',
+  [REQUEST_REPORT_STATUS.PENDING]: 'secondary',
+  [REQUEST_REPORT_STATUS.DELIVERED]: 'default',
+  [REQUEST_REPORT_STATUS.REJECTED]: 'outline',
 }
 
-function reportStatusLabel(s: RequestReportStatusValue): string {
+function reportStatusLabel(
+  s: RequestReportStatusValue | null | undefined,
+): string {
   const labels: Record<RequestReportStatusValue, string> = {
-    [REQUEST_REPORT_STATUS.UNDER_REVIEW]: 'Under review',
-    [REQUEST_REPORT_STATUS.PROCESSING]: 'Processing',
-    [REQUEST_REPORT_STATUS.COMPLETED]: 'Completed',
-    [REQUEST_REPORT_STATUS.CANCELLED]: 'Cancelled',
-    [REQUEST_REPORT_STATUS.NEED_CLARIFICATION]: 'Need clarification',
+    [REQUEST_REPORT_STATUS.PENDING]: 'Pending',
+    [REQUEST_REPORT_STATUS.DELIVERED]: 'Delivered',
+    [REQUEST_REPORT_STATUS.REJECTED]: 'Rejected',
   }
-  return labels[s] ?? s
+  return s ? (labels[s] ?? s) : 'Pending'
 }
 
 export function RequestReportCard({ report, status }: RequestReportRowProps) {
   const { mutate: downloadReportUpload, isPending: isDownloading } =
     useRequestReportUploadDownload()
   const hasReportFile = !!report.upload
-  const estimatedPrice =
-    report.estimatedPrice ?? report.price ?? 0
+  const estimatedPrice = report.estimatedPrice ?? report.price ?? 0
   const finalPrice = report.finalPrice ?? null
   const displayPrice = finalPrice ?? estimatedPrice
-  const reportStatus = report.reportStatus ?? REQUEST_REPORT_STATUS.UNDER_REVIEW
+  const reportStatus = report.reportStatus ?? null
 
   return (
     <div className="flex items-center justify-between gap-4 rounded-xl border bg-card p-4 transition-colors hover:border-primary/20 hover:bg-muted/20">
@@ -64,10 +61,16 @@ export function RequestReportCard({ report, status }: RequestReportRowProps) {
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-sm font-semibold leading-tight">{report.name}</p>
           <Badge
-            variant={reportStatusVariant[reportStatus]}
+            variant={
+              reportStatus ? reportStatusVariant[reportStatus] : 'secondary'
+            }
             className={cn(
-              reportStatus === REQUEST_REPORT_STATUS.COMPLETED &&
+              reportStatus === REQUEST_REPORT_STATUS.PENDING &&
+                'bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-400',
+              reportStatus === REQUEST_REPORT_STATUS.DELIVERED &&
                 'bg-green-100 text-green-800 dark:bg-green-950/50 dark:text-green-400',
+              reportStatus === REQUEST_REPORT_STATUS.REJECTED &&
+                'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-400',
             )}
           >
             {reportStatusLabel(reportStatus)}
@@ -115,7 +118,7 @@ export function RequestReportCard({ report, status }: RequestReportRowProps) {
           Report
         </Button>
       ) : status === REQUEST_STATUS.COMPLETED ||
-        reportStatus === REQUEST_REPORT_STATUS.COMPLETED ? (
+        reportStatus === REQUEST_REPORT_STATUS.DELIVERED ? (
         <Button
           size="sm"
           variant="outline"

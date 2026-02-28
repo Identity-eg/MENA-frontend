@@ -18,11 +18,9 @@ export type RequestStatusValue = ValueOf<typeof REQUEST_STATUS>
 
 /** Request report (line) status enum values */
 export const REQUEST_REPORT_STATUS = {
-  UNDER_REVIEW: 'UNDER_REVIEW',
-  PROCESSING: 'PROCESSING',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED',
-  NEED_CLARIFICATION: 'NEED_CLARIFICATION',
+  PENDING: 'PENDING',
+  DELIVERED: 'DELIVERED',
+  REJECTED: 'REJECTED',
 } as const
 
 export type RequestReportStatusValue = ValueOf<typeof REQUEST_REPORT_STATUS>

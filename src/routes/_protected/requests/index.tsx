@@ -239,9 +239,7 @@ function RequestsPage() {
                     <TableHead className="text-right">
                       Estimated price
                     </TableHead>
-                    <TableHead className="text-right">
-                      Final price
-                    </TableHead>
+                    <TableHead className="text-right">Final price</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -330,7 +328,9 @@ function RequestsPage() {
                           ${req.totalEstimatedPrice ?? 0}
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {req.invoice?.amount != null ? `$${req.invoice.amount}` : '—'}
+                          {req.invoice?.amount != null
+                            ? `$${req.invoice.amount}`
+                            : '—'}
                         </TableCell>
                         <TableCell className="text-right">
                           <Link
