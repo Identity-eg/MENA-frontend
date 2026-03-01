@@ -6,10 +6,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
-import { useEffect } from 'react'
 import { NuqsAdapter } from 'nuqs/adapters/react'
-import { getCookie } from '@tanstack/react-start/server'
-import { createServerFn } from '@tanstack/react-start'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
@@ -20,32 +17,26 @@ import { getMeQueryOptions } from '@/apis/user/get-me'
 import { useAuthStore } from '@/stores/auth'
 import { getIsomorphicAccessToken } from '@/apis/request/request-interceptor'
 import { NotFoundPage } from '@/components/layout/not-found-page'
-import { ACCESS_TOKEN_NAME } from '@/constants/auth'
 
 interface MyRouterContext {
   queryClient: QueryClient
   user: TUser | null
+  accessToken: string | null
 }
-
-const getTokenFromServer = createServerFn().handler(() => {
-  return getCookie(ACCESS_TOKEN_NAME)
-})
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   beforeLoad: async ({ context }) => {
+    // On server: reads cookie — works perfectly
+    // On client: this return value was serialized into HTML by SSR,
+    // so TanStack Router provides it synchronously — no fetch needed
     const accessToken = getIsomorphicAccessToken()
 
     if (!accessToken) {
-      return { user: null }
+      return { user: null, accessToken: null }
     }
 
-    try {
-      const user =
-        await context.queryClient.ensureQueryData(getMeQueryOptions())
-      return { user }
-    } catch (error) {
-      return { user: null }
-    }
+    const user = await context.queryClient.ensureQueryData(getMeQueryOptions())
+    return { user, accessToken }
   },
   notFoundComponent: NotFoundPage,
   head: () => ({
@@ -72,23 +63,14 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   shellComponent: RootDocument,
 })
 
-const useSyncClientCredentials = () => {
-  const { setAccessToken } = useAuthStore()
-
-  const fetchAccessToken = async () => {
-    const tokenFromServer = await getTokenFromServer()
-    if (tokenFromServer) {
-      setAccessToken(tokenFromServer)
-    }
-  }
-
-  useEffect(() => {
-    fetchAccessToken()
-  }, [])
-}
-
 function RootDocument({ children }: { children: React.ReactNode }) {
-  useSyncClientCredentials()
+  const { accessToken } = Route.useRouteContext()
+
+  const store = useAuthStore()
+
+  if (accessToken && !store.accessToken) {
+    store.setAccessToken(accessToken)
+  }
 
   return (
     <html lang="en">
