@@ -405,7 +405,8 @@ function RequestDetailsPage() {
     [currentStepIndex, isRejectedOrCancelled, submittedDate, updatedDate],
   )
 
-  const { mutate: createPaymentSession, isPending: isPaymentRedirecting } = useCreateRequestPaymentSession()
+  const { mutate: createPaymentSession, isPending: isPaymentRedirecting } =
+    useCreateRequestPaymentSession()
 
   return (
     <div className="space-y-6 pb-12">
@@ -520,6 +521,9 @@ function RequestDetailsPage() {
                 className="flex w-full flex-col items-center gap-2"
               >
                 <div className="relative flex flex-col items-center">
+                  {status === step.status && (
+                    <span className="absolute inset-0 z-0 h-10 w-10 animate-ping rounded-full bg-primary/40" />
+                  )}
                   <span
                     className={cn(
                       'relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold transition-all',
@@ -527,7 +531,7 @@ function RequestDetailsPage() {
                         ? 'border-primary bg-primary text-primary-foreground'
                         : 'border-muted bg-muted/30 text-muted-foreground',
                       status === step.status &&
-                      'ring-2 ring-primary ring-offset-2 ring-offset-background',
+                        'ring-2 ring-primary ring-offset-2 ring-offset-background',
                     )}
                   >
                     {idx + 1}
@@ -535,7 +539,7 @@ function RequestDetailsPage() {
                   {idx < timeline.length - 1 && (
                     <div
                       className={cn(
-                        'absolute left-1/2 top-5 h-0.5 w-full min-w-[24px] -translate-x-1/2',
+                        'absolute left-1/2 top-5 h-0.5 w-full min-w-6 -translate-x-1/2',
                         step.active ? 'bg-primary/50' : 'bg-muted',
                       )}
                       style={{ width: 'calc(100% + 1rem)' }}
@@ -709,14 +713,16 @@ function RequestDetailsPage() {
                     'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl',
                     status === REQUEST_STATUS.COMPLETED
                       ? 'bg-emerald-500/15 text-emerald-600 dark:bg-emerald-400/20 dark:text-emerald-400'
-                      : status === REQUEST_STATUS.CANCELLED || status === REQUEST_STATUS.REJECTED
+                      : status === REQUEST_STATUS.CANCELLED ||
+                          status === REQUEST_STATUS.REJECTED
                         ? 'bg-red-500/15 text-red-600 dark:bg-red-400/20 dark:text-red-400'
                         : 'bg-primary/10 text-primary',
                   )}
                 >
                   {status === REQUEST_STATUS.COMPLETED ? (
                     <CheckCircle2 className="h-5 w-5" />
-                  ) : status === REQUEST_STATUS.CANCELLED || status === REQUEST_STATUS.REJECTED ? (
+                  ) : status === REQUEST_STATUS.CANCELLED ||
+                    status === REQUEST_STATUS.REJECTED ? (
                     <XCircle className="h-5 w-5" />
                   ) : (
                     <Activity className="h-5 w-5 animate-pulse" />
@@ -754,7 +760,7 @@ function RequestDetailsPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="flex flex-col gap-3 max-h-[280px] min-h-[120px] overflow-y-auto rounded-xl border bg-muted/20 p-3">
+                    <div className="flex flex-col gap-3 max-h-70 min-h-30 overflow-y-auto rounded-xl border bg-muted/20 p-3">
                       {messages.length === 0 ? (
                         <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
                           <div className="rounded-full bg-muted p-3">
