@@ -15,7 +15,7 @@ import {
   User,
   XCircle,
 } from 'lucide-react'
-import { RequestReportCard } from '../../../components/requests/-request-report-card'
+import { RequestReportCard } from '../../../components/requests/request-report-card'
 import type {
   RequestReport,
   RequestReportItem,
@@ -426,7 +426,7 @@ function RequestDetailsPage() {
       </nav>
 
       {/* Hero header */}
-      <header className="relative overflow-hidden rounded-2xl border bg-linear-to-br from-card via-card to-muted/30 px-6 py-6 shadow-sm sm:px-8 sm:py-7">
+      <header className="relative overflow-hidden rounded-xl sm:rounded-2xl border bg-linear-to-br from-card via-card to-muted/30 px-4 py-5 shadow-sm sm:px-8 sm:py-7">
         <div className="absolute right-0 top-0 h-24 w-40 bg-linear-to-bl from-primary/5 to-transparent rounded-bl-full pointer-events-none" />
         <div className="relative flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-2">
@@ -435,7 +435,7 @@ function RequestDetailsPage() {
                 <FileText className="h-5 w-5" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                <h1 className="text-xl font-bold tracking-tight sm:text-2xl lg:text-3xl">
                   {formatRequestId(request.id)}
                 </h1>
                 <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -477,21 +477,21 @@ function RequestDetailsPage() {
                 </Button>
               </div>
             )}
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="rounded-xl border px-4 py-2.5">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <div className="rounded-lg sm:rounded-xl border px-3 py-2 sm:px-4 sm:py-2.5">
                 <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                   Estimated
                 </p>
-                <p className="text-lg font-bold tabular-nums tracking-tight">
+                <p className="text-base sm:text-lg font-bold tabular-nums tracking-tight">
                   ${totalEstimatedPrice.toLocaleString()}
                 </p>
               </div>
               {request.invoice != null && (
-                <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5">
+                <div className="rounded-lg sm:rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 sm:px-4 sm:py-2.5">
                   <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                     Amount due
                   </p>
-                  <p className="text-lg font-bold tabular-nums tracking-tight text-primary">
+                  <p className="text-base sm:text-lg font-bold tabular-nums tracking-tight text-primary">
                     ${request.invoice.amount.toLocaleString()}
                   </p>
                 </div>
@@ -504,29 +504,29 @@ function RequestDetailsPage() {
       {/* Timeline stepper */}
       <nav
         aria-label="Request status"
-        className="rounded-xl border bg-card px-4 py-4"
+        className="rounded-xl border bg-card px-2 py-3 sm:px-4 sm:py-4 overflow-x-auto"
       >
-        <div className="flex w-full items-start">
+        <div className="flex w-full items-start min-w-100 sm:min-w-0">
           {timeline.map((step, idx) => (
             <div
               key={step.status}
               className={cn(
-                'flex flex-1 min-w-0 flex-col items-center gap-2 text-center',
-                idx < timeline.length - 1 && 'mr-2 sm:mr-4',
+                'flex flex-1 min-w-0 flex-col items-center gap-1.5 sm:gap-2 text-center',
+                idx < timeline.length - 1 && 'mr-1 sm:mr-4',
               )}
             >
               <div
                 role="listitem"
                 aria-current={status === step.status ? 'step' : undefined}
-                className="flex w-full flex-col items-center gap-2"
+                className="flex w-full flex-col items-center gap-1.5 sm:gap-2"
               >
                 <div className="relative flex flex-col items-center">
                   {status === step.status && (
-                    <span className="absolute inset-0 z-0 h-10 w-10 animate-ping rounded-full bg-primary/40" />
+                    <span className="absolute inset-0 z-0 h-8 w-8 sm:h-10 sm:w-10 animate-ping rounded-full bg-primary/40" />
                   )}
                   <span
                     className={cn(
-                      'relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold transition-all',
+                      'relative z-10 flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full border-2 text-[10px] sm:text-xs font-bold transition-all',
                       step.active
                         ? 'border-primary bg-primary text-primary-foreground'
                         : 'border-muted bg-muted/30 text-muted-foreground',
@@ -539,22 +539,22 @@ function RequestDetailsPage() {
                   {idx < timeline.length - 1 && (
                     <div
                       className={cn(
-                        'absolute left-1/2 top-5 h-0.5 w-full min-w-6 -translate-x-1/2',
+                        'absolute left-1/2 top-4 sm:top-5 h-0.5 w-full min-w-6 -translate-x-1/2',
                         step.active ? 'bg-primary/50' : 'bg-muted',
                       )}
-                      style={{ width: 'calc(100% + 1rem)' }}
+                      style={{ width: 'calc(100% + 0.5rem)' }}
                     />
                   )}
                 </div>
                 <span
                   className={cn(
-                    'text-xs font-medium leading-tight',
+                    'text-[10px] sm:text-xs font-medium leading-tight',
                     step.active ? 'text-foreground' : 'text-muted-foreground',
                   )}
                 >
                   {step.label}
                 </span>
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-[10px] text-muted-foreground hidden sm:block">
                   {step.date}
                 </span>
               </div>
@@ -563,8 +563,8 @@ function RequestDetailsPage() {
         </div>
       </nav>
 
-      <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-        {/* Sidebar: Subject selection */}
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-[280px_1fr]">
+        {/* Sidebar: Subject selection — horizontal scroll on mobile, vertical list on lg+ */}
         <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
           <Card>
             <CardHeader className="pb-3">
@@ -575,11 +575,7 @@ function RequestDetailsPage() {
                 {subjects.length} subject{subjects.length !== 1 ? 's' : ''}
               </p>
             </CardHeader>
-            <CardContent
-              className="space-y-2 pt-0"
-              role="tablist"
-              aria-label="Subjects"
-            >
+            <CardContent className="pt-0" role="tablist" aria-label="Subjects">
               {subjects.length === 0 ? (
                 <EmptyState
                   icon={User}
@@ -588,55 +584,57 @@ function RequestDetailsPage() {
                   className="py-8"
                 />
               ) : (
-                subjects.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeSubjectId === s.id}
-                    onClick={() => setActiveSubjectId(s.id)}
-                    className={cn(
-                      'w-full rounded-xl border p-3 text-left transition-all flex items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                      activeSubjectId === s.id
-                        ? 'border-primary bg-primary text-primary-foreground shadow-md'
-                        : 'border-border bg-card hover:border-primary/40 hover:bg-muted/30 text-foreground',
-                    )}
-                  >
-                    <span
+                <div className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-x-visible lg:pb-0">
+                  {subjects.map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeSubjectId === s.id}
+                      onClick={() => setActiveSubjectId(s.id)}
                       className={cn(
-                        'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
+                        'shrink-0 lg:shrink rounded-xl border p-3 text-left transition-all flex items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:w-full',
                         activeSubjectId === s.id
-                          ? 'bg-primary-foreground/20'
-                          : 'bg-muted',
+                          ? 'border-primary bg-primary text-primary-foreground shadow-md'
+                          : 'border-border bg-card hover:border-primary/40 hover:bg-muted/30 text-foreground',
                       )}
                     >
-                      {s.type === 'Individual' ? (
-                        <User className="h-4 w-4" />
-                      ) : (
-                        <Building2 className="h-4 w-4" />
-                      )}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span
-                        className="block truncate text-sm font-semibold"
-                        dir={s.type === 'Individual' ? 'rtl' : 'ltr'}
-                      >
-                        {s.name}
-                      </span>
                       <span
                         className={cn(
-                          'text-[10px] font-medium uppercase tracking-wider',
+                          'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
                           activeSubjectId === s.id
-                            ? 'text-primary-foreground/80'
-                            : 'text-muted-foreground',
+                            ? 'bg-primary-foreground/20'
+                            : 'bg-muted',
                         )}
                       >
-                        {s.type} · {s.reports.length} report
-                        {s.reports.length !== 1 ? 's' : ''}
+                        {s.type === 'Individual' ? (
+                          <User className="h-4 w-4" />
+                        ) : (
+                          <Building2 className="h-4 w-4" />
+                        )}
                       </span>
-                    </span>
-                  </button>
-                ))
+                      <span className="min-w-0 flex-1">
+                        <span
+                          className="block truncate text-sm font-semibold"
+                          dir={s.type === 'Individual' ? 'rtl' : 'ltr'}
+                        >
+                          {s.name}
+                        </span>
+                        <span
+                          className={cn(
+                            'text-[10px] font-medium uppercase tracking-wider whitespace-nowrap',
+                            activeSubjectId === s.id
+                              ? 'text-primary-foreground/80'
+                              : 'text-muted-foreground',
+                          )}
+                        >
+                          {s.type} · {s.reports.length} report
+                          {s.reports.length !== 1 ? 's' : ''}
+                        </span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
               )}
             </CardContent>
           </Card>
@@ -670,11 +668,11 @@ function RequestDetailsPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="px-5 py-5">
-                <h3 className="mb-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              <CardContent className="px-3 py-4 sm:px-5 sm:py-5">
+                <h3 className="mb-3 sm:mb-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   Assigned Services & Reports
                 </h3>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
                   {selectedSubject.reports.map((report) => (
                     <RequestReportCard
                       key={report.id}
@@ -705,7 +703,7 @@ function RequestDetailsPage() {
             </Card>
           )}
 
-          <div className="grid gap-6 items-start sm:grid-cols-1 lg:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 items-start grid-cols-1 lg:grid-cols-2">
             <Card>
               <CardContent className="flex items-start gap-4 pt-6">
                 <span

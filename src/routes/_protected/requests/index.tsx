@@ -183,7 +183,7 @@ function RequestsPage() {
         title="My Requests"
         subtitle={`${filtered.length} request${filtered.length === 1 ? '' : 's'}`}
       />
-      <div className="my-6 flex flex-col gap-4 sm:flex-row sm:items-center">
+      <div className="my-6 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -197,7 +197,7 @@ function RequestsPage() {
           value={statusFilter}
           onValueChange={(v) => setStatusFilter(v ?? 'all')}
         >
-          <SelectTrigger className="!h-10 w-[180px]">
+          <SelectTrigger className="h-10! w-full sm:w-45">
             <SelectValue placeholder="All statuses" />
           </SelectTrigger>
           <SelectContent>
@@ -218,139 +218,271 @@ function RequestsPage() {
           </SelectContent>
         </Select>
       </div>
-      <Card className="min-w-0">
-        <CardContent className="min-w-0 pt-6">
-          {filtered.length === 0 ? (
+
+      {filtered.length === 0 ? (
+        <Card>
+          <CardContent className="pt-6">
             <div className="py-12 text-center text-sm text-muted-foreground">
               {requests.length === 0
                 ? 'You have no requests yet. Request a screening package from a company page.'
                 : 'No requests match your filters.'}
             </div>
-          ) : (
-            <div className="w-full max-w-full min-w-0 overflow-x-auto -mx-4 sm:mx-0">
-              <Table className="min-w-2xl">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Request ID</TableHead>
-                    <TableHead>Date created</TableHead>
-                    <TableHead>Companies & reports</TableHead>
-                    <TableHead>Individuals & reports</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">
-                      Estimated price
-                    </TableHead>
-                    <TableHead className="text-right">Final price</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtered.map((req) => {
-                    const companyWithReports = getCompanyWithReports(req)
-                    const individualWithReports = getIndividualWithReports(req)
-                    return (
-                      <TableRow key={req.id}>
-                        <TableCell className="font-mono font-medium">
-                          {formatRequestId(req.id)}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {new Intl.DateTimeFormat('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          }).format(new Date(req.createdAt))}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-2">
-                            {companyWithReports.length === 0 ? (
-                              <span className="text-muted-foreground">—</span>
-                            ) : (
-                              companyWithReports.map(({ company, reports }) => (
-                                <div
-                                  key={company.id}
-                                  className="flex flex-col gap-1"
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          {/* ── Mobile: Card layout ── */}
+          <div className="flex flex-col gap-3 md:hidden">
+            {filtered.map((req) => {
+              const companyWithReports = getCompanyWithReports(req)
+              const individualWithReports = getIndividualWithReports(req)
+              return (
+                <Card key={req.id}>
+                  <CardContent className="p-4 space-y-3">
+                    {/* Top row: ID + status */}
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-sm font-medium">
+                        {formatRequestId(req.id)}
+                      </span>
+                      <StatusPill status={req.status} />
+                    </div>
+
+                    {/* Date */}
+                    <p className="text-xs text-muted-foreground">
+                      {new Intl.DateTimeFormat('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      }).format(new Date(req.createdAt))}
+                    </p>
+
+                    {/* Companies */}
+                    {companyWithReports.length > 0 && (
+                      <div className="space-y-1.5">
+                        <p className="text-[11px] font-semibold uppercase text-muted-foreground tracking-wider">
+                          Companies
+                        </p>
+                        {companyWithReports.map(({ company, reports }) => (
+                          <div key={company.id} className="space-y-1">
+                            <span className="text-sm font-medium">
+                              {company.nameAr
+                                ? `${company.nameEn} (${company.nameAr})`
+                                : company.nameEn}
+                            </span>
+                            <div className="flex flex-wrap gap-1">
+                              {reports.map((r) => (
+                                <Badge
+                                  key={r.id}
+                                  variant="secondary"
+                                  className="text-[10px]"
                                 >
-                                  <span className="font-medium">
-                                    {company.nameAr
-                                      ? `${company.nameEn} (${company.nameAr})`
-                                      : company.nameEn}
-                                  </span>
-                                  <div className="flex flex-wrap gap-1">
-                                    {reports.map((r) => (
-                                      <Badge
-                                        key={r.id}
-                                        variant="secondary"
-                                        className="text-[10px]"
-                                      >
-                                        {r.name}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                </div>
-                              ))
-                            )}
+                                  {r.name}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-2">
-                            {individualWithReports.length === 0 ? (
-                              <span className="text-muted-foreground">—</span>
-                            ) : (
-                              individualWithReports.map(
-                                ({ individual, reports }) => (
-                                  <div
-                                    key={individual.id}
-                                    className="flex flex-col gap-1"
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Individuals */}
+                    {individualWithReports.length > 0 && (
+                      <div className="space-y-1.5">
+                        <p className="text-[11px] font-semibold uppercase text-muted-foreground tracking-wider">
+                          Individuals
+                        </p>
+                        {individualWithReports.map(
+                          ({ individual, reports }) => (
+                            <div key={individual.id} className="space-y-1">
+                              <span className="text-sm font-medium">
+                                {individual.fullName}
+                              </span>
+                              <div className="flex flex-wrap gap-1">
+                                {reports.map((r) => (
+                                  <Badge
+                                    key={r.id}
+                                    variant="secondary"
+                                    className="text-[10px]"
                                   >
-                                    <span className="font-medium">
-                                      {individual.fullName}
-                                    </span>
-                                    <div className="flex flex-wrap gap-1">
-                                      {reports.map((r) => (
-                                        <Badge
-                                          key={r.id}
-                                          variant="secondary"
-                                          className="text-[10px]"
-                                        >
-                                          {r.name}
-                                        </Badge>
-                                      ))}
+                                    {r.name}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    )}
+
+                    {/* Prices + action */}
+                    <div className="flex items-center justify-between border-t pt-3">
+                      <div className="flex gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground text-xs">
+                            Est.{' '}
+                          </span>
+                          <span className="font-medium">
+                            ${req.totalEstimatedPrice ?? 0}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground text-xs">
+                            Final{' '}
+                          </span>
+                          <span className="font-medium">
+                            {req.invoice?.amount != null
+                              ? `$${req.invoice.amount}`
+                              : '—'}
+                          </span>
+                        </div>
+                      </div>
+                      <Link
+                        to="/requests/$requestId"
+                        params={{ requestId: String(req.id) }}
+                      >
+                        <Button variant="outline" size="sm">
+                          <Eye className="mr-1.5 h-3.5 w-3.5" />
+                          View
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+
+          {/* ── Desktop: Table layout ── */}
+          <Card className="hidden md:block min-w-0">
+            <CardContent className="min-w-0 pt-6">
+              <div className="w-full max-w-full min-w-0 overflow-x-auto">
+                <Table className="min-w-2xl">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Request ID</TableHead>
+                      <TableHead>Date created</TableHead>
+                      <TableHead>Companies & reports</TableHead>
+                      <TableHead>Individuals & reports</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">
+                        Estimated price
+                      </TableHead>
+                      <TableHead className="text-right">Final price</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filtered.map((req) => {
+                      const companyWithReports = getCompanyWithReports(req)
+                      const individualWithReports =
+                        getIndividualWithReports(req)
+                      return (
+                        <TableRow key={req.id}>
+                          <TableCell className="font-mono font-medium">
+                            {formatRequestId(req.id)}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {new Intl.DateTimeFormat('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            }).format(new Date(req.createdAt))}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col gap-2">
+                              {companyWithReports.length === 0 ? (
+                                <span className="text-muted-foreground">—</span>
+                              ) : (
+                                companyWithReports.map(
+                                  ({ company, reports }) => (
+                                    <div
+                                      key={company.id}
+                                      className="flex flex-col gap-1"
+                                    >
+                                      <span className="font-medium">
+                                        {company.nameAr
+                                          ? `${company.nameEn} (${company.nameAr})`
+                                          : company.nameEn}
+                                      </span>
+                                      <div className="flex flex-wrap gap-1">
+                                        {reports.map((r) => (
+                                          <Badge
+                                            key={r.id}
+                                            variant="secondary"
+                                            className="text-[10px]"
+                                          >
+                                            {r.name}
+                                          </Badge>
+                                        ))}
+                                      </div>
                                     </div>
-                                  </div>
-                                ),
-                              )
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <StatusPill status={req.status} />
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          ${req.totalEstimatedPrice ?? 0}
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {req.invoice?.amount != null
-                            ? `$${req.invoice.amount}`
-                            : '—'}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Link
-                            to="/requests/$requestId"
-                            params={{ requestId: String(req.id) }}
-                          >
-                            <Button variant="ghost" size="icon">
-                              <Eye size={16} />
-                            </Button>
-                          </Link>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                                  ),
+                                )
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col gap-2">
+                              {individualWithReports.length === 0 ? (
+                                <span className="text-muted-foreground">—</span>
+                              ) : (
+                                individualWithReports.map(
+                                  ({ individual, reports }) => (
+                                    <div
+                                      key={individual.id}
+                                      className="flex flex-col gap-1"
+                                    >
+                                      <span className="font-medium">
+                                        {individual.fullName}
+                                      </span>
+                                      <div className="flex flex-wrap gap-1">
+                                        {reports.map((r) => (
+                                          <Badge
+                                            key={r.id}
+                                            variant="secondary"
+                                            className="text-[10px]"
+                                          >
+                                            {r.name}
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  ),
+                                )
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <StatusPill status={req.status} />
+                          </TableCell>
+                          <TableCell className="text-right font-medium">
+                            ${req.totalEstimatedPrice ?? 0}
+                          </TableCell>
+                          <TableCell className="text-right font-medium">
+                            {req.invoice?.amount != null
+                              ? `$${req.invoice.amount}`
+                              : '—'}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Link
+                              to="/requests/$requestId"
+                              params={{ requestId: String(req.id) }}
+                            >
+                              <Button variant="ghost" size="icon">
+                                <Eye size={16} />
+                              </Button>
+                            </Link>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   )
 }

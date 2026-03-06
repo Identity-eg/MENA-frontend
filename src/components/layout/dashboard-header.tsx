@@ -5,13 +5,23 @@ import { NotificationDropdown } from './notification-dropdown'
 import { UserNav } from './user-nav'
 import { useGetMe } from '@/apis/user/get-me'
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  onToggleSidebar?: () => void
+}
+
+export function DashboardHeader({ onToggleSidebar }: DashboardHeaderProps) {
   const { data: user } = useGetMe()
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur lg:px-8">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="lg:hidden">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden"
+          onClick={onToggleSidebar}
+          aria-label="Toggle sidebar"
+        >
           <MenuIcon className="h-5 w-5" />
         </Button>
         <Link to="/">
