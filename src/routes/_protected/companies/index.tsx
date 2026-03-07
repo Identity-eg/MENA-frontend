@@ -46,13 +46,16 @@ export const Route = createFileRoute('/_protected/companies/')({
   component: CompanySearchPage,
   validateSearch: z.object({
     q: z.string().optional(),
+    mode: z.enum(['hybrid', 'fuzzy', 'vector']).optional().default('hybrid'),
   }),
   loaderDeps(opts) {
-    return { query: opts.search.q }
+    return { query: opts.search.q, mode: opts.search.mode }
   },
   loader: ({ context, deps }) => {
     const query = deps.query?.trim()
-    context.queryClient.ensureQueryData(getCompaniesQueryOptions({ q: query }))
+    context.queryClient.ensureQueryData(
+      getCompaniesQueryOptions({ q: query, mode: deps.mode }),
+    )
   },
 })
 

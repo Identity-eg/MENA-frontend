@@ -20,8 +20,11 @@ export type TCompany = {
   phone: string
   email: string
   website: string | null
+  ticker: string | null
   description: string | null
+  descriptionAr: string | null
   services: Array<string>
+  aliases: Array<string>
   lockedFields: Array<TLockedField>
   reports: Array<TReport>
   createdAt: string
