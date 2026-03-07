@@ -6,6 +6,7 @@ import { useCreateRequest } from '@/apis/requests/create-request'
 type RequestScreeningPackageButtonProps = {
   companyId?: number
   individualId?: number
+  individualName?: string
   selectedReportIds: Array<number>
   disabled?: boolean
   className?: string
@@ -14,6 +15,7 @@ type RequestScreeningPackageButtonProps = {
 export function RequestScreeningPackageButton({
   companyId,
   individualId,
+  individualName,
   selectedReportIds,
   disabled = false,
   className,
@@ -33,8 +35,7 @@ export function RequestScreeningPackageButton({
               {
                 individualId,
                 reportIds: selectedReportIds,
-                fullName: '', // The backend might need a name if it's a new individual, but if individualId is provided it should be fine.
-                // Wait, let's check backend if it needs fullName even if individualId is present.
+                fullName: individualName || '',
               },
             ]
           : undefined,

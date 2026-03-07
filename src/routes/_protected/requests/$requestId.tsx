@@ -538,10 +538,10 @@ function RequestDetailsPage() {
                   )}
                   <span
                     className={cn(
-                      'relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-[10px] font-bold transition-all',
+                      'relative z-0 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-[10px] font-bold transition-all',
                       step.active
                         ? 'border-primary bg-primary text-primary-foreground'
-                        : 'border-muted bg-muted/30 text-muted-foreground',
+                        : 'border-muted bg-card text-muted-foreground',
                       status === step.status &&
                         'ring-2 ring-primary ring-offset-2 ring-offset-background',
                     )}
