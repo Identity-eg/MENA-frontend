@@ -45,7 +45,7 @@ export default function LoginPage() {
             className="text-primary font-semibold hover:underline"
             data-testid="link-signup"
           >
-            Apply for Access
+            Create new account
           </Link>
         </p>
       </div>

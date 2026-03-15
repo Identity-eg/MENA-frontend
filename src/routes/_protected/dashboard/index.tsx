@@ -16,9 +16,17 @@ import {
   useGetRequests,
 } from '@/apis/requests/get-requests'
 import { useGetMe } from '@/apis/user/get-me'
+import { Spinner } from '@/components/ui/spinner'
 
 export const Route = createFileRoute('/_protected/dashboard/')({
   component: DashboardPage,
+  pendingComponent: () => {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Spinner className="text-primary size-6" />
+      </div>
+    )
+  },
   loader: async ({ context }) => {
     await Promise.all([
       context.queryClient.ensureQueryData(getRequestsQueryOptions()),
