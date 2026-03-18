@@ -21,7 +21,7 @@ export const getMeAction = createServerFn().handler(async () => {
 export const getMeQueryOptions = () =>
   queryOptions({
     queryKey: ['me'],
-    staleTime: 5 * 60 * 1000,
+    staleTime: Infinity,
     queryFn: getMe,
   })
 

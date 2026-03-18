@@ -12,7 +12,7 @@ function AboutUsPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="relative overflow-hidden">
-        <HomeHeader user={user?.user} />
+        <HomeHeader user={user ?? undefined} />
 
         <main className="relative p-6">
           <h1 className="text-2xl font-bold">About us</h1>

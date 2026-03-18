@@ -65,8 +65,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     const accessToken = getIsomorphicAccessToken()
     if (!accessToken) return { user: null, accessToken: null }
 
-    const user = await context.queryClient.ensureQueryData(getMeQueryOptions())
-    return { user, accessToken }
+    const meData = await context.queryClient.ensureQueryData(getMeQueryOptions())
+    return { user: meData?.user ?? null, accessToken }
   },
   component: RootComponent,
   notFoundComponent: NotFoundPage,

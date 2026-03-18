@@ -19,7 +19,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="relative overflow-hidden">
-        <HomeHeader user={user?.user} />
+        <HomeHeader user={user ?? undefined} />
 
         <main className="relative">
           <HeroSection />
