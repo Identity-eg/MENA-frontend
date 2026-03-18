@@ -41,7 +41,7 @@ async function fetchUser(token: string): Promise<TUser | null> {
     if (!res.ok) return null
 
     const data: { user: TUser } = await res.json()
-    return data.user ?? null
+    return data.user
   } catch {
     return null
   }
