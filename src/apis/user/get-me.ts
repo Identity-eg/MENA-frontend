@@ -9,20 +9,19 @@ export const getMe = async (): Promise<{ user: TUser } | null> => {
       url: '/auth/me',
     })
     return res
-  } catch (error) {
+  } catch {
     return null
   }
 }
 
 export const getMeAction = createServerFn().handler(async () => {
-  const user = await getMe()
-  return user
+  return getMe()
 })
 
 export const getMeQueryOptions = () =>
   queryOptions({
     queryKey: ['me'],
-    staleTime: Infinity,
+    staleTime: 5 * 60 * 1000,
     queryFn: getMe,
   })
 

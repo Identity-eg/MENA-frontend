@@ -1,9 +1,10 @@
-// import { refreshAccessTokenAction } from '../auth/refresh-access-token'
 import { refreshToken } from '../auth/refresh-token'
 import { apiClient } from './api-client'
 import { getErrorMessage } from './error-handler'
 import { setIsomorphicAccessToken } from './request-interceptor'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
+import { clearServerCredentials } from '@/lib/auth'
+import { useAuthStore } from '@/stores/auth'
 
 let isRefreshing = false
 let failedQueue: Array<{
@@ -22,8 +23,13 @@ const processQueue = (error: AxiosError | null = null) => {
   failedQueue = []
 }
 
+const forceLogout = async () => {
+  await clearServerCredentials()
+  useAuthStore.getState().clearAccessToken()
+  window.location.href = '/auth/login'
+}
+
 export const responseErrorInterceptor = async (error: AxiosError) => {
-  console.log('error', { status: error.response?.status })
   const originalRequest =
     error.config as unknown as InternalAxiosRequestConfig & {
       _retry?: boolean
@@ -56,10 +62,12 @@ export const responseErrorInterceptor = async (error: AxiosError) => {
         return apiClient(originalRequest)
       } else {
         processQueue(error)
+        await forceLogout()
         return Promise.reject(error)
       }
     } catch (refreshError) {
-      processQueue(error)
+      processQueue(refreshError as AxiosError)
+      await forceLogout()
       return Promise.reject(refreshError)
     } finally {
       isRefreshing = false

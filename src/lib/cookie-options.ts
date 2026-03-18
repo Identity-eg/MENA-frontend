@@ -1,5 +1,5 @@
-const ACCESS_TOKEN_EXPIRY = 0.1 * 60 * 1000 // 10 minutes
-const REFRESH_TOKEN_EXPIRY = 60 * 60 * 24 * 7 // 7 days
+const ACCESS_TOKEN_EXPIRY = 10 * 60 // 10 minutes in seconds
+const REFRESH_TOKEN_EXPIRY = 60 * 60 * 24 * 7 // 7 days in seconds
 
 const isProduction = process.env.NODE_ENV === 'production'
 const SHARED_COOKIE_OPTIONS = {
