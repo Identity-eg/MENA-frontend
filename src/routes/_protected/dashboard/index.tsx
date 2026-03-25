@@ -8,7 +8,6 @@ import {
   useGetUnlocks,
 } from '@/apis/unlocks/get-unlocks'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { PageHeader } from '@/components/page-header'
 import { DashboardRecentRequests } from '@/components/dashboard-recent-requests'
 import {
@@ -85,9 +84,6 @@ function DashboardPage() {
           title="Dashboard"
           subtitle={`Welcome back, ${user?.name}. Here's your compliance overview.`}
         />
-        <Link to="/requests/new/individual">
-          <Button>New Request</Button>
-        </Link>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

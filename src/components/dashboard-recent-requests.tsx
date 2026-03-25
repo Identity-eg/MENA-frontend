@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { Eye } from 'lucide-react'
 import { useGetRequests } from '@/apis/requests/get-requests'
 import type { TRequest } from '@/types/request'
+import { displayIndividualName } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -36,16 +37,22 @@ function getCompanyNames(req: TRequest): string[] {
 }
 
 /** Derive individual count from requestReports when individuals not present */
-function getIndividualCount(req: TRequest): number {
-  if (req.individuals?.length !== undefined) return req.individuals.length
+function getIndividualNames(req: TRequest): string[] {
+  if (req.individuals?.length) {
+    return req.individuals.map((i) => displayIndividualName(i))
+  }
+
   const seen = new Set<number>()
-  return (req.requestReports ?? [])
-    .filter((rr) => rr.individualId != null && rr.individual != null)
-    .filter((rr) => {
-      if (seen.has(rr.individualId!)) return false
-      seen.add(rr.individualId!)
-      return true
-    }).length
+  const names: string[] = []
+
+  for (const rr of req.requestReports ?? []) {
+    if (rr.individualId == null || rr.individual == null) continue
+    if (seen.has(rr.individualId)) continue
+    seen.add(rr.individualId)
+    names.push(displayIndividualName(rr.individual))
+  }
+
+  return names
 }
 
 function formatRequestId(id: number) {
@@ -87,7 +94,7 @@ export function DashboardRecentRequests() {
             <TableHeader>
               <TableRow>
                 <TableHead>Request ID</TableHead>
-                <TableHead>Company</TableHead>
+                <TableHead>Entity Requested</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -100,9 +107,9 @@ export function DashboardRecentRequests() {
                     {formatRequestId(req.id)}
                   </TableCell>
                   <TableCell>
-                    {getCompanyNames(req).join(', ') || '—'}
-                    {getIndividualCount(req) > 0 &&
-                      ` · ${getIndividualCount(req)} individual${getIndividualCount(req) !== 1 ? 's' : ''}`}
+                    {getCompanyNames(req).join(', ')}
+                    {getIndividualNames(req).length > 0 &&
+                      getIndividualNames(req).join(', ')}
                   </TableCell>
                   <TableCell>
                     <StatusPill status={req.status} />
