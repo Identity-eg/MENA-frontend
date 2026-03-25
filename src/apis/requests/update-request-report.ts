@@ -1,4 +1,4 @@
-import { request } from '../request'
+import { request } from '../base'
 import type { RequestReportStatusValue } from '@/types/request'
 
 export type UpdateRequestReportPayload = {

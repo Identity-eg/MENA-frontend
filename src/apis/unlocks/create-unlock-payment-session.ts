@@ -1,4 +1,4 @@
-import { request } from '../request'
+import { request } from '../base'
 
 type CreateUnlockPaymentSessionResponse = {
   success: boolean

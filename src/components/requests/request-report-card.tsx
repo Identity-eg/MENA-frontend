@@ -115,7 +115,7 @@ export function RequestReportCard({ report, status }: RequestReportRowProps) {
           ) : (
             <Download className="h-3.5 w-3.5" />
           )}{' '}
-          Report
+          Download
         </Button>
       ) : status === REQUEST_STATUS.COMPLETED ||
         reportStatus === REQUEST_REPORT_STATUS.DELIVERED ? (

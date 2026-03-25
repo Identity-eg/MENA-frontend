@@ -1,5 +1,5 @@
 import { queryOptions, useMutation } from '@tanstack/react-query'
-import { apiClient } from '../request/api-client'
+import { apiClient } from '../base/api-client'
 
 export type RequestReportUploadDownloadResponse = {
   success: boolean

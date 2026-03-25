@@ -17,7 +17,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import type { TUser } from '@/types/user'
 import { resolveAuthSession } from '@/apis/auth/session'
 import { getMeQueryOptions } from '@/apis/user/get-me'
-import { getIsomorphicAccessToken } from '@/apis/request/request-interceptor'
+import { getIsomorphicAccessToken } from '@/apis/base/request-interceptor'
 import { NotFoundPage } from '@/components/layout/not-found-page'
 import { useAuthStore } from '@/stores/auth'
 
@@ -65,7 +65,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     const accessToken = getIsomorphicAccessToken()
     if (!accessToken) return { user: null, accessToken: null }
 
-    const meData = await context.queryClient.ensureQueryData(getMeQueryOptions())
+    const meData =
+      await context.queryClient.ensureQueryData(getMeQueryOptions())
     return { user: meData?.user ?? null, accessToken }
   },
   component: RootComponent,
@@ -93,7 +94,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <TanStackDevtools
           config={{ position: 'bottom-right' }}
           plugins={[
-            { name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> },
+            {
+              name: 'Tanstack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
             TanStackQueryDevtools,
           ]}
         />

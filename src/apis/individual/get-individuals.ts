@@ -1,5 +1,5 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { request } from '../request'
+import { request } from '../base'
 import type { TIndividual } from '@/types/individual'
 import type { TApiResponsePaginated } from '@/types/api-response-paginated'
 

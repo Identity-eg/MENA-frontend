@@ -238,7 +238,7 @@ function IndividualDetailsContent() {
         </div>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
         <div className="space-y-6 min-w-0">
           <Card>
             <CardHeader className="pb-2">
@@ -393,7 +393,7 @@ function IndividualDetailsContent() {
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden hidden xl:block">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-semibold">
                 Quick info

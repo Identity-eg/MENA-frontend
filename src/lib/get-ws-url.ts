@@ -1,4 +1,4 @@
-import { getApiBaseUrl } from '@/apis/request/api-base-url'
+import { getApiBaseUrl } from '@/apis/base/api-base-url'
 
 /**
  * WebSocket URL for realtime notifications (same host as API, ws/wss).

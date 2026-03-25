@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { request } from '../request'
+import { request } from '../base'
 
 type CreatePaymentSessionResponse = {
   success: boolean
@@ -20,12 +20,11 @@ export async function createRequestPaymentSession(
   return data.data
 }
 
-
 export const useCreateRequestPaymentSession = () => {
   return useMutation({
     mutationFn: createRequestPaymentSession,
     onSuccess: (data) => {
       window.location.href = data.url
-    }
+    },
   })
 }

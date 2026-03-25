@@ -1,8 +1,10 @@
-import { request } from '../request'
+import { request } from '../base'
 
-export async function markNotificationRead(id: string): Promise<{ success: boolean }> {
-    return request<{ success: boolean }>({
-        url: `/notifications/${id}/read`,
-        method: 'PATCH',
-    })
+export async function markNotificationRead(
+  id: string,
+): Promise<{ success: boolean }> {
+  return request<{ success: boolean }>({
+    url: `/notifications/${id}/read`,
+    method: 'PATCH',
+  })
 }

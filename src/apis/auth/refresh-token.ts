@@ -2,7 +2,7 @@ import { getCookie, setCookie } from '@tanstack/react-start/server'
 import { createServerFn } from '@tanstack/react-start'
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/constants/auth'
 import { getAuthCookieOptions } from '@/lib/cookie-options'
-import { getApiBaseUrl } from '@/apis/request/api-base-url'
+import { getApiBaseUrl } from '@/apis/base/api-base-url'
 
 /**
  * Server fn called by the client-side Axios response interceptor when a

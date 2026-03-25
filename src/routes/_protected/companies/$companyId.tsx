@@ -303,7 +303,6 @@ function CompanyDetailsContent() {
               <div className="min-w-0">
                 <h1
                   className="text-2xl font-bold tracking-tight sm:text-3xl"
-                  dir="rtl"
                 >
                   {company.nameEn}
                 </h1>
@@ -330,7 +329,7 @@ function CompanyDetailsContent() {
         </div>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
         <div className="space-y-6 min-w-0">
           {lockedFields.length > 0 && (
             <Card className="relative overflow-hidden rounded-2xl border-0 bg-linear-to-b from-primary/8 via-primary/5 to-transparent shadow-lg ring-1 ring-primary/10 dark:from-primary/15 dark:via-primary/10 dark:to-transparent dark:ring-primary/20">
@@ -667,7 +666,7 @@ function CompanyDetailsContent() {
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden hidden xl:block">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-semibold">
                 Quick info

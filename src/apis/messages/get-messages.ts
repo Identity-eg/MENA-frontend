@@ -1,5 +1,5 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
-import { request } from '../request'
+import { request } from '../base'
 import type { TApiResponseSingle } from '@/types/api-response-single'
 import type { TMessage } from '@/types/message'
 
@@ -22,7 +22,10 @@ export const getMessagesQueryOptions = (requestId: number) =>
     staleTime: 30 * 1000,
   })
 
-export const useGetMessages = (requestId: number, options?: { enabled?: boolean }) =>
+export const useGetMessages = (
+  requestId: number,
+  options?: { enabled?: boolean },
+) =>
   useQuery({
     ...getMessagesQueryOptions(requestId),
     enabled: options?.enabled !== false && requestId > 0,

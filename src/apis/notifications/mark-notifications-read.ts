@@ -1,4 +1,4 @@
-import { request } from '../request'
+import { request } from '../base'
 
 export async function markNotificationsRead(): Promise<{ success: boolean }> {
   return request<{ success: boolean }>({

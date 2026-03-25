@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { request } from '../request'
+import { request } from '../base'
 import type { TApiResponseSingle } from '@/types/api-response-single'
 import type { TMessage } from '@/types/message'
 import { getMessagesQueryKey } from './get-messages'
@@ -19,7 +19,9 @@ export const useMarkMessageRead = (requestId: number) => {
   return useMutation({
     mutationFn: (messageId: number) => markMessageRead(requestId, messageId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: getMessagesQueryKey(requestId) })
+      queryClient.invalidateQueries({
+        queryKey: getMessagesQueryKey(requestId),
+      })
     },
   })
 }

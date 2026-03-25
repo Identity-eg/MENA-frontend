@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { request } from '../request'
+import { request } from '../base'
 
 const setupPassword = async ({
   password,

@@ -1,4 +1,4 @@
-import { apiClient } from '../request/api-client'
+import { apiClient } from '../base/api-client'
 
 /**
  * Download the invoice PDF for a request.

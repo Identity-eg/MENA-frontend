@@ -3,7 +3,7 @@ import { createServerFn } from '@tanstack/react-start'
 import type { TUser } from '@/types/user'
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/constants/auth'
 import { getAuthCookieOptions } from '@/lib/cookie-options'
-import { getApiBaseUrl } from '@/apis/request/api-base-url'
+import { getApiBaseUrl } from '@/apis/base/api-base-url'
 
 export type AuthSession = {
   accessToken: string

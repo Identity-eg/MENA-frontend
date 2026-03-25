@@ -453,30 +453,35 @@ function RequestDetailsPage() {
 
           {/* Action buttons + amounts */}
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            {status === REQUEST_STATUS.INVOICE_GENERATED && (
+            {(request.invoice != null ||
+              status === REQUEST_STATUS.INVOICE_GENERATED) && (
               <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="flex-1 sm:flex-none gap-2"
-                  onClick={() => downloadRequestInvoicePdf(request.id)}
-                >
-                  <FileDown className="h-4 w-4" />
-                  Invoice
-                </Button>
-                <Button
-                  size="sm"
-                  className="flex-1 sm:flex-none gap-2 bg-orange-500 hover:bg-orange-600 focus-visible:ring-orange-500 border-none shadow-sm"
-                  disabled={isPaymentRedirecting}
-                  onClick={() => createPaymentSession(request.id)}
-                >
-                  {isPaymentRedirecting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <CreditCard className="h-4 w-4" />
-                  )}{' '}
-                  Pay ${amountDue.toLocaleString()}
-                </Button>
+                {request.invoice != null && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 sm:flex-none gap-2"
+                    onClick={() => downloadRequestInvoicePdf(request.id)}
+                  >
+                    <FileDown className="h-4 w-4" />
+                    Download Invoice
+                  </Button>
+                )}
+                {status === REQUEST_STATUS.INVOICE_GENERATED && (
+                  <Button
+                    size="sm"
+                    className="flex-1 sm:flex-none gap-2 bg-orange-500 hover:bg-orange-600 focus-visible:ring-orange-500 border-none shadow-sm"
+                    disabled={isPaymentRedirecting}
+                    onClick={() => createPaymentSession(request.id)}
+                  >
+                    {isPaymentRedirecting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <CreditCard className="h-4 w-4" />
+                    )}{' '}
+                    Pay ${amountDue.toLocaleString()}
+                  </Button>
+                )}
               </div>
             )}
             <div className="flex items-center gap-2">
@@ -568,7 +573,7 @@ function RequestDetailsPage() {
         </div>
       </nav>
 
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-[280px_1fr]">
+      <div className="grid gap-4 sm:gap-6 xl:grid-cols-[280px_1fr]">
         {/* Sidebar: Subject selection — horizontal scroll on mobile, vertical list on lg+ */}
         <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
           <Card>
@@ -677,7 +682,7 @@ function RequestDetailsPage() {
                 <h3 className="mb-3 sm:mb-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   Assigned Services & Reports
                 </h3>
-                <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
+                <div className="grid gap-3 grid-cols-1 md:grid-cols-2">
                   {selectedSubject.reports.map((report) => (
                     <RequestReportCard
                       key={report.id}
