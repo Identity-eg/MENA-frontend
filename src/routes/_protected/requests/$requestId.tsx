@@ -203,8 +203,10 @@ function buildSubjects(request: TRequest | undefined): Array<SubjectItem> {
 
     if (rr.individualId != null && rr.individual != null) {
       const existing = individualMap.get(rr.individualId)
-      const name = rr.individual.fullName
-      const nationality = rr.individual.nationality ?? '—'
+      const name =
+        rr.individual.nameEn?.trim() || rr.individual.nameAr
+      const nationality =
+        rr.individual.country?.nameEn ?? rr.individual.countryCode ?? '—'
       if (existing) {
         const idx = existing.reports.findIndex(
           (r) => r.id === reportWithUploads.id,

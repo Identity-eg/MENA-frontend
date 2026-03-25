@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
 import type { Subject } from '@/types'
+import { displayIndividualName } from '@/types/individual'
 import { Button } from './ui/button'
 
 interface SubjectsTableProps {
@@ -49,13 +50,13 @@ export function SubjectsTable({
                 <div>
                   <span className="text-muted-foreground">Name</span>
                   <p className="font-medium text-foreground">
-                    {subject.fullName ?? '—'}
+                    {displayIndividualName(subject)}
                   </p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Nationality</span>
+                  <span className="text-muted-foreground">Country</span>
                   <p className="font-medium text-foreground">
-                    {subject.nationality ?? '—'}
+                    {subject.country ?? '—'}
                   </p>
                 </div>
                 <div>

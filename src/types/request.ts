@@ -40,19 +40,9 @@ export type CreateRequestCompanyItem = {
   reportIds: Array<number>
 }
 
-/** Per-individual data + report selection when creating a request */
+/** Per-individual report selection when creating a request (backend uses individualId + reportIds) */
 export type CreateRequestIndividualItem = {
-  individualId?: number
-  fullName: string
-  email?: string | null
-  phone?: string | null
-  position?: string | null
-  nationality?: string | null
-  dateOfBirth?: string | null
-  idNumber?: string | null
-  address?: string | null
-  city?: string | null
-  countryCode?: string | null
+  individualId: number
   reportIds: Array<number>
 }
 

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Mail, ShieldCheck } from 'lucide-react'
+import { Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Card,

@@ -2,16 +2,16 @@ import type { TReport } from './report'
 
 export type TIndividual = {
   id: number
-  fullName: string
+  nameAr: string
+  nameEn: string | null
   email: string | null
   phone: string | null
   position: string | null
-  nationality: string | null
   dateOfBirth: string | null
   idNumber: string | null
   address: string | null
-  city: string | null
-  countryCode: string | null
+  city: string
+  countryCode: string
   country: {
     code: string
     nameEn: string
@@ -20,4 +20,13 @@ export type TIndividual = {
   reports: Array<TReport>
   createdAt: string
   updatedAt: string
+}
+
+export function displayIndividualName(individual: {
+  nameAr: string
+  nameEn?: string | null
+}): string {
+  const en = individual.nameEn?.trim()
+  if (en) return en
+  return individual.nameAr
 }

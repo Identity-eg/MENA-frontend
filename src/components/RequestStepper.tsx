@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { RequestStatus } from '@/types'
+import { REQUEST_STATUS, type RequestStatus } from '@/types'
 
 const steps: { key: string; label: string }[] = [
   { key: 'submitted', label: 'Submitted' },
@@ -13,20 +13,20 @@ const steps: { key: string; label: string }[] = [
 
 function stepIndexForStatus(status: RequestStatus): number {
   switch (status) {
-    case 'Draft':
+    case REQUEST_STATUS.UNDER_REVIEW:
       return 0
-    case 'WaitingForEvaluation':
-      return 1
-    case 'WaitingForUserReply':
-      return 1
-    case 'WaitingForPayment':
+    case REQUEST_STATUS.INVOICE_GENERATED:
+      return 2
+    case REQUEST_STATUS.PAID:
       return 3
-    case 'Processing':
+    case REQUEST_STATUS.PROCESSING:
       return 4
-    case 'Completed':
+    case REQUEST_STATUS.COMPLETED:
       return 5
-    case 'Expired':
+    case REQUEST_STATUS.REJECTED:
       return 1
+    case REQUEST_STATUS.CANCELLED:
+      return 0
     default:
       return 0
   }

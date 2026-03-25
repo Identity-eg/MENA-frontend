@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { SubjectsTable } from '@/components/SubjectsTable'
+import type { Subject } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -28,39 +29,41 @@ function generateId() {
 
 function NewRequestIndividualsPage() {
   const [step, setStep] = useState(1)
-  const [subjects, setSubjects] = useState<any[]>([
+  const [subjects, setSubjects] = useState<Subject[]>([
     {
       id: '1',
       type: 'Individual',
-      fullName: 'John Smith',
-      nationality: 'United States',
+      nameAr: 'جون سميث',
+      nameEn: 'John Smith',
+      country: 'United States',
       idNumber: 'A12345678',
     },
   ])
   const [addIndividualModalOpen, setAddIndividualModalOpen] = useState(false)
   const [addIndividualForm, setAddIndividualForm] = useState({
-    fullName: '',
-    nationality: '',
+    nameAr: '',
+    nameEn: '',
+    country: '',
     idNumber: '',
     email: '',
   })
 
   const handleAddIndividual = () => {
-    if (!addIndividualForm.fullName.trim()) return
-    setSubjects((prev) => [
-      ...prev,
-      {
-        id: generateId(),
-        type: 'Individual',
-        fullName: addIndividualForm.fullName.trim(),
-        nationality: addIndividualForm.nationality.trim() || undefined,
-        idNumber: addIndividualForm.idNumber.trim() || undefined,
-        email: addIndividualForm.email.trim() || undefined,
-      },
-    ])
+    if (!addIndividualForm.nameAr.trim()) return
+    const subject: Subject = {
+      id: generateId(),
+      type: 'Individual',
+      nameAr: addIndividualForm.nameAr.trim(),
+      nameEn: addIndividualForm.nameEn.trim() || undefined,
+      country: addIndividualForm.country.trim() || undefined,
+      idNumber: addIndividualForm.idNumber.trim() || undefined,
+      email: addIndividualForm.email.trim() || undefined,
+    }
+    setSubjects((prev) => [...prev, subject])
     setAddIndividualForm({
-      fullName: '',
-      nationality: '',
+      nameAr: '',
+      nameEn: '',
+      country: '',
       idNumber: '',
       email: '',
     })
@@ -131,29 +134,43 @@ function NewRequestIndividualsPage() {
                 </CardHeader>
                 <CardContent className="space-y-4 pt-4">
                   <div className="space-y-2">
-                    <Label htmlFor="add-fullName">Full name</Label>
+                    <Label htmlFor="add-nameAr">Name (Arabic) *</Label>
                     <Input
-                      id="add-fullName"
-                      placeholder="John Smith"
-                      value={addIndividualForm.fullName}
+                      id="add-nameAr"
+                      placeholder="الاسم"
+                      value={addIndividualForm.nameAr}
                       onChange={(e) =>
                         setAddIndividualForm((prev) => ({
                           ...prev,
-                          fullName: e.target.value,
+                          nameAr: e.target.value,
                         }))
                       }
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="add-nationality">Nationality</Label>
+                    <Label htmlFor="add-nameEn">Name (English)</Label>
                     <Input
-                      id="add-nationality"
-                      placeholder="United States"
-                      value={addIndividualForm.nationality}
+                      id="add-nameEn"
+                      placeholder="John Smith"
+                      value={addIndividualForm.nameEn}
                       onChange={(e) =>
                         setAddIndividualForm((prev) => ({
                           ...prev,
-                          nationality: e.target.value,
+                          nameEn: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="add-country">Country</Label>
+                    <Input
+                      id="add-country"
+                      placeholder="United Arab Emirates"
+                      value={addIndividualForm.country}
+                      onChange={(e) =>
+                        setAddIndividualForm((prev) => ({
+                          ...prev,
+                          country: e.target.value,
                         }))
                       }
                     />
@@ -196,7 +213,7 @@ function NewRequestIndividualsPage() {
                     </Button>
                     <Button
                       onClick={handleAddIndividual}
-                      disabled={!addIndividualForm.fullName.trim()}
+                      disabled={!addIndividualForm.nameAr.trim()}
                     >
                       Add individual
                     </Button>
@@ -222,9 +239,7 @@ function NewRequestIndividualsPage() {
               Select the services you need. Estimated price and TAT are shown
               per service.
             </p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              
-            </div>
+            <div className="grid gap-3 sm:grid-cols-2"></div>
           </div>
           <Card className="h-fit rounded-xl border border-border shadow-sm lg:sticky lg:top-24">
             <CardHeader className="border-b border-border bg-muted/30">
@@ -274,7 +289,6 @@ function NewRequestIndividualsPage() {
             </CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-2 text-sm text-muted-foreground">
-                
                 <li className="flex justify-between border-t border-border pt-2 font-medium text-foreground">
                   <span>Total</span>
                   <span>$0</span>
@@ -286,7 +300,6 @@ function NewRequestIndividualsPage() {
             <label className="flex items-start gap-3">
               <input
                 type="checkbox"
-                
                 className="mt-1 rounded border-input"
               />
               <span className="text-sm text-muted-foreground">

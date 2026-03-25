@@ -10,6 +10,7 @@ import {
   getIndividualsQueryOptions,
   useGetIndividuals,
 } from '@/apis/individual/get-individuals'
+import { displayIndividualName } from '@/types/individual'
 import { useDebounceCallback } from '@/hooks/use-debounce-cb'
 
 function IndividualsLoadingFallback() {
@@ -79,7 +80,7 @@ function IndividualSearchResults({ q }: { q: string }) {
                   </div>
                   <div>
                     <div className="text-xl font-bold font-sans tracking-tight">
-                      {individual.fullName}
+                      {displayIndividualName(individual)}
                     </div>
                     {individual.email && (
                       <div className="text-sm font-medium text-muted-foreground">
@@ -87,7 +88,7 @@ function IndividualSearchResults({ q }: { q: string }) {
                       </div>
                     )}
                     <div className="mt-1.5 flex items-center gap-2 text-[10px] font-bold text-muted-foreground/60">
-                      {individual.nationality ||
+                      {individual.country?.nameEn ||
                         individual.countryCode ||
                         'N/A'}
                     </div>

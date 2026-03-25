@@ -14,6 +14,7 @@ export const getRouter = () => {
     context: {
       ...rqContext,
       user: null,
+      accessToken: null,
     },
 
     defaultPreload: 'intent',

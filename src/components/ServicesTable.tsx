@@ -98,7 +98,10 @@ export function ServicesTable({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => onDownload?.(svc.serviceId)}
+                        onClick={() => {
+                          const id = svc.serviceId ?? svc.id
+                          if (id) onDownload?.(id)
+                        }}
                       >
                         <Download className="mr-1 h-4 w-4" />
                         Download

@@ -32,6 +32,7 @@ import {
   getIndividualQueryOptions,
   useGetIndividual,
 } from '@/apis/individual/get-individual'
+import { displayIndividualName } from '@/types/individual'
 
 function IndividualDetailsLoadingFallback() {
   return (
@@ -174,12 +175,6 @@ function IndividualDetailsContent() {
       icon: Calendar,
     },
     {
-      key: 'nationality',
-      label: 'Nationality',
-      value: individual.nationality,
-      icon: Globe,
-    },
-    {
       key: 'address',
       label: 'Address',
       value: individual.address,
@@ -209,7 +204,7 @@ function IndividualDetailsContent() {
         </Link>
         <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
         <span className="font-medium text-foreground truncate max-w-50 sm:max-w-none">
-          {individual.fullName}
+          {displayIndividualName(individual)}
         </span>
       </nav>
 
@@ -224,7 +219,7 @@ function IndividualDetailsContent() {
               </div>
               <div className="min-w-0">
                 <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                  {individual.fullName}
+                  {displayIndividualName(individual)}
                 </h1>
                 <p className="text-sm text-muted-foreground truncate uppercase tracking-wider mt-0.5 font-medium">
                   {individual.position || 'Individual'}
@@ -237,14 +232,6 @@ function IndividualDetailsContent() {
                   <Globe className="h-3.5 w-3.5" />
                   {individual.country?.nameEn || individual.countryCode}
                 </span>
-              )}
-              {individual.nationality && (
-                <>
-                  <span className="hidden sm:inline text-muted-foreground/40">
-                    •
-                  </span>
-                  <span>Nationality: {individual.nationality}</span>
-                </>
               )}
             </div>
           </div>
@@ -398,7 +385,6 @@ function IndividualDetailsContent() {
               </div>
               <RequestScreeningPackageButton
                 individualId={id}
-                individualName={individual.fullName}
                 selectedReportIds={selectedReports}
                 disabled={selectedReports.length === 0}
               />
@@ -418,13 +404,6 @@ function IndividualDetailsContent() {
                 <span className="text-muted-foreground">Residence</span>
                 <span className="font-medium text-right">
                   {individual.country?.nameEn || individual.countryCode || '—'}
-                </span>
-              </div>
-              <Separator />
-              <div className="flex justify-between py-3 text-sm">
-                <span className="text-muted-foreground">Nationality</span>
-                <span className="font-medium text-right">
-                  {individual.nationality || '—'}
                 </span>
               </div>
               {individual.position && (

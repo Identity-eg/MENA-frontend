@@ -2,6 +2,8 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { Eye, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import type { RequestReportItem, TRequest } from '@/types/request'
+import type { TIndividual } from '@/types/individual'
+import { displayIndividualName } from '@/types/individual'
 import {
   getRequestsQueryOptions,
   useGetRequests,
@@ -64,7 +66,7 @@ function getCompaniesForSearch(
 }
 
 /** Derive individuals for search (from requestReports when req.individuals not present) */
-function getIndividualsForSearch(req: TRequest): Array<{ fullName: string }> {
+function getIndividualsForSearch(req: TRequest): TIndividual[] {
   if (req.individuals?.length) return req.individuals
   const reports = getRequestReports(req)
   const seen = new Set<number>()
@@ -165,7 +167,7 @@ function RequestsPage() {
           (c.nameAr != null && c.nameAr.toLowerCase().includes(searchLower)),
       )
       const individualMatch = individuals.some((i) =>
-        i.fullName.toLowerCase().includes(searchLower),
+        displayIndividualName(i).toLowerCase().includes(searchLower),
       )
       const matchSearch =
         !search ||
@@ -295,7 +297,7 @@ function RequestsPage() {
                           ({ individual, reports }) => (
                             <div key={individual.id} className="space-y-1">
                               <span className="text-sm font-medium">
-                                {individual.fullName}
+                                {displayIndividualName(individual)}
                               </span>
                               <div className="flex flex-wrap gap-1">
                                 {reports.map((r) => (
@@ -433,7 +435,7 @@ function RequestsPage() {
                                       className="flex flex-col gap-1"
                                     >
                                       <span className="font-medium">
-                                        {individual.fullName}
+                                        {displayIndividualName(individual)}
                                       </span>
                                       <div className="flex flex-wrap gap-1">
                                         {reports.map((r) => (

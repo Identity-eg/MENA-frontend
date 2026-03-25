@@ -71,6 +71,7 @@ function CompanySearchResults({ q }: { q: string }) {
             key={company.id}
             to="/companies/$companyId"
             params={{ companyId: String(company.id) }}
+            search={{ unlock: undefined }}
           >
             <Card className="cursor-pointer transition-all hover:bg-accent/50 group">
               <CardContent className="flex items-center justify-between p-5">

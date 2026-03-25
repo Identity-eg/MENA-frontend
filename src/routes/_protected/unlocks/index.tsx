@@ -108,6 +108,7 @@ function UnlocksPage() {
                   params={{
                     companyId: String(unlock.lockedField.company.id),
                   }}
+                  search={{ unlock: undefined }}
                 >
                   <Button variant="ghost">
                     View Full Profile
