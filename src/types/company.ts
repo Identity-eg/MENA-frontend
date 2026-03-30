@@ -1,6 +1,28 @@
 import type { TLockedField } from './locked-field'
 import type { TReport } from './report'
 
+/** Masked locked value from API (see maskCompanyLockedFields). */
+export const COMPANY_MASKED_VALUE = '••••••'
+
+export type TCompanyPartner = {
+  id?: number
+  nameAr: string
+  nameEn?: string | null
+  idNumber: string
+  percentage?: number | null
+  nationality?: string | null
+}
+
+export type TCompanyManager = {
+  id?: number
+  nameAr: string
+  nameEn?: string | null
+  idNumber: string
+  nationality?: string | null
+  authority?: string | null
+  position?: string | null
+}
+
 export type TCompany = {
   id: number
   nameEn: string
@@ -27,5 +49,8 @@ export type TCompany = {
   aliases: Array<string>
   lockedFields: Array<TLockedField>
   reports: Array<TReport>
+  /** Present when unlocked; masked string when locked. */
+  partners?: TCompanyPartner[] | string
+  managers?: TCompanyManager[] | string
   createdAt: string
 }
