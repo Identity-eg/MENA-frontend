@@ -4,7 +4,6 @@ import { io } from 'socket.io-client'
 import { NOTIFICATIONS_QUERY_KEY } from './use-notifications-query'
 import type { Socket } from 'socket.io-client'
 import { getWsUrl } from '@/lib/get-ws-url'
-import { useAuthStore } from '@/stores/auth'
 
 const SOCKET_EVENTS = [
   'request:statusChanged',
@@ -46,7 +45,7 @@ function invalidateRequestQueries(
  */
 export function useRealtimeNotifications() {
   const queryClient = useQueryClient()
-  const token = useAuthStore((s) => s.accessToken)
+  const token = queryClient.getQueryData(['access-token'])
   const socketRef = useRef<Socket | null>(null)
 
   useEffect(() => {

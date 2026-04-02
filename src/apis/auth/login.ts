@@ -4,7 +4,6 @@ import { createServerFn } from '@tanstack/react-start'
 import { setCookie } from '@tanstack/react-start/server'
 import z from 'zod'
 import { request } from '../base'
-import { useAuthStore } from '@/stores/auth'
 import { getAuthCookieOptions } from '@/lib/cookie-options'
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/constants/auth'
 
@@ -46,7 +45,6 @@ const loginServerAction = createServerFn()
   })
 
 export const useLogin = () => {
-  const { setAccessToken } = useAuthStore()
   const router = useRouter()
   const queryClient = useQueryClient()
 
@@ -54,7 +52,7 @@ export const useLogin = () => {
     mutationFn: loginServerAction,
     onSuccess: (data) => {
       queryClient.clear()
-      setAccessToken(data.accessToken)
+      queryClient.setQueryData(['access-token'], data.accessToken)
       router.navigate({ to: '/dashboard' })
       router.invalidate()
     },

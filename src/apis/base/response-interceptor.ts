@@ -4,7 +4,7 @@ import { getErrorMessage } from './error-handler'
 import { setIsomorphicAccessToken } from './request-interceptor'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { clearServerCredentials } from '@/lib/auth'
-import { useAuthStore } from '@/stores/auth'
+import { getContext } from '@/integrations/tanstack-query/root-provider'
 
 let isRefreshing = false
 let failedQueue: Array<{
@@ -25,7 +25,8 @@ const processQueue = (error: AxiosError | null = null) => {
 
 const forceLogout = async () => {
   await clearServerCredentials()
-  useAuthStore.getState().clearAccessToken()
+  const context = getContext()
+  context.queryClient.removeQueries({ queryKey: ['access-token'] })
   window.location.href = '/auth/login'
 }
 
