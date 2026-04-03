@@ -53,14 +53,21 @@ export const Route = createFileRoute('/_protected/companies/')({
   },
   loader: ({ context, deps }) => {
     const query = deps.query?.trim()
-    context.queryClient.ensureQueryData(
+    if (!query) return
+    return context.queryClient.ensureQueryData(
       getCompaniesQueryOptions({ q: query, mode: deps.mode }),
     )
   },
 })
 
-function CompanySearchResults({ q }: { q: string }) {
-  const { data } = useGetCompanies({ q })
+function CompanySearchResults({
+  q,
+  mode,
+}: {
+  q: string
+  mode: 'hybrid' | 'fuzzy' | 'vector'
+}) {
+  const { data } = useGetCompanies({ q, mode })
   const companies = data.data
 
   return (
@@ -133,7 +140,7 @@ function CompanySearchResults({ q }: { q: string }) {
 }
 
 export default function CompanySearchPage() {
-  const { q = '' } = Route.useSearch()
+  const { q = '', mode = 'hybrid' } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   const [value, setValue] = useState(q)
@@ -164,7 +171,7 @@ export default function CompanySearchPage() {
 
       {hasQuery ? (
         <Suspense fallback={<CompaniesLoadingFallback />}>
-          <CompanySearchResults q={searchQuery} />
+          <CompanySearchResults q={searchQuery} mode={mode} />
         </Suspense>
       ) : (
         <CompaniesStartSearchingState />

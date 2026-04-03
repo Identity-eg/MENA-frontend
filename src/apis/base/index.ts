@@ -4,7 +4,6 @@ import { apiClient } from './api-client'
 import type { AxiosProgressEvent, AxiosRequestConfig } from 'axios'
 
 type TOptions = {
-  withOrg?: boolean
   onDownloadProgress?: (progress: number) => void
   onUploadProgress?: (progress: number) => void
 } & Omit<AxiosRequestConfig, 'onDownloadProgress' | 'onUploadProgress'>

@@ -10,7 +10,6 @@ export const requestSuccessInterceptor = async (
   config: InternalAxiosRequestConfig,
 ) => {
   const accessToken = await getIsomorphicAccessToken()
-
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`
   }
@@ -25,7 +24,6 @@ export const getIsomorphicAccessToken = createIsomorphicFn()
     if (!accessToken) {
       accessToken = (await refreshToken())?.accessToken || null
     }
-
     return accessToken
   })
   .client(() => {

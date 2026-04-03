@@ -61,6 +61,6 @@ export const Route = createFileRoute('/_protected/requests/$requestId')({
   ),
 })
 
-export default function RequestDetailsPage() {
+function RequestDetailsPage() {
   return <RequestDetailView />
 }
