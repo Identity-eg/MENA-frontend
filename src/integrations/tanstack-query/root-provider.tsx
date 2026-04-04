@@ -1,31 +1,34 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { createIsomorphicFn } from '@tanstack/react-start'
 import type { ReactNode } from 'react'
 
-let context:
-  | {
-      queryClient: QueryClient
-    }
-  | undefined
-
-/** Router context and app-wide `QueryClient` (same instance as `TanStackQueryProvider`). */
-export function getContext() {
-  if (context) {
-    return context
-  }
-
-  const queryClient = new QueryClient({
+function makeQueryClient() {
+  return new QueryClient({
     defaultOptions: {
       queries: {
         staleTime: 1000 * 60 * 5,
       },
     },
   })
+}
 
-  context = {
-    queryClient,
+let browserQueryClient: QueryClient | undefined
+
+const getQueryClient = createIsomorphicFn()
+  .server(() => {
+    return makeQueryClient()
+  })
+  .client(() => {
+    if (!browserQueryClient) {
+      browserQueryClient = makeQueryClient()
+    }
+    return browserQueryClient
+  })
+
+export function getContext() {
+  return {
+    queryClient: getQueryClient(),
   }
-
-  return context
 }
 
 export default function TanStackQueryProvider({
@@ -33,7 +36,7 @@ export default function TanStackQueryProvider({
 }: {
   children: ReactNode
 }) {
-  const { queryClient } = getContext()
+  const queryClient = getQueryClient()
 
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

@@ -22,8 +22,9 @@ export const getIsomorphicAccessToken = createIsomorphicFn()
     let accessToken = getCookie(ACCESS_TOKEN_NAME) || null
 
     if (!accessToken) {
-      accessToken = (await refreshToken())?.accessToken || null
+      accessToken = await refreshToken()
     }
+
     return accessToken
   })
   .client(() => {
