@@ -55,8 +55,7 @@ export const useLogin = () => {
       queryClient.removeQueries({ queryKey: ['refresh-token'] })
       queryClient.setQueryData(['access-token'], response.accessToken)
 
-      router.navigate({ to: '/dashboard' })
-      router.invalidate()
+      await router.navigate({ to: '/dashboard' })
     },
   })
 }
