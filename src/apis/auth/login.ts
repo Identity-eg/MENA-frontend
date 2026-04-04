@@ -52,7 +52,6 @@ export const useLogin = () => {
     mutationFn: async (data: { email: string; password: string }) => {
       const response = await loginServerAction({ data })
 
-      queryClient.removeQueries({ queryKey: ['access-token'] })
       queryClient.removeQueries({ queryKey: ['refresh-token'] })
       queryClient.setQueryData(['access-token'], response.accessToken)
 
