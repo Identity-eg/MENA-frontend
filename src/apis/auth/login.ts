@@ -49,10 +49,13 @@ export const useLogin = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: loginServerAction,
-    onSuccess: (data) => {
-      queryClient.clear()
-      queryClient.setQueryData(['access-token'], data.accessToken)
+    mutationFn: async (data: { email: string; password: string }) => {
+      const response = await loginServerAction({ data })
+
+      queryClient.removeQueries({ queryKey: ['access-token'] })
+      queryClient.removeQueries({ queryKey: ['refresh-token'] })
+      queryClient.setQueryData(['access-token'], response.accessToken)
+
       router.navigate({ to: '/dashboard' })
       router.invalidate()
     },
