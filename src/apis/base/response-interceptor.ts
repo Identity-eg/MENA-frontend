@@ -53,11 +53,11 @@ export const responseErrorInterceptor = async (error: AxiosError) => {
     isRefreshing = true
 
     try {
-      const refreshResponse = await refreshToken()
+      const accessToken = await refreshToken()
 
-      if (refreshResponse?.accessToken) {
-        originalRequest.headers.Authorization = `Bearer ${refreshResponse.accessToken}`
-        setIsomorphicAccessToken({ accessToken: refreshResponse.accessToken })
+      if (accessToken) {
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`
+        setIsomorphicAccessToken({ accessToken })
 
         processQueue(null)
         return apiClient(originalRequest)
