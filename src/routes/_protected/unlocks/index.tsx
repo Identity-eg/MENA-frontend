@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { Building2, ExternalLink, Search, Unlock } from 'lucide-react'
 import {
   Card,
@@ -16,6 +17,7 @@ import {
 } from '@/apis/unlocks/get-unlocks'
 
 export const Route = createFileRoute('/_protected/unlocks/')({
+  pendingComponent: FullPageLoading,
   component: UnlocksPage,
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(getUnlocksQueryOptions())

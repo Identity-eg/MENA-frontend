@@ -1,4 +1,5 @@
 import { createFileRoute, useRouteContext } from '@tanstack/react-router'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { HomeHeader } from '@/components/home-header'
 import { HomeFooter } from '@/components/home-footer'
 import { Button } from '@/components/ui/button'
@@ -6,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { ArrowUpRight, BookOpen, Clock, Calendar } from 'lucide-react'
 
 export const Route = createFileRoute('/ident-insights')({
+  pendingComponent: FullPageLoading,
   component: IdentInsightsPage,
 })
 

@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { Eye, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import type { RequestReportItem, TRequest } from '@/types/request'
@@ -31,6 +32,7 @@ import {
 
 export const Route = createFileRoute('/_protected/requests/')({
   component: RequestsPage,
+  pendingComponent: FullPageLoading,
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(getRequestsQueryOptions())
     return {}

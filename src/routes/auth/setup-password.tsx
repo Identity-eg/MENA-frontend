@@ -3,6 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Loader2, Lock, ShieldCheck } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import {
   Card,
   CardContent,
@@ -16,6 +17,7 @@ import { Input } from '@/components/ui/input'
 import { useSetupPassword } from '@/apis/auth/setup-password'
 
 export const Route = createFileRoute('/auth/setup-password')({
+  pendingComponent: FullPageLoading,
   component: RouteComponent,
   validateSearch: z.object({
     token: z.string().min(1, 'Token is required'),

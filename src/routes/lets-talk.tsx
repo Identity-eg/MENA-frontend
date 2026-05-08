@@ -1,12 +1,14 @@
 import { createFileRoute, useRouteContext } from '@tanstack/react-router'
+import { Mail, MapPin, MessageSquare, Phone, Send } from 'lucide-react'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { HomeHeader } from '@/components/home-header'
 import { HomeFooter } from '@/components/home-footer'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { MessageSquare, Mail, Phone, MapPin, Send } from 'lucide-react'
 
 export const Route = createFileRoute('/lets-talk')({
+  pendingComponent: FullPageLoading,
   component: LetsTalkPage,
 })
 
@@ -27,10 +29,12 @@ function LetsTalkPage() {
                 <span>Contact Us</span>
               </div>
               <h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
-                Let's start a <span className="text-primary">conversation</span>.
+                Let's start a <span className="text-primary">conversation</span>
+                .
               </h1>
               <p className="text-lg text-muted-foreground mb-8 max-w-lg">
-                Whether you have a question about our platform, need a custom solution, or just want to say hello, we're here to help.
+                Whether you have a question about our platform, need a custom
+                solution, or just want to say hello, we're here to help.
               </p>
 
               <div className="space-y-6">
@@ -40,7 +44,9 @@ function LetsTalkPage() {
                   </div>
                   <div>
                     <div className="text-sm font-semibold">Email us</div>
-                    <div className="text-sm text-muted-foreground">support@complianceportal.com</div>
+                    <div className="text-sm text-muted-foreground">
+                      support@complianceportal.com
+                    </div>
                   </div>
                 </div>
 
@@ -50,7 +56,9 @@ function LetsTalkPage() {
                   </div>
                   <div>
                     <div className="text-sm font-semibold">Call us</div>
-                    <div className="text-sm text-muted-foreground">+1 (555) 000-0000</div>
+                    <div className="text-sm text-muted-foreground">
+                      +1 (555) 000-0000
+                    </div>
                   </div>
                 </div>
 
@@ -60,7 +68,9 @@ function LetsTalkPage() {
                   </div>
                   <div>
                     <div className="text-sm font-semibold">Visit us</div>
-                    <div className="text-sm text-muted-foreground">123 Compliance St, Risk City, RC 12345</div>
+                    <div className="text-sm text-muted-foreground">
+                      123 Compliance St, Risk City, RC 12345
+                    </div>
                   </div>
                 </div>
               </div>
@@ -70,7 +80,10 @@ function LetsTalkPage() {
             <div className="relative">
               <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-tr from-primary/10 via-transparent to-primary/5 blur-2xl" />
               <div className="relative rounded-3xl border bg-card p-8 shadow-xl lg:p-12">
-                <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                <form
+                  className="space-y-6"
+                  onSubmit={(e) => e.preventDefault()}
+                >
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div className="space-y-2">
                       <label className="text-sm font-medium">First name</label>
@@ -84,19 +97,26 @@ function LetsTalkPage() {
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Email address</label>
-                    <Input type="email" placeholder="john@example.com" className="bg-muted/30" />
+                    <Input
+                      type="email"
+                      placeholder="john@example.com"
+                      className="bg-muted/30"
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Subject</label>
-                    <Input placeholder="How can we help?" className="bg-muted/30" />
+                    <Input
+                      placeholder="How can we help?"
+                      className="bg-muted/30"
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Message</label>
-                    <Textarea 
-                      placeholder="Tell us more about your inquiry..." 
-                      className="min-h-[150px] bg-muted/30 resize-none" 
+                    <Textarea
+                      placeholder="Tell us more about your inquiry..."
+                      className="min-h-[150px] bg-muted/30 resize-none"
                     />
                   </div>
 
@@ -104,7 +124,7 @@ function LetsTalkPage() {
                     <Send className="h-4 w-4" />
                     Send Message
                   </Button>
-                  
+
                   <p className="text-center text-xs text-muted-foreground">
                     By submitting this form, you agree to our privacy policy.
                   </p>

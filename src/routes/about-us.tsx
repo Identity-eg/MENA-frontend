@@ -1,8 +1,10 @@
 import { createFileRoute, useRouteContext } from '@tanstack/react-router'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { HomeHeader } from '@/components/home-header'
 import { HomeFooter } from '@/components/home-footer'
 
 export const Route = createFileRoute('/about-us')({
+  pendingComponent: FullPageLoading,
   component: AboutUsPage,
 })
 

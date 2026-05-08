@@ -15,6 +15,7 @@ import type { TUser } from '@/types/user'
 import { getMeQueryOptions } from '@/apis/user/get-me'
 import { getIsomorphicAccessToken } from '@/apis/base/request-interceptor'
 import { NotFoundPage } from '@/components/layout/not-found-page'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -22,6 +23,7 @@ interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  pendingComponent: FullPageLoading,
   beforeLoad: async ({ context }) => {
     const accessToken = await getIsomorphicAccessToken()
 

@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { CheckCircle2, Clock, Mail, ShieldCheck } from 'lucide-react'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import {
   Card,
   CardContent,
@@ -10,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button'
 
 export const Route = createFileRoute('/auth/pending-verification')({
+  pendingComponent: FullPageLoading,
   component: PendingVerificationPage,
 })
 

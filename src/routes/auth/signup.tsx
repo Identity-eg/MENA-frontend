@@ -3,6 +3,7 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowRight, Loader2, ShieldCheck } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import {
   Card,
   CardContent,
@@ -16,6 +17,7 @@ import { Input } from '@/components/ui/input'
 import { useRegister } from '@/apis/auth/register'
 
 export const Route = createFileRoute('/auth/signup')({
+  pendingComponent: FullPageLoading,
   component: SignupPage,
 })
 

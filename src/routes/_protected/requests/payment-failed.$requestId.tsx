@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { AlertCircle, ArrowLeft, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -6,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 export const Route = createFileRoute(
   '/_protected/requests/payment-failed/$requestId',
 )({
+  pendingComponent: FullPageLoading,
   component: PaymentFailedPage,
 })
 

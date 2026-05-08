@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Mail } from 'lucide-react'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -9,6 +10,7 @@ import {
 } from '@/components/ui/card'
 
 export const Route = createFileRoute('/auth/verify-email')({
+  pendingComponent: FullPageLoading,
   component: RouteComponent,
 })
 

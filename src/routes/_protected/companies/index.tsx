@@ -1,5 +1,6 @@
 import { Suspense, useState } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { ChevronRight, Loader2, Plus, Search } from 'lucide-react'
 import z from 'zod'
 import { Button } from '@/components/ui/button'
@@ -44,6 +45,7 @@ function CompaniesStartSearchingState() {
 
 export const Route = createFileRoute('/_protected/companies/')({
   component: CompanySearchPage,
+  pendingComponent: FullPageLoading,
   validateSearch: z.object({
     q: z.string().optional(),
     mode: z.enum(['hybrid', 'fuzzy', 'vector']).optional().default('hybrid'),

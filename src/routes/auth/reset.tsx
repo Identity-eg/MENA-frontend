@@ -1,10 +1,12 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { ShieldCheck } from 'lucide-react'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { Card, CardContent } from '@/components/ui/card'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/auth/reset')({
+  pendingComponent: FullPageLoading,
   component: ResetPasswordPage,
 })
 
@@ -35,7 +37,10 @@ export default function ResetPasswordPage() {
             </p>
             <Link
               to="/auth/login"
-              className={cn(buttonVariants({ variant: 'outline' }), 'w-full mt-4')}
+              className={cn(
+                buttonVariants({ variant: 'outline' }),
+                'w-full mt-4',
+              )}
             >
               Back to Login
             </Link>

@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { HeroSection } from '@/components/hero-section'
 import { PlatformFeaturesSection } from '@/components/platform-features-section'
 import { StatusSection } from '@/components/status-section'
@@ -6,6 +7,7 @@ import { HomeHeader } from '@/components/home-header'
 import { HomeFooter } from '@/components/home-footer'
 
 export const Route = createFileRoute('/')({
+  pendingComponent: FullPageLoading,
   loader: ({ context }) => {
     const user = context.user
     return user
