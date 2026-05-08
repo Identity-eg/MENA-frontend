@@ -3,11 +3,11 @@ import { ArrowLeft, ChevronRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 
 type CompanyDetailBreadcrumbProps = {
-  nameEn: string
+  companyNameEn: string
 }
 
 export const CompanyDetailBreadcrumb = memo(function CompanyDetailBreadcrumb({
-  nameEn,
+  companyNameEn,
 }: CompanyDetailBreadcrumbProps) {
   return (
     <nav className="flex items-center gap-2 text-sm">
@@ -20,7 +20,7 @@ export const CompanyDetailBreadcrumb = memo(function CompanyDetailBreadcrumb({
       </Link>
       <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
       <span className="font-medium text-foreground truncate max-w-[200px] sm:max-w-none">
-        {nameEn}
+        {companyNameEn}
       </span>
     </nav>
   )

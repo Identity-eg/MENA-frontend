@@ -84,11 +84,11 @@ function UnlocksPage() {
                   </Badge>
                 </div>
                 <CardTitle className="text-lg mt-3 font-sans" dir="rtl">
-                  {unlock.lockedField.company.nameAr ??
-                    unlock.lockedField.company.nameEn}
+                  {unlock.lockedField.company.companyNameAr ??
+                    unlock.lockedField.company.companyNameEn}
                 </CardTitle>
                 <div className="text-sm text-muted-foreground font-medium">
-                  {unlock.lockedField.company.nameEn}
+                  {unlock.lockedField.company.companyNameEn}
                 </div>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">

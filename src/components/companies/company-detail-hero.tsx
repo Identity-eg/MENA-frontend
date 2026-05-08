@@ -2,12 +2,12 @@ import { memo } from 'react'
 import { Building2, Globe } from 'lucide-react'
 import type { TCompany } from '@/types/company'
 
-type CompanyDetailHeroProps = Pick<TCompany, 'nameEn' | 'nameAr' | 'industry' | 'country'>
+type CompanyDetailHeroProps = Pick<TCompany, 'companyNameEn' | 'companyNameAr' | 'activityName' | 'country'>
 
 export const CompanyDetailHero = memo(function CompanyDetailHero({
-  nameEn,
-  nameAr,
-  industry,
+  companyNameEn,
+  companyNameAr,
+  activityName,
   country,
 }: CompanyDetailHeroProps) {
   return (
@@ -21,9 +21,9 @@ export const CompanyDetailHero = memo(function CompanyDetailHero({
             </div>
             <div className="min-w-0">
               <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                {nameEn}
+                {companyNameEn}
               </h1>
-              <p className="text-sm text-muted-foreground truncate">{nameAr}</p>
+              <p className="text-sm text-muted-foreground truncate">{companyNameAr}</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
@@ -31,12 +31,12 @@ export const CompanyDetailHero = memo(function CompanyDetailHero({
               <Globe className="h-3.5 w-3.5" />
               {country.nameEn}
             </span>
-            {industry && (
+            {activityName && (
               <>
                 <span className="hidden sm:inline text-muted-foreground/40">
                   •
                 </span>
-                <span>{industry}</span>
+                <span>{activityName}</span>
               </>
             )}
           </div>

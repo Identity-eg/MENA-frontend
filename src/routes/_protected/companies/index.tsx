@@ -93,10 +93,10 @@ function CompanySearchResults({
                       className="text-xl font-bold font-sans tracking-tight"
                       dir="rtl"
                     >
-                      {company.nameAr ?? company.nameEn}
+                      {company.companyNameAr ?? company.companyNameEn}
                     </div>
                     <div className="text-sm font-medium text-muted-foreground">
-                      {company.nameEn}
+                      {company.companyNameEn}
                     </div>
                     <div className="mt-1.5 flex items-center gap-2 text-[10px] font-bold text-muted-foreground/60">
                       {company.country.nameEn || company.country.code}

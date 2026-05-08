@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SolutionsRouteImport } from './routes/solutions'
+import { Route as LetsTalkRouteImport } from './routes/lets-talk'
+import { Route as IdentInsightsRouteImport } from './routes/ident-insights'
 import { Route as AboutUsRouteImport } from './routes/about-us'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -21,19 +23,26 @@ import { Route as AuthPendingVerificationRouteImport } from './routes/auth/pendi
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as ProtectedUnlocksIndexRouteImport } from './routes/_protected/unlocks/index'
 import { Route as ProtectedRequestsIndexRouteImport } from './routes/_protected/requests/index'
-import { Route as ProtectedIndividualsIndexRouteImport } from './routes/_protected/individuals/index'
 import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
 import { Route as ProtectedCompaniesIndexRouteImport } from './routes/_protected/companies/index'
 import { Route as ProtectedRequestsRequestIdRouteImport } from './routes/_protected/requests/$requestId'
-import { Route as ProtectedIndividualsIndividualIdRouteImport } from './routes/_protected/individuals/$individualId'
 import { Route as ProtectedCompaniesCompanyIdRouteImport } from './routes/_protected/companies/$companyId'
 import { Route as ProtectedRequestsPaymentFailedRequestIdRouteImport } from './routes/_protected/requests/payment-failed.$requestId'
-import { Route as ProtectedRequestsNewIndividualRouteImport } from './routes/_protected/requests/new.individual'
 import { Route as ProtectedRequestsNewCompanyRouteImport } from './routes/_protected/requests/new.company'
 
 const SolutionsRoute = SolutionsRouteImport.update({
   id: '/solutions',
   path: '/solutions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LetsTalkRoute = LetsTalkRouteImport.update({
+  id: '/lets-talk',
+  path: '/lets-talk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentInsightsRoute = IdentInsightsRouteImport.update({
+  id: '/ident-insights',
+  path: '/ident-insights',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutUsRoute = AboutUsRouteImport.update({
@@ -90,12 +99,6 @@ const ProtectedRequestsIndexRoute = ProtectedRequestsIndexRouteImport.update({
   path: '/requests/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
-const ProtectedIndividualsIndexRoute =
-  ProtectedIndividualsIndexRouteImport.update({
-    id: '/individuals/',
-    path: '/individuals/',
-    getParentRoute: () => ProtectedRouteRoute,
-  } as any)
 const ProtectedDashboardIndexRoute = ProtectedDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
@@ -112,12 +115,6 @@ const ProtectedRequestsRequestIdRoute =
     path: '/requests/$requestId',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
-const ProtectedIndividualsIndividualIdRoute =
-  ProtectedIndividualsIndividualIdRouteImport.update({
-    id: '/individuals/$individualId',
-    path: '/individuals/$individualId',
-    getParentRoute: () => ProtectedRouteRoute,
-  } as any)
 const ProtectedCompaniesCompanyIdRoute =
   ProtectedCompaniesCompanyIdRouteImport.update({
     id: '/companies/$companyId',
@@ -130,12 +127,6 @@ const ProtectedRequestsPaymentFailedRequestIdRoute =
     path: '/requests/payment-failed/$requestId',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
-const ProtectedRequestsNewIndividualRoute =
-  ProtectedRequestsNewIndividualRouteImport.update({
-    id: '/requests/new/individual',
-    path: '/requests/new/individual',
-    getParentRoute: () => ProtectedRouteRoute,
-  } as any)
 const ProtectedRequestsNewCompanyRoute =
   ProtectedRequestsNewCompanyRouteImport.update({
     id: '/requests/new/company',
@@ -146,6 +137,8 @@ const ProtectedRequestsNewCompanyRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about-us': typeof AboutUsRoute
+  '/ident-insights': typeof IdentInsightsRoute
+  '/lets-talk': typeof LetsTalkRoute
   '/solutions': typeof SolutionsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/pending-verification': typeof AuthPendingVerificationRoute
@@ -154,20 +147,19 @@ export interface FileRoutesByFullPath {
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/companies/$companyId': typeof ProtectedCompaniesCompanyIdRoute
-  '/individuals/$individualId': typeof ProtectedIndividualsIndividualIdRoute
   '/requests/$requestId': typeof ProtectedRequestsRequestIdRoute
   '/companies/': typeof ProtectedCompaniesIndexRoute
   '/dashboard/': typeof ProtectedDashboardIndexRoute
-  '/individuals/': typeof ProtectedIndividualsIndexRoute
   '/requests/': typeof ProtectedRequestsIndexRoute
   '/unlocks/': typeof ProtectedUnlocksIndexRoute
   '/requests/new/company': typeof ProtectedRequestsNewCompanyRoute
-  '/requests/new/individual': typeof ProtectedRequestsNewIndividualRoute
   '/requests/payment-failed/$requestId': typeof ProtectedRequestsPaymentFailedRequestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about-us': typeof AboutUsRoute
+  '/ident-insights': typeof IdentInsightsRoute
+  '/lets-talk': typeof LetsTalkRoute
   '/solutions': typeof SolutionsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/pending-verification': typeof AuthPendingVerificationRoute
@@ -176,15 +168,12 @@ export interface FileRoutesByTo {
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/companies/$companyId': typeof ProtectedCompaniesCompanyIdRoute
-  '/individuals/$individualId': typeof ProtectedIndividualsIndividualIdRoute
   '/requests/$requestId': typeof ProtectedRequestsRequestIdRoute
   '/companies': typeof ProtectedCompaniesIndexRoute
   '/dashboard': typeof ProtectedDashboardIndexRoute
-  '/individuals': typeof ProtectedIndividualsIndexRoute
   '/requests': typeof ProtectedRequestsIndexRoute
   '/unlocks': typeof ProtectedUnlocksIndexRoute
   '/requests/new/company': typeof ProtectedRequestsNewCompanyRoute
-  '/requests/new/individual': typeof ProtectedRequestsNewIndividualRoute
   '/requests/payment-failed/$requestId': typeof ProtectedRequestsPaymentFailedRequestIdRoute
 }
 export interface FileRoutesById {
@@ -192,6 +181,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/about-us': typeof AboutUsRoute
+  '/ident-insights': typeof IdentInsightsRoute
+  '/lets-talk': typeof LetsTalkRoute
   '/solutions': typeof SolutionsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/pending-verification': typeof AuthPendingVerificationRoute
@@ -200,15 +191,12 @@ export interface FileRoutesById {
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/_protected/companies/$companyId': typeof ProtectedCompaniesCompanyIdRoute
-  '/_protected/individuals/$individualId': typeof ProtectedIndividualsIndividualIdRoute
   '/_protected/requests/$requestId': typeof ProtectedRequestsRequestIdRoute
   '/_protected/companies/': typeof ProtectedCompaniesIndexRoute
   '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
-  '/_protected/individuals/': typeof ProtectedIndividualsIndexRoute
   '/_protected/requests/': typeof ProtectedRequestsIndexRoute
   '/_protected/unlocks/': typeof ProtectedUnlocksIndexRoute
   '/_protected/requests/new/company': typeof ProtectedRequestsNewCompanyRoute
-  '/_protected/requests/new/individual': typeof ProtectedRequestsNewIndividualRoute
   '/_protected/requests/payment-failed/$requestId': typeof ProtectedRequestsPaymentFailedRequestIdRoute
 }
 export interface FileRouteTypes {
@@ -216,6 +204,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about-us'
+    | '/ident-insights'
+    | '/lets-talk'
     | '/solutions'
     | '/auth/login'
     | '/auth/pending-verification'
@@ -224,20 +214,19 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/auth/verify-email'
     | '/companies/$companyId'
-    | '/individuals/$individualId'
     | '/requests/$requestId'
     | '/companies/'
     | '/dashboard/'
-    | '/individuals/'
     | '/requests/'
     | '/unlocks/'
     | '/requests/new/company'
-    | '/requests/new/individual'
     | '/requests/payment-failed/$requestId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about-us'
+    | '/ident-insights'
+    | '/lets-talk'
     | '/solutions'
     | '/auth/login'
     | '/auth/pending-verification'
@@ -246,21 +235,20 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/auth/verify-email'
     | '/companies/$companyId'
-    | '/individuals/$individualId'
     | '/requests/$requestId'
     | '/companies'
     | '/dashboard'
-    | '/individuals'
     | '/requests'
     | '/unlocks'
     | '/requests/new/company'
-    | '/requests/new/individual'
     | '/requests/payment-failed/$requestId'
   id:
     | '__root__'
     | '/'
     | '/_protected'
     | '/about-us'
+    | '/ident-insights'
+    | '/lets-talk'
     | '/solutions'
     | '/auth/login'
     | '/auth/pending-verification'
@@ -269,15 +257,12 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/auth/verify-email'
     | '/_protected/companies/$companyId'
-    | '/_protected/individuals/$individualId'
     | '/_protected/requests/$requestId'
     | '/_protected/companies/'
     | '/_protected/dashboard/'
-    | '/_protected/individuals/'
     | '/_protected/requests/'
     | '/_protected/unlocks/'
     | '/_protected/requests/new/company'
-    | '/_protected/requests/new/individual'
     | '/_protected/requests/payment-failed/$requestId'
   fileRoutesById: FileRoutesById
 }
@@ -285,6 +270,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   AboutUsRoute: typeof AboutUsRoute
+  IdentInsightsRoute: typeof IdentInsightsRoute
+  LetsTalkRoute: typeof LetsTalkRoute
   SolutionsRoute: typeof SolutionsRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthPendingVerificationRoute: typeof AuthPendingVerificationRoute
@@ -301,6 +288,20 @@ declare module '@tanstack/react-router' {
       path: '/solutions'
       fullPath: '/solutions'
       preLoaderRoute: typeof SolutionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lets-talk': {
+      id: '/lets-talk'
+      path: '/lets-talk'
+      fullPath: '/lets-talk'
+      preLoaderRoute: typeof LetsTalkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ident-insights': {
+      id: '/ident-insights'
+      path: '/ident-insights'
+      fullPath: '/ident-insights'
+      preLoaderRoute: typeof IdentInsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about-us': {
@@ -380,13 +381,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedRequestsIndexRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
-    '/_protected/individuals/': {
-      id: '/_protected/individuals/'
-      path: '/individuals'
-      fullPath: '/individuals/'
-      preLoaderRoute: typeof ProtectedIndividualsIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
     '/_protected/dashboard/': {
       id: '/_protected/dashboard/'
       path: '/dashboard'
@@ -408,13 +402,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedRequestsRequestIdRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
-    '/_protected/individuals/$individualId': {
-      id: '/_protected/individuals/$individualId'
-      path: '/individuals/$individualId'
-      fullPath: '/individuals/$individualId'
-      preLoaderRoute: typeof ProtectedIndividualsIndividualIdRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
     '/_protected/companies/$companyId': {
       id: '/_protected/companies/$companyId'
       path: '/companies/$companyId'
@@ -429,13 +416,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedRequestsPaymentFailedRequestIdRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
-    '/_protected/requests/new/individual': {
-      id: '/_protected/requests/new/individual'
-      path: '/requests/new/individual'
-      fullPath: '/requests/new/individual'
-      preLoaderRoute: typeof ProtectedRequestsNewIndividualRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
     '/_protected/requests/new/company': {
       id: '/_protected/requests/new/company'
       path: '/requests/new/company'
@@ -448,29 +428,23 @@ declare module '@tanstack/react-router' {
 
 interface ProtectedRouteRouteChildren {
   ProtectedCompaniesCompanyIdRoute: typeof ProtectedCompaniesCompanyIdRoute
-  ProtectedIndividualsIndividualIdRoute: typeof ProtectedIndividualsIndividualIdRoute
   ProtectedRequestsRequestIdRoute: typeof ProtectedRequestsRequestIdRoute
   ProtectedCompaniesIndexRoute: typeof ProtectedCompaniesIndexRoute
   ProtectedDashboardIndexRoute: typeof ProtectedDashboardIndexRoute
-  ProtectedIndividualsIndexRoute: typeof ProtectedIndividualsIndexRoute
   ProtectedRequestsIndexRoute: typeof ProtectedRequestsIndexRoute
   ProtectedUnlocksIndexRoute: typeof ProtectedUnlocksIndexRoute
   ProtectedRequestsNewCompanyRoute: typeof ProtectedRequestsNewCompanyRoute
-  ProtectedRequestsNewIndividualRoute: typeof ProtectedRequestsNewIndividualRoute
   ProtectedRequestsPaymentFailedRequestIdRoute: typeof ProtectedRequestsPaymentFailedRequestIdRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedCompaniesCompanyIdRoute: ProtectedCompaniesCompanyIdRoute,
-  ProtectedIndividualsIndividualIdRoute: ProtectedIndividualsIndividualIdRoute,
   ProtectedRequestsRequestIdRoute: ProtectedRequestsRequestIdRoute,
   ProtectedCompaniesIndexRoute: ProtectedCompaniesIndexRoute,
   ProtectedDashboardIndexRoute: ProtectedDashboardIndexRoute,
-  ProtectedIndividualsIndexRoute: ProtectedIndividualsIndexRoute,
   ProtectedRequestsIndexRoute: ProtectedRequestsIndexRoute,
   ProtectedUnlocksIndexRoute: ProtectedUnlocksIndexRoute,
   ProtectedRequestsNewCompanyRoute: ProtectedRequestsNewCompanyRoute,
-  ProtectedRequestsNewIndividualRoute: ProtectedRequestsNewIndividualRoute,
   ProtectedRequestsPaymentFailedRequestIdRoute:
     ProtectedRequestsPaymentFailedRequestIdRoute,
 }
@@ -483,6 +457,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   AboutUsRoute: AboutUsRoute,
+  IdentInsightsRoute: IdentInsightsRoute,
+  LetsTalkRoute: LetsTalkRoute,
   SolutionsRoute: SolutionsRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthPendingVerificationRoute: AuthPendingVerificationRoute,

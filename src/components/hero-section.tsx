@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { ArrowRight, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
@@ -28,21 +28,10 @@ export function HeroSection() {
         data-testid="text-hero-subtitle"
       >
         The unified platform for MENA-focused third-party risk management.
-        Request high-fidelity reports for individuals and companies with rapid
-        evaluation.
+        Request high-fidelity reports for companies with rapid evaluation.
       </p>
 
       <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-        <Link
-          to="/individuals"
-          data-testid="hero-cta-primary"
-          className="w-full sm:w-auto"
-        >
-          <Button size="lg" className="w-full sm:w-50">
-            Search Individual
-            <ArrowRight />
-          </Button>
-        </Link>
         <Link
           to="/companies"
           data-testid="hero-cta-secondary"

@@ -27,14 +27,6 @@ export function buildRequestDetailSubjects(
       reports: Array<RequestDetailReportRow>
     }
   >()
-  const individualMap = new Map<
-    number,
-    {
-      name: string
-      nationality: string
-      reports: Array<RequestDetailReportRow>
-    }
-  >()
 
   for (const rr of requestReports) {
     const price = rr.report.price ?? rr.report.estimatedPrice ?? 0
@@ -49,7 +41,7 @@ export function buildRequestDetailSubjects(
 
     if (rr.companyId != null && rr.company != null) {
       const existing = companyMap.get(rr.companyId)
-      const name = rr.company.nameAr ?? rr.company.nameEn
+      const name = rr.company.companyNameAr ?? rr.company.companyNameEn
       const nationality = rr.company.country
         ? String(rr.company.country.nameEn)
         : '—'
@@ -74,32 +66,6 @@ export function buildRequestDetailSubjects(
       }
     }
 
-    if (rr.individualId != null && rr.individual != null) {
-      const existing = individualMap.get(rr.individualId)
-      const name =
-        rr.individual.nameEn?.trim() || rr.individual.nameAr
-      const nationality =
-        rr.individual.country?.nameEn ?? rr.individual.countryCode ?? '—'
-      if (existing) {
-        const idx = existing.reports.findIndex(
-          (r) => r.id === reportWithUploads.id,
-        )
-        if (idx >= 0) {
-          const existingReport = existing.reports[idx] as RequestDetailReportRow
-          if (!existingReport.upload && reportWithUploads.upload) {
-            existingReport.upload = reportWithUploads.upload
-          }
-        } else {
-          existing.reports.push(reportWithUploads)
-        }
-      } else {
-        individualMap.set(rr.individualId, {
-          name,
-          nationality,
-          reports: [reportWithUploads],
-        })
-      }
-    }
   }
 
   const companySubjects: Array<RequestDetailSubjectItem> = Array.from(
@@ -111,15 +77,5 @@ export function buildRequestDetailSubjects(
     nationality,
     reports,
   }))
-  const individualSubjects: Array<RequestDetailSubjectItem> = Array.from(
-    individualMap.entries(),
-  ).map(([individualId, { name, nationality, reports }]) => ({
-    id: `individual-${individualId}`,
-    name,
-    type: 'Individual' as const,
-    nationality,
-    reports,
-  }))
-
-  return [...companySubjects, ...individualSubjects]
+  return companySubjects
 }

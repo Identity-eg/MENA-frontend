@@ -5,7 +5,6 @@ import { useCreateRequest } from '@/apis/requests/create-request'
 
 type RequestScreeningPackageButtonProps = {
   companyId?: number
-  individualId?: number
   selectedReportIds: Array<number>
   disabled?: boolean
   className?: string
@@ -13,7 +12,6 @@ type RequestScreeningPackageButtonProps = {
 
 export function RequestScreeningPackageButton({
   companyId,
-  individualId,
   selectedReportIds,
   disabled = false,
   className,
@@ -27,9 +25,6 @@ export function RequestScreeningPackageButton({
       {
         companiesReports: companyId
           ? [{ companyId, reportIds: selectedReportIds }]
-          : undefined,
-        individualsReports: individualId
-          ? [{ individualId, reportIds: selectedReportIds }]
           : undefined,
       },
       {

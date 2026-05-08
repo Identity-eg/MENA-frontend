@@ -10,14 +10,14 @@ import type { TCompany } from '@/types/company'
 
 type CompanyDetailSidebarProps = Pick<
   TCompany,
-  'country' | 'industry' | 'legalForm'
+  'country' | 'activityName' | 'legalForm'
 > & {
   lockedFieldCount: number
 }
 
 export const CompanyDetailSidebar = memo(function CompanyDetailSidebar({
   country,
-  industry,
+  activityName,
   legalForm,
   lockedFieldCount,
 }: CompanyDetailSidebarProps) {
@@ -34,8 +34,8 @@ export const CompanyDetailSidebar = memo(function CompanyDetailSidebar({
           </div>
           <Separator />
           <div className="flex justify-between py-3 text-sm">
-            <span className="text-muted-foreground">Industry</span>
-            <span className="font-medium text-right">{industry}</span>
+            <span className="text-muted-foreground">Activity</span>
+            <span className="font-medium text-right">{activityName}</span>
           </div>
           {legalForm && (
             <>

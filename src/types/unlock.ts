@@ -10,8 +10,8 @@ export type TUnlock = {
   lockedField: {
     company: {
       id: number
-      nameEn: string
-      nameAr: string | null
+      companyNameEn: string
+      companyNameAr: string | null
     }
     lockedType: {
       id: number

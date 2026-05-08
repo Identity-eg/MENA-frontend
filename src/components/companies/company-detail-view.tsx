@@ -44,8 +44,10 @@ export function CompanyDetailView() {
     totalUnlockPrice,
     partnersRaw,
     managersRaw,
+    authSignatoriesRaw,
     partnersIsList,
     managersIsList,
+    authSignatoriesIsList,
     showPartnersManagersCard,
   } = useCompanyDetailDerived(company)
 
@@ -111,14 +113,14 @@ export function CompanyDetailView() {
 
   return (
     <div className="space-y-6 pb-12">
-      <CompanyDetailBreadcrumb nameEn={company.nameEn} />
+      <CompanyDetailBreadcrumb companyNameEn={company.companyNameEn ?? '—'} />
 
       {showUnlockSuccessBanner && <CompanyDetailUnlockSuccessBanner />}
 
       <CompanyDetailHero
-        nameEn={company.nameEn}
-        nameAr={company.nameAr}
-        industry={company.industry}
+        companyNameEn={company.companyNameEn}
+        companyNameAr={company.companyNameAr}
+        activityName={company.activityName}
         country={company.country}
       />
 
@@ -136,16 +138,19 @@ export function CompanyDetailView() {
 
           <CompanyDetailUnlockedFieldsCard fields={purchasedUnlockFields} />
 
-          <CompanyDetailProfileCard publicFields={publicFields} />
+          <CompanyDetailProfileCard publicFields={publicFields}>
+            {showPartnersManagersCard && (
+              <CompanyDetailPartnersManagersCard
+                partnersRaw={partnersRaw}
+                managersRaw={managersRaw}
+                authSignatoriesRaw={authSignatoriesRaw}
+                partnersIsList={partnersIsList}
+                managersIsList={managersIsList}
+                authSignatoriesIsList={authSignatoriesIsList}
+              />
+            )}
+          </CompanyDetailProfileCard>
 
-          {showPartnersManagersCard && (
-            <CompanyDetailPartnersManagersCard
-              partnersRaw={partnersRaw}
-              managersRaw={managersRaw}
-              partnersIsList={partnersIsList}
-              managersIsList={managersIsList}
-            />
-          )}
 
           <CompanyDetailComplianceCard
             companyId={id}
@@ -157,7 +162,7 @@ export function CompanyDetailView() {
 
         <CompanyDetailSidebar
           country={company.country}
-          industry={company.industry}
+          activityName={company.activityName}
           legalForm={company.legalForm}
           lockedFieldCount={lockedFields.length}
         />

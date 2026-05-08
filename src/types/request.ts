@@ -1,5 +1,4 @@
 import type { ValueOf } from './value-of'
-import type { TIndividual } from './individual'
 import type { TCompany } from './company'
 import type { TReport } from './report'
 
@@ -28,8 +27,8 @@ export type RequestReportStatusValue = ValueOf<typeof REQUEST_REPORT_STATUS>
 /** Minimal company shape in request list/detail */
 export type TRequestCompany = {
   id: number
-  nameEn: string
-  nameAr: string | null
+  companyNameEn: string
+  companyNameAr: string | null
   /** Present in GET /api/requests/:id response */
   country?: { code: string; nameEn: string; nameAr: string }
 }
@@ -40,16 +39,8 @@ export type CreateRequestCompanyItem = {
   reportIds: Array<number>
 }
 
-/** Per-individual report selection when creating a request (backend uses individualId + reportIds) */
-export type CreateRequestIndividualItem = {
-  individualId: number
-  reportIds: Array<number>
-}
-
-/** Payload for creating a request (per-company and per-individual report selection) */
 export type CreateCompanyRequestPayload = {
   companiesReports?: Array<CreateRequestCompanyItem>
-  individualsReports?: Array<CreateRequestIndividualItem>
 }
 
 /** Report shape as included in request list/detail (backend sends price = estimatedPrice) */
@@ -82,24 +73,6 @@ export type RequestCompanyReportItem = {
   upload?: RequestCompanyReportUploadItem | null
 }
 
-/** Upload for an individual report (from GET request by id) */
-export type RequestIndividualReportUploadItem = {
-  id: number
-  fileUrl: string
-  fileName: string | null
-  /** Full URL to download the file (from backend) */
-  downloadUrl?: string
-}
-
-/** Junction: which report is requested for which individual (aligned with RequestIndividualReport) */
-export type RequestIndividualReportItem = {
-  requestId: number
-  individualId: number
-  reportId: number
-  individual: TIndividual
-  report: RequestReport & { price: number }
-  upload?: RequestIndividualReportUploadItem | null
-}
 
 /** Upload for a request report (company or individual); backend model: RequestReportUpload */
 export type RequestReportUploadItem = {
@@ -115,11 +88,9 @@ export type RequestReportItem = {
   requestId: number
   reportId: number
   companyId?: number | null
-  individualId?: number | null
   status?: RequestReportStatusValue
   finalPrice?: number | null
   company?: TRequestCompany | null
-  individual?: TIndividual | null
   report: RequestReport & { price?: number; estimatedPrice?: number }
   upload?: RequestReportUploadItem | null
 }
@@ -147,8 +118,6 @@ export type TRequest = {
   requestReports?: Array<RequestReportItem>
   /** Optional: derived companies (GET /api/requests list adds these) */
   companies?: Array<TCompany | TRequestCompany>
-  /** Optional: derived individuals (derive from requestReports when absent) */
-  individuals?: Array<TIndividual>
   /** Optional: derived reports (GET /api/requests list adds these) */
   reports?: Array<TReport>
 }

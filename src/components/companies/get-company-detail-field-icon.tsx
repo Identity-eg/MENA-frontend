@@ -23,7 +23,10 @@ export function getCompanyDetailFieldIcon(key: string): LucideIcon {
       return Users
     case 'managers':
       return Briefcase
+    case 'authSignatories':
+      return Users
     default:
       return Lock
+
   }
 }

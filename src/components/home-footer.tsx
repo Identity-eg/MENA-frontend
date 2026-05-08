@@ -1,4 +1,5 @@
 import { ShieldCheck } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
 
 export function HomeFooter() {
   return (
@@ -11,15 +12,21 @@ export function HomeFooter() {
           </span>
         </div>
         <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-xs font-medium text-muted-foreground">
-          <a href="#" className="hover:text-primary transition-colors">
-            Privacy Policy
-          </a>
-          <a href="#" className="hover:text-primary transition-colors">
-            Service Terms
-          </a>
-          <a href="#" className="hover:text-primary transition-colors">
-            Contact Support
-          </a>
+          <Link to="/about-us" className="hover:text-primary transition-colors">
+            About Us
+          </Link>
+          <Link to="/solutions" className="hover:text-primary transition-colors">
+            Solutions
+          </Link>
+          <Link to="/ident-insights" className="hover:text-primary transition-colors">
+            Ident Insights
+          </Link>
+          <Link to="/lets-talk" className="hover:text-primary transition-colors">
+            Let's Talk
+          </Link>
+          <Link to="/auth/login" className="hover:text-primary transition-colors">
+            Login
+          </Link>
         </div>
         <div className="text-[10px] font-bold text-muted-foreground/40 uppercase">
           &copy; 2026 Compliance Intelligence Platform

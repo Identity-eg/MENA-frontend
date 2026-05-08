@@ -9,6 +9,8 @@ const navLinks = [
   { to: '/' as const, label: 'Home' },
   { to: '/about-us' as const, label: 'About Us' },
   { to: '/solutions' as const, label: 'Solutions' },
+  { to: '/ident-insights' as const, label: 'Ident Insights' },
+  { to: '/lets-talk' as const, label: "Let's Talk" },
 ]
 
 export function HomeHeader({ user }: { user?: TUser | null }) {

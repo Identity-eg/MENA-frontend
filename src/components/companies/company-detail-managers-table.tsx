@@ -1,10 +1,10 @@
 import { memo } from 'react'
-import type { TCompanyManager } from '@/types/company'
+import type { TManager } from '@/types/company'
 
 export const CompanyDetailManagersTable = memo(function CompanyDetailManagersTable({
   rows,
 }: {
-  rows: TCompanyManager[]
+  rows: TManager[]
 }) {
   if (rows.length === 0) {
     return (
@@ -21,9 +21,12 @@ export const CompanyDetailManagersTable = memo(function CompanyDetailManagersTab
             <th className="px-3 py-2.5">Name (EN)</th>
             <th className="px-3 py-2.5">Name (AR)</th>
             <th className="px-3 py-2.5">ID number</th>
-            <th className="px-3 py-2.5">Position</th>
-            <th className="px-3 py-2.5">Authority</th>
-            <th className="px-3 py-2.5">Nationality</th>
+            <th className="px-3 py-2.5">Position (EN)</th>
+            <th className="px-3 py-2.5">Position (AR)</th>
+            <th className="px-3 py-2.5">Role (EN)</th>
+            <th className="px-3 py-2.5">Role (AR)</th>
+            <th className="px-3 py-2.5">Nationality (EN)</th>
+            <th className="px-3 py-2.5">Nationality (AR)</th>
           </tr>
         </thead>
         <tbody>
@@ -34,10 +37,13 @@ export const CompanyDetailManagersTable = memo(function CompanyDetailManagersTab
             >
               <td className="px-3 py-2.5">{m.nameEn ?? '—'}</td>
               <td className="px-3 py-2.5">{m.nameAr}</td>
-              <td className="px-3 py-2.5 font-mono text-xs">{m.idNumber}</td>
-              <td className="px-3 py-2.5">{m.position ?? '—'}</td>
-              <td className="px-3 py-2.5">{m.authority ?? '—'}</td>
-              <td className="px-3 py-2.5">{m.nationality ?? '—'}</td>
+              <td className="px-3 py-2.5 font-mono text-xs">{m.idNumber ?? '—'}</td>
+              <td className="px-3 py-2.5">{m.positionEn ?? '—'}</td>
+              <td className="px-3 py-2.5">{m.positionAr ?? '—'}</td>
+              <td className="px-3 py-2.5">{m.roleEn ?? '—'}</td>
+              <td className="px-3 py-2.5">{m.roleAr ?? '—'}</td>
+              <td className="px-3 py-2.5">{m.nationalityEn ?? '—'}</td>
+              <td className="px-3 py-2.5">{m.nationalityAr ?? '—'}</td>
             </tr>
           ))}
         </tbody>

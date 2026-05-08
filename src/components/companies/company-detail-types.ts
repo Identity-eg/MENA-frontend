@@ -1,5 +1,5 @@
 export type CompanyProfileFieldRow = {
   key: string
   label: string
-  value: string | null
+  value: string | null | undefined
 }

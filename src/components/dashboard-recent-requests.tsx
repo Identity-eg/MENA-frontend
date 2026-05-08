@@ -2,7 +2,6 @@ import { Link } from '@tanstack/react-router'
 import { Eye } from 'lucide-react'
 import { useGetRequests } from '@/apis/requests/get-requests'
 import type { TRequest } from '@/types/request'
-import { displayIndividualName } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -21,7 +20,9 @@ const RECENT_LIMIT = 5
 function getCompanyNames(req: TRequest): string[] {
   if (req.companies?.length) {
     return req.companies.map((c) =>
-      c.nameAr ? `${c.nameEn} (${c.nameAr})` : c.nameEn,
+      c.companyNameAr
+        ? `${c.companyNameEn ?? '—'} (${c.companyNameAr})`
+        : (c.companyNameEn ?? '—'),
     )
   }
   const seen = new Set<number>()
@@ -33,27 +34,13 @@ function getCompanyNames(req: TRequest): string[] {
       seen.add(c.id)
       return true
     })
-    .map((c) => (c.nameAr ? `${c.nameEn} (${c.nameAr})` : c.nameEn))
+    .map((c) =>
+      c.companyNameAr
+        ? `${c.companyNameEn ?? '—'} (${c.companyNameAr})`
+        : (c.companyNameEn ?? '—'),
+    )
 }
 
-/** Derive individual count from requestReports when individuals not present */
-function getIndividualNames(req: TRequest): string[] {
-  if (req.individuals?.length) {
-    return req.individuals.map((i) => displayIndividualName(i))
-  }
-
-  const seen = new Set<number>()
-  const names: string[] = []
-
-  for (const rr of req.requestReports ?? []) {
-    if (rr.individualId == null || rr.individual == null) continue
-    if (seen.has(rr.individualId)) continue
-    seen.add(rr.individualId)
-    names.push(displayIndividualName(rr.individual))
-  }
-
-  return names
-}
 
 function formatRequestId(id: number) {
   return `REQ-${String(id).padStart(6, '0')}`
@@ -108,8 +95,6 @@ export function DashboardRecentRequests() {
                   </TableCell>
                   <TableCell>
                     {getCompanyNames(req).join(', ')}
-                    {getIndividualNames(req).length > 0 &&
-                      getIndividualNames(req).join(', ')}
                   </TableCell>
                   <TableCell>
                     <StatusPill status={req.status} />
