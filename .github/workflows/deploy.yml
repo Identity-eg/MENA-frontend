@@ -96,19 +96,22 @@ jobs:
                 docker compose pull frontend
                 docker compose up -d --force-recreate --no-deps frontend
 
-                echo '✔ Frontend pulled with tag: $FRONTEND_TAG'
+                echo \"✔ Frontend pulled with tag: \$FRONTEND_TAG\"
 
-                echo '▶ Waiting for health check...'
-                for i in \$(seq 1 12); do
-                  if docker compose exec -T frontend wget -qO- http://localhost:3000/ > /dev/null 2>&1; then
-                    echo '✔ Frontend health check passed'
+                echo '▶ Waiting for Docker health check...'
+                for i in \$(seq 1 24); do
+                  STATUS=\$(docker inspect --format='{{.State.Health.Status}}' mena-frontend 2>/dev/null || echo \"starting\")
+                  if [ \"\$STATUS\" = \"healthy\" ]; then
+                    echo \"✔ Container healthy after \$((i*5))s\"
                     break
                   fi
-                  if [ \"\$i\" -eq 12 ]; then
-                    echo '✗ Frontend health check failed'
+                  if [ \"\$i\" -eq 24 ]; then
+                    echo \"✗ Container not healthy after 120s (status: \$STATUS)\"
+                    echo '--- Last 50 lines of frontend logs ---'
+                    docker compose logs --tail=50 frontend
                     exit 1
                   fi
-                  echo \"  attempt \$i/12 – waiting...\"
+                  echo \"  attempt \$i/24 – status: \$STATUS\"
                   sleep 5
                 done
 
