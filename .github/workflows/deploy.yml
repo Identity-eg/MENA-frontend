@@ -71,8 +71,7 @@ jobs:
 
       - name: Set up SSH key
         run: |
-          # EC2_SSH_KEY must be base64-encoded: base64 -w 0 your-key.pem
-          echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > /tmp/ec2-key.pem
+          echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ec2-key.pem
           chmod 600 /tmp/ec2-key.pem
 
       - name: Deploy to EC2
@@ -95,11 +94,25 @@ jobs:
                 export FRONTEND_TAG=$IMAGE_TAG
 
                 docker compose pull frontend
-                docker compose up -d --no-build --no-deps frontend
+                docker compose up -d --force-recreate --no-deps frontend
+
+                echo '✔ Frontend pulled with tag: $FRONTEND_TAG'
+
+                echo '▶ Waiting for health check...'
+                for i in \$(seq 1 12); do
+                  if docker compose exec -T frontend wget -qO- http://localhost:3000/ > /dev/null 2>&1; then
+                    echo '✔ Frontend health check passed'
+                    break
+                  fi
+                  if [ \"\$i\" -eq 12 ]; then
+                    echo '✗ Frontend health check failed'
+                    exit 1
+                  fi
+                  echo \"  attempt \$i/12 – waiting...\"
+                  sleep 5
+                done
 
                 docker image prune -a -f
-
-                echo '✔ Frontend deployed: $IMAGE_TAG'
               "
 
       - name: Clean up SSH key
