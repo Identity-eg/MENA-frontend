@@ -41,7 +41,15 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Compliance Requests | Third-Party Risk & Compliance' },
+      {
+        title:
+          'Ident-ity | Source-Verified Business Intelligence Across MENA',
+      },
+      {
+        name: 'description',
+        content:
+          'On-demand corporate verification, retrieval, and due diligence across 10 MENA jurisdictions and 5M+ companies.',
+      },
     ],
     links: [{ rel: 'stylesheet', href: appCss }],
   }),
