@@ -143,7 +143,7 @@ function RouteComponent() {
         </CardContent>
         <CardFooter className="flex items-center w-full justify-center gap-2 text-[10px] font-bold text-muted-foreground/60 mx-auto border-t">
           <ShieldCheck className="size-3" />
-          CompliancePortal Secure Entry
+          Ident-ity Secure Entry
         </CardFooter>
       </Card>
     </div>

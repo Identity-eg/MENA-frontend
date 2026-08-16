@@ -3,7 +3,6 @@ import {
   FileText,
   LayoutDashboard,
   LogOut,
-  ShieldCheck,
   Unlock,
   Users,
   X,
@@ -11,6 +10,7 @@ import {
 
 import { Link } from '@tanstack/react-router'
 import { Button } from '../ui/button'
+import { Logo } from '../brand/logo'
 import { useLogout } from '@/hooks/use-logout'
 
 const items = [
@@ -33,8 +33,7 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center justify-between border-b px-6">
         <div className="flex items-center gap-3">
-          <ShieldCheck className="size-6 text-primary" />
-          <span className="font-semibold tracking-tight">CompliancePortal</span>
+          <Logo size="sm" />
         </div>
         {/* Close button — only visible on mobile */}
         <Button

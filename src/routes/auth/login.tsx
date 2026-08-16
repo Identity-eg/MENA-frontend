@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { ArrowRight, Loader2, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Loader2 } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { FullPageLoading } from '@/components/ui/full-page-loading'
@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Logo } from '@/components/brand/logo'
 import { useLogin } from '@/apis/auth/login'
 
 export const Route = createFileRoute('/auth/login')({
@@ -19,18 +20,15 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background grid place-items-center p-6 relative">
       <div className="w-full max-w-sm space-y-6 relative z-10">
-        <div className="flex flex-col items-center gap-2 text-center">
-          <Link
-            className="rounded-xl border bg-card p-3 hover:border-primary/30 transition-all"
-            to="/"
-          >
-            <ShieldCheck className="h-6 w-6 text-primary" />
+        <div className="flex flex-col items-center gap-3 text-center">
+          <Link to="/">
+            <Logo size="lg" />
           </Link>
           <h1 className="text-2xl font-semibold tracking-tight">
             Welcome Back
           </h1>
           <p className="text-sm text-muted-foreground">
-            Access your compliance intelligence portal
+            Access your Ident-ity account
           </p>
         </div>
 

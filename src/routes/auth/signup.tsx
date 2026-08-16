@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { ArrowRight, Loader2, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Loader2 } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { FullPageLoading } from '@/components/ui/full-page-loading'
@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Logo } from '@/components/brand/logo'
 import { useRegister } from '@/apis/auth/register'
 
 export const Route = createFileRoute('/auth/signup')({
@@ -66,18 +67,15 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-background grid place-items-center p-6 relative">
       <Card className="w-full max-w-md relative z-10">
-        <CardHeader className="flex flex-col py-6 items-center">
-          <Link
-            className="rounded-xl border bg-card p-3 mb-2 hover:border-primary/30 transition-all w-fit"
-            to="/"
-          >
-            <ShieldCheck className="h-6 w-6 text-primary" />
+        <CardHeader className="flex flex-col py-6 items-center gap-2">
+          <Link to="/" className="mb-1">
+            <Logo size="lg" />
           </Link>
           <CardTitle className="text-2xl font-semibold">
             Create Account
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Apply for access to the CompliancePortal.
+            Apply for access to Ident-ity.
           </p>
         </CardHeader>
         <CardContent>

@@ -9,9 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
 import { Route as SolutionsRouteImport } from './routes/solutions'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as PortalRouteImport } from './routes/portal'
 import { Route as LetsTalkRouteImport } from './routes/lets-talk'
 import { Route as IdentInsightsRouteImport } from './routes/ident-insights'
+import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
 import { Route as AboutUsRouteImport } from './routes/about-us'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -30,9 +34,24 @@ import { Route as ProtectedCompaniesCompanyIdRouteImport } from './routes/_prote
 import { Route as ProtectedRequestsPaymentFailedRequestIdRouteImport } from './routes/_protected/requests/payment-failed.$requestId'
 import { Route as ProtectedRequestsNewCompanyRouteImport } from './routes/_protected/requests/new.company'
 
+const TermsOfServiceRoute = TermsOfServiceRouteImport.update({
+  id: '/terms-of-service',
+  path: '/terms-of-service',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SolutionsRoute = SolutionsRouteImport.update({
   id: '/solutions',
   path: '/solutions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalRoute = PortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LetsTalkRoute = LetsTalkRouteImport.update({
@@ -43,6 +62,11 @@ const LetsTalkRoute = LetsTalkRouteImport.update({
 const IdentInsightsRoute = IdentInsightsRouteImport.update({
   id: '/ident-insights',
   path: '/ident-insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiePolicyRoute = CookiePolicyRouteImport.update({
+  id: '/cookie-policy',
+  path: '/cookie-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutUsRoute = AboutUsRouteImport.update({
@@ -137,9 +161,13 @@ const ProtectedRequestsNewCompanyRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about-us': typeof AboutUsRoute
+  '/cookie-policy': typeof CookiePolicyRoute
   '/ident-insights': typeof IdentInsightsRoute
   '/lets-talk': typeof LetsTalkRoute
+  '/portal': typeof PortalRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/solutions': typeof SolutionsRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/pending-verification': typeof AuthPendingVerificationRoute
   '/auth/reset': typeof AuthResetRoute
@@ -158,9 +186,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about-us': typeof AboutUsRoute
+  '/cookie-policy': typeof CookiePolicyRoute
   '/ident-insights': typeof IdentInsightsRoute
   '/lets-talk': typeof LetsTalkRoute
+  '/portal': typeof PortalRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/solutions': typeof SolutionsRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/pending-verification': typeof AuthPendingVerificationRoute
   '/auth/reset': typeof AuthResetRoute
@@ -181,9 +213,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/about-us': typeof AboutUsRoute
+  '/cookie-policy': typeof CookiePolicyRoute
   '/ident-insights': typeof IdentInsightsRoute
   '/lets-talk': typeof LetsTalkRoute
+  '/portal': typeof PortalRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/solutions': typeof SolutionsRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/pending-verification': typeof AuthPendingVerificationRoute
   '/auth/reset': typeof AuthResetRoute
@@ -204,9 +240,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about-us'
+    | '/cookie-policy'
     | '/ident-insights'
     | '/lets-talk'
+    | '/portal'
+    | '/privacy-policy'
     | '/solutions'
+    | '/terms-of-service'
     | '/auth/login'
     | '/auth/pending-verification'
     | '/auth/reset'
@@ -225,9 +265,13 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about-us'
+    | '/cookie-policy'
     | '/ident-insights'
     | '/lets-talk'
+    | '/portal'
+    | '/privacy-policy'
     | '/solutions'
+    | '/terms-of-service'
     | '/auth/login'
     | '/auth/pending-verification'
     | '/auth/reset'
@@ -247,9 +291,13 @@ export interface FileRouteTypes {
     | '/'
     | '/_protected'
     | '/about-us'
+    | '/cookie-policy'
     | '/ident-insights'
     | '/lets-talk'
+    | '/portal'
+    | '/privacy-policy'
     | '/solutions'
+    | '/terms-of-service'
     | '/auth/login'
     | '/auth/pending-verification'
     | '/auth/reset'
@@ -270,9 +318,13 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   AboutUsRoute: typeof AboutUsRoute
+  CookiePolicyRoute: typeof CookiePolicyRoute
   IdentInsightsRoute: typeof IdentInsightsRoute
   LetsTalkRoute: typeof LetsTalkRoute
+  PortalRoute: typeof PortalRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   SolutionsRoute: typeof SolutionsRoute
+  TermsOfServiceRoute: typeof TermsOfServiceRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthPendingVerificationRoute: typeof AuthPendingVerificationRoute
   AuthResetRoute: typeof AuthResetRoute
@@ -283,11 +335,32 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms-of-service': {
+      id: '/terms-of-service'
+      path: '/terms-of-service'
+      fullPath: '/terms-of-service'
+      preLoaderRoute: typeof TermsOfServiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/solutions': {
       id: '/solutions'
       path: '/solutions'
       fullPath: '/solutions'
       preLoaderRoute: typeof SolutionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal': {
+      id: '/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof PortalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lets-talk': {
@@ -302,6 +375,13 @@ declare module '@tanstack/react-router' {
       path: '/ident-insights'
       fullPath: '/ident-insights'
       preLoaderRoute: typeof IdentInsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookie-policy': {
+      id: '/cookie-policy'
+      path: '/cookie-policy'
+      fullPath: '/cookie-policy'
+      preLoaderRoute: typeof CookiePolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about-us': {
@@ -457,9 +537,13 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   AboutUsRoute: AboutUsRoute,
+  CookiePolicyRoute: CookiePolicyRoute,
   IdentInsightsRoute: IdentInsightsRoute,
   LetsTalkRoute: LetsTalkRoute,
+  PortalRoute: PortalRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   SolutionsRoute: SolutionsRoute,
+  TermsOfServiceRoute: TermsOfServiceRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthPendingVerificationRoute: AuthPendingVerificationRoute,
   AuthResetRoute: AuthResetRoute,

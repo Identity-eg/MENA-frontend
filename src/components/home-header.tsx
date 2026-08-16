@@ -1,41 +1,28 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ShieldCheck, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { Button } from './ui/button'
-import type { TUser } from '@/types/user'
+import { Logo } from './brand/logo'
 import { UserNav } from './layout/user-nav'
+import type { TUser } from '@/types/user'
 
 const navLinks = [
   { to: '/' as const, label: 'Home' },
-  { to: '/about-us' as const, label: 'About Us' },
+  { to: '/about-us' as const, label: 'About' },
   { to: '/solutions' as const, label: 'Solutions' },
-  { to: '/ident-insights' as const, label: 'Ident Insights' },
-  { to: '/lets-talk' as const, label: "Let's Talk" },
+  { to: '/lets-talk' as const, label: 'Contact' },
+  { to: '/portal' as const, label: 'Portal' },
 ]
 
 export function HomeHeader({ user }: { user?: TUser | null }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <header className="relative border-b bg-background/60 backdrop-blur-md">
+    <header className="relative border-b bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
-        {/* Brand */}
-        <div className="flex items-center gap-3" data-testid="brand-home">
-          <div className="grid h-10 w-10 place-items-center rounded-xl border bg-card">
-            <ShieldCheck className="h-5 w-5 text-primary" />
-          </div>
-          <div className="leading-tight">
-            <div
-              className="text-sm font-bold tracking-tight"
-              data-testid="text-brand-title"
-            >
-              CompliancePortal
-            </div>
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-              Third-Party Risk
-            </div>
-          </div>
-        </div>
+        <Link to="/" data-testid="brand-home" className="shrink-0">
+          <Logo size="md" />
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
@@ -56,16 +43,14 @@ export function HomeHeader({ user }: { user?: TUser | null }) {
             </div>
           ) : (
             <nav className="hidden sm:flex items-center gap-2">
-              <Button variant="ghost" size="sm">
-                <Link to="/auth/login" data-testid="link-login">
+              <Link to="/auth/login" data-testid="link-login">
+                <Button variant="ghost" size="sm">
                   Login
-                </Link>
-              </Button>
-              <Button size="sm">
-                <Link to="/auth/signup" data-testid="link-signup">
-                  Get Started
-                </Link>
-              </Button>
+                </Button>
+              </Link>
+              <Link to="/lets-talk" data-testid="link-contact-cta">
+                <Button size="sm">Request a Report</Button>
+              </Link>
             </nav>
           )}
 
@@ -128,12 +113,12 @@ export function HomeHeader({ user }: { user?: TUser | null }) {
                   </Button>
                 </Link>
                 <Link
-                  to="/auth/signup"
+                  to="/lets-talk"
                   onClick={() => setMobileOpen(false)}
-                  data-testid="link-signup-mobile"
+                  data-testid="link-contact-cta-mobile"
                 >
                   <Button size="sm" className="w-full">
-                    Get Started
+                    Request a Report
                   </Button>
                 </Link>
               </div>
