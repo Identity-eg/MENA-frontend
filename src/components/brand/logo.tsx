@@ -34,14 +34,14 @@ export function Logo({
       <span
         aria-hidden
         className={cn(
-          'grid shrink-0 place-items-center rounded-lg bg-brand-navy font-black text-brand-cyan',
+          'grid shrink-0 place-items-center rounded-lg bg-brand-navy text-brand-cyan',
           s.mark,
         )}
       >
-        <span className="relative">
-          i
-          <span className="absolute -top-[0.15em] left-1/2 size-[0.16em] -translate-x-1/2 rounded-full bg-brand-cyan" />
-        </span>
+        <svg viewBox="0 0 24 24" fill="currentColor" className="h-[55%] w-[55%]">
+          <rect x="10.69" y="10.13" width="2.63" height="9" rx="1.31" />
+          <circle cx="12" cy="6.19" r="2.06" />
+        </svg>
       </span>
       <span
         className={cn(

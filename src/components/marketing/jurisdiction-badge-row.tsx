@@ -1,3 +1,4 @@
+import { Flag } from '@/components/marketing/flag'
 import { jurisdictions } from '@/lib/jurisdictions'
 import { cn } from '@/lib/utils'
 
@@ -14,7 +15,7 @@ export function JurisdictionBadgeRow({ className }: { className?: string }) {
           key={j.code}
           className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-3 py-1.5 text-sm font-medium text-brand-navy"
         >
-          <span aria-hidden>{j.flag}</span>
+          <Flag code={j.code} />
           {j.name}
         </span>
       ))}

@@ -9,64 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
-import { Route as SolutionsRouteImport } from './routes/solutions'
-import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
-import { Route as PortalRouteImport } from './routes/portal'
-import { Route as LetsTalkRouteImport } from './routes/lets-talk'
-import { Route as IdentInsightsRouteImport } from './routes/ident-insights'
-import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
-import { Route as AboutUsRouteImport } from './routes/about-us'
-import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
-import { Route as AuthSignupRouteImport } from './routes/auth/signup'
-import { Route as AuthSetupPasswordRouteImport } from './routes/auth/setup-password'
-import { Route as AuthResetRouteImport } from './routes/auth/reset'
-import { Route as AuthPendingVerificationRouteImport } from './routes/auth/pending-verification'
+import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
+import { Route as AboutUsRouteImport } from './routes/about-us'
+import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
+import { Route as IdentInsightsRouteImport } from './routes/ident-insights'
+import { Route as LetsTalkRouteImport } from './routes/lets-talk'
+import { Route as PortalRouteImport } from './routes/portal'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as SolutionsRouteImport } from './routes/solutions'
+import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as ProtectedUnlocksIndexRouteImport } from './routes/_protected/unlocks/index'
-import { Route as ProtectedRequestsIndexRouteImport } from './routes/_protected/requests/index'
-import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
+import { Route as AuthPendingVerificationRouteImport } from './routes/auth/pending-verification'
+import { Route as AuthResetRouteImport } from './routes/auth/reset'
+import { Route as AuthSetupPasswordRouteImport } from './routes/auth/setup-password'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
+import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
 import { Route as ProtectedCompaniesIndexRouteImport } from './routes/_protected/companies/index'
-import { Route as ProtectedRequestsRequestIdRouteImport } from './routes/_protected/requests/$requestId'
 import { Route as ProtectedCompaniesCompanyIdRouteImport } from './routes/_protected/companies/$companyId'
-import { Route as ProtectedRequestsPaymentFailedRequestIdRouteImport } from './routes/_protected/requests/payment-failed.$requestId'
+import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
+import { Route as ProtectedRequestsIndexRouteImport } from './routes/_protected/requests/index'
+import { Route as ProtectedRequestsRequestIdRouteImport } from './routes/_protected/requests/$requestId'
+import { Route as ProtectedUnlocksIndexRouteImport } from './routes/_protected/unlocks/index'
 import { Route as ProtectedRequestsNewCompanyRouteImport } from './routes/_protected/requests/new.company'
+import { Route as ProtectedRequestsPaymentFailedRequestIdRouteImport } from './routes/_protected/requests/payment-failed.$requestId'
 
-const TermsOfServiceRoute = TermsOfServiceRouteImport.update({
-  id: '/terms-of-service',
-  path: '/terms-of-service',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SolutionsRoute = SolutionsRouteImport.update({
-  id: '/solutions',
-  path: '/solutions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
-  id: '/privacy-policy',
-  path: '/privacy-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortalRoute = PortalRouteImport.update({
-  id: '/portal',
-  path: '/portal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LetsTalkRoute = LetsTalkRouteImport.update({
-  id: '/lets-talk',
-  path: '/lets-talk',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IdentInsightsRoute = IdentInsightsRouteImport.update({
-  id: '/ident-insights',
-  path: '/ident-insights',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CookiePolicyRoute = CookiePolicyRouteImport.update({
-  id: '/cookie-policy',
-  path: '/cookie-policy',
+const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
+  id: '/_protected',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutUsRoute = AboutUsRouteImport.update({
@@ -74,38 +48,39 @@ const AboutUsRoute = AboutUsRouteImport.update({
   path: '/about-us',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
-  id: '/_protected',
+const CookiePolicyRoute = CookiePolicyRouteImport.update({
+  id: '/cookie-policy',
+  path: '/cookie-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const IdentInsightsRoute = IdentInsightsRouteImport.update({
+  id: '/ident-insights',
+  path: '/ident-insights',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
-  id: '/auth/verify-email',
-  path: '/auth/verify-email',
+const LetsTalkRoute = LetsTalkRouteImport.update({
+  id: '/lets-talk',
+  path: '/lets-talk',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthSignupRoute = AuthSignupRouteImport.update({
-  id: '/auth/signup',
-  path: '/auth/signup',
+const PortalRoute = PortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthSetupPasswordRoute = AuthSetupPasswordRouteImport.update({
-  id: '/auth/setup-password',
-  path: '/auth/setup-password',
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthResetRoute = AuthResetRouteImport.update({
-  id: '/auth/reset',
-  path: '/auth/reset',
+const SolutionsRoute = SolutionsRouteImport.update({
+  id: '/solutions',
+  path: '/solutions',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthPendingVerificationRoute = AuthPendingVerificationRouteImport.update({
-  id: '/auth/pending-verification',
-  path: '/auth/pending-verification',
+const TermsOfServiceRoute = TermsOfServiceRouteImport.update({
+  id: '/terms-of-service',
+  path: '/terms-of-service',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
@@ -113,24 +88,50 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProtectedUnlocksIndexRoute = ProtectedUnlocksIndexRouteImport.update({
-  id: '/unlocks/',
-  path: '/unlocks/',
+const AuthPendingVerificationRoute = AuthPendingVerificationRouteImport.update({
+  id: '/auth/pending-verification',
+  path: '/auth/pending-verification',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthResetRoute = AuthResetRouteImport.update({
+  id: '/auth/reset',
+  path: '/auth/reset',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSetupPasswordRoute = AuthSetupPasswordRouteImport.update({
+  id: '/auth/setup-password',
+  path: '/auth/setup-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
+  id: '/auth/verify-email',
+  path: '/auth/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedCompaniesIndexRoute = ProtectedCompaniesIndexRouteImport.update({
+  id: '/companies/',
+  path: '/companies/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
-const ProtectedRequestsIndexRoute = ProtectedRequestsIndexRouteImport.update({
-  id: '/requests/',
-  path: '/requests/',
-  getParentRoute: () => ProtectedRouteRoute,
-} as any)
+const ProtectedCompaniesCompanyIdRoute =
+  ProtectedCompaniesCompanyIdRouteImport.update({
+    id: '/companies/$companyId',
+    path: '/companies/$companyId',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
 const ProtectedDashboardIndexRoute = ProtectedDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
-const ProtectedCompaniesIndexRoute = ProtectedCompaniesIndexRouteImport.update({
-  id: '/companies/',
-  path: '/companies/',
+const ProtectedRequestsIndexRoute = ProtectedRequestsIndexRouteImport.update({
+  id: '/requests/',
+  path: '/requests/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
 const ProtectedRequestsRequestIdRoute =
@@ -139,22 +140,21 @@ const ProtectedRequestsRequestIdRoute =
     path: '/requests/$requestId',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
-const ProtectedCompaniesCompanyIdRoute =
-  ProtectedCompaniesCompanyIdRouteImport.update({
-    id: '/companies/$companyId',
-    path: '/companies/$companyId',
+const ProtectedUnlocksIndexRoute = ProtectedUnlocksIndexRouteImport.update({
+  id: '/unlocks/',
+  path: '/unlocks/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedRequestsNewCompanyRoute =
+  ProtectedRequestsNewCompanyRouteImport.update({
+    id: '/requests/new/company',
+    path: '/requests/new/company',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
 const ProtectedRequestsPaymentFailedRequestIdRoute =
   ProtectedRequestsPaymentFailedRequestIdRouteImport.update({
     id: '/requests/payment-failed/$requestId',
     path: '/requests/payment-failed/$requestId',
-    getParentRoute: () => ProtectedRouteRoute,
-  } as any)
-const ProtectedRequestsNewCompanyRoute =
-  ProtectedRequestsNewCompanyRouteImport.update({
-    id: '/requests/new/company',
-    path: '/requests/new/company',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
 
@@ -335,60 +335,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms-of-service': {
-      id: '/terms-of-service'
-      path: '/terms-of-service'
-      fullPath: '/terms-of-service'
-      preLoaderRoute: typeof TermsOfServiceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/solutions': {
-      id: '/solutions'
-      path: '/solutions'
-      fullPath: '/solutions'
-      preLoaderRoute: typeof SolutionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy-policy': {
-      id: '/privacy-policy'
-      path: '/privacy-policy'
-      fullPath: '/privacy-policy'
-      preLoaderRoute: typeof PrivacyPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portal': {
-      id: '/portal'
-      path: '/portal'
-      fullPath: '/portal'
-      preLoaderRoute: typeof PortalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lets-talk': {
-      id: '/lets-talk'
-      path: '/lets-talk'
-      fullPath: '/lets-talk'
-      preLoaderRoute: typeof LetsTalkRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ident-insights': {
-      id: '/ident-insights'
-      path: '/ident-insights'
-      fullPath: '/ident-insights'
-      preLoaderRoute: typeof IdentInsightsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cookie-policy': {
-      id: '/cookie-policy'
-      path: '/cookie-policy'
-      fullPath: '/cookie-policy'
-      preLoaderRoute: typeof CookiePolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about-us': {
-      id: '/about-us'
-      path: '/about-us'
-      fullPath: '/about-us'
-      preLoaderRoute: typeof AboutUsRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_protected': {
@@ -398,46 +349,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about-us': {
+      id: '/about-us'
+      path: '/about-us'
+      fullPath: '/about-us'
+      preLoaderRoute: typeof AboutUsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/verify-email': {
-      id: '/auth/verify-email'
-      path: '/auth/verify-email'
-      fullPath: '/auth/verify-email'
-      preLoaderRoute: typeof AuthVerifyEmailRouteImport
+    '/cookie-policy': {
+      id: '/cookie-policy'
+      path: '/cookie-policy'
+      fullPath: '/cookie-policy'
+      preLoaderRoute: typeof CookiePolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/signup': {
-      id: '/auth/signup'
-      path: '/auth/signup'
-      fullPath: '/auth/signup'
-      preLoaderRoute: typeof AuthSignupRouteImport
+    '/ident-insights': {
+      id: '/ident-insights'
+      path: '/ident-insights'
+      fullPath: '/ident-insights'
+      preLoaderRoute: typeof IdentInsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/setup-password': {
-      id: '/auth/setup-password'
-      path: '/auth/setup-password'
-      fullPath: '/auth/setup-password'
-      preLoaderRoute: typeof AuthSetupPasswordRouteImport
+    '/lets-talk': {
+      id: '/lets-talk'
+      path: '/lets-talk'
+      fullPath: '/lets-talk'
+      preLoaderRoute: typeof LetsTalkRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/reset': {
-      id: '/auth/reset'
-      path: '/auth/reset'
-      fullPath: '/auth/reset'
-      preLoaderRoute: typeof AuthResetRouteImport
+    '/portal': {
+      id: '/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof PortalRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/pending-verification': {
-      id: '/auth/pending-verification'
-      path: '/auth/pending-verification'
-      fullPath: '/auth/pending-verification'
-      preLoaderRoute: typeof AuthPendingVerificationRouteImport
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solutions': {
+      id: '/solutions'
+      path: '/solutions'
+      fullPath: '/solutions'
+      preLoaderRoute: typeof SolutionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms-of-service': {
+      id: '/terms-of-service'
+      path: '/terms-of-service'
+      fullPath: '/terms-of-service'
+      preLoaderRoute: typeof TermsOfServiceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/login': {
@@ -447,39 +412,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_protected/unlocks/': {
-      id: '/_protected/unlocks/'
-      path: '/unlocks'
-      fullPath: '/unlocks/'
-      preLoaderRoute: typeof ProtectedUnlocksIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
+    '/auth/pending-verification': {
+      id: '/auth/pending-verification'
+      path: '/auth/pending-verification'
+      fullPath: '/auth/pending-verification'
+      preLoaderRoute: typeof AuthPendingVerificationRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_protected/requests/': {
-      id: '/_protected/requests/'
-      path: '/requests'
-      fullPath: '/requests/'
-      preLoaderRoute: typeof ProtectedRequestsIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
+    '/auth/reset': {
+      id: '/auth/reset'
+      path: '/auth/reset'
+      fullPath: '/auth/reset'
+      preLoaderRoute: typeof AuthResetRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_protected/dashboard/': {
-      id: '/_protected/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof ProtectedDashboardIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
+    '/auth/setup-password': {
+      id: '/auth/setup-password'
+      path: '/auth/setup-password'
+      fullPath: '/auth/setup-password'
+      preLoaderRoute: typeof AuthSetupPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/verify-email': {
+      id: '/auth/verify-email'
+      path: '/auth/verify-email'
+      fullPath: '/auth/verify-email'
+      preLoaderRoute: typeof AuthVerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_protected/companies/': {
       id: '/_protected/companies/'
       path: '/companies'
       fullPath: '/companies/'
       preLoaderRoute: typeof ProtectedCompaniesIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
-    '/_protected/requests/$requestId': {
-      id: '/_protected/requests/$requestId'
-      path: '/requests/$requestId'
-      fullPath: '/requests/$requestId'
-      preLoaderRoute: typeof ProtectedRequestsRequestIdRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
     '/_protected/companies/$companyId': {
@@ -489,11 +461,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedCompaniesCompanyIdRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
-    '/_protected/requests/payment-failed/$requestId': {
-      id: '/_protected/requests/payment-failed/$requestId'
-      path: '/requests/payment-failed/$requestId'
-      fullPath: '/requests/payment-failed/$requestId'
-      preLoaderRoute: typeof ProtectedRequestsPaymentFailedRequestIdRouteImport
+    '/_protected/dashboard/': {
+      id: '/_protected/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof ProtectedDashboardIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/requests/': {
+      id: '/_protected/requests/'
+      path: '/requests'
+      fullPath: '/requests/'
+      preLoaderRoute: typeof ProtectedRequestsIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/requests/$requestId': {
+      id: '/_protected/requests/$requestId'
+      path: '/requests/$requestId'
+      fullPath: '/requests/$requestId'
+      preLoaderRoute: typeof ProtectedRequestsRequestIdRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/unlocks/': {
+      id: '/_protected/unlocks/'
+      path: '/unlocks'
+      fullPath: '/unlocks/'
+      preLoaderRoute: typeof ProtectedUnlocksIndexRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
     '/_protected/requests/new/company': {
@@ -501,6 +494,13 @@ declare module '@tanstack/react-router' {
       path: '/requests/new/company'
       fullPath: '/requests/new/company'
       preLoaderRoute: typeof ProtectedRequestsNewCompanyRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/requests/payment-failed/$requestId': {
+      id: '/_protected/requests/payment-failed/$requestId'
+      path: '/requests/payment-failed/$requestId'
+      fullPath: '/requests/payment-failed/$requestId'
+      preLoaderRoute: typeof ProtectedRequestsPaymentFailedRequestIdRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
   }

@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { Flag } from '@/components/marketing/flag'
 import { jurisdictions } from '@/lib/jurisdictions'
 
 export const Route = createFileRoute('/lets-talk')({
@@ -238,7 +239,10 @@ function LetsTalkPage() {
                               <SelectContent>
                                 {jurisdictions.map((j) => (
                                   <SelectItem key={j.code} value={j.name}>
-                                    {j.flag} {j.name}
+                                    <span className="inline-flex items-center gap-1.5">
+                                      <Flag code={j.code} />
+                                      {j.name}
+                                    </span>
                                   </SelectItem>
                                 ))}
                                 <SelectItem value="Other">Other</SelectItem>
