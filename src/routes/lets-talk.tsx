@@ -8,6 +8,7 @@ import {
 import { CheckCircle2, Mail, MessageSquare, Send } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import type { TFrontendErrorResponse } from '@/apis/base/error-type'
 import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { HomeHeader } from '@/components/home-header'
 import { HomeFooter } from '@/components/home-footer'
@@ -25,6 +26,7 @@ import {
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Flag } from '@/components/marketing/flag'
 import { jurisdictions } from '@/lib/jurisdictions'
+import { useSendContactMessage } from '@/apis/contact/send-contact-message'
 
 export const Route = createFileRoute('/lets-talk')({
   pendingComponent: FullPageLoading,
@@ -66,6 +68,8 @@ type ContactValues = z.infer<typeof contactSchema>
 function LetsTalkPage() {
   const { user } = useRouteContext({ from: '__root__' })
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const sendContactMessage = useSendContactMessage()
 
   const form = useForm<ContactValues>({
     resolver: zodResolver(contactSchema),
@@ -81,13 +85,20 @@ function LetsTalkPage() {
     mode: 'onTouched',
   })
 
-  const onSubmit = (_data: ContactValues) => {
-    // TODO(backend): wire to a real endpoint (SES + DynamoDB, or a
-    // MENA-backend `leads` route) — see PRD §6.4/§9. Mocked for now.
-    setSubmitted(true)
+  const onSubmit = async (data: ContactValues) => {
+    setSubmitError(null)
+    try {
+      await sendContactMessage.mutateAsync(data)
+      setSubmitted(true)
+    } catch (error) {
+      const { message } = error as TFrontendErrorResponse
+      setSubmitError(
+        message || 'Something went wrong. Please try again.',
+      )
+    }
   }
 
-  const isSubmitting = form.formState.isSubmitting
+  const isSubmitting = form.formState.isSubmitting || sendContactMessage.isPending
 
   return (
     <div className="min-h-screen bg-background">
@@ -336,6 +347,16 @@ function LetsTalkPage() {
                       <FieldError
                         errors={[form.formState.errors.consent]}
                       />
+                    )}
+
+                    {submitError && (
+                      <p
+                        role="alert"
+                        className="text-sm text-destructive"
+                        data-testid="contact-error"
+                      >
+                        {submitError}
+                      </p>
                     )}
 
                     <Button
