@@ -37,13 +37,12 @@ export function HeroSection() {
           className="mx-auto mt-4 max-w-2xl text-pretty text-sm leading-relaxed text-white/70 sm:mt-6 sm:text-lg"
           data-testid="text-hero-subtitle"
         >
-          On-demand corporate verification, retrieval, and due diligence
-          across 10 jurisdictions and 5M+ companies — delivered in 1–3
-          business days.
+          On-demand corporate verification, retrieval, and due diligence across
+          10 jurisdictions and 5M+ companies — delivered in 1–3 business days.
         </p>
 
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
-          <Link to="/lets-talk" className="w-full sm:w-auto">
+          <Link to="/dashboard" className="w-full sm:w-auto">
             <Button
               size="lg"
               className="w-full bg-brand-cyan text-brand-navy-deep hover:bg-brand-cyan/90 sm:w-auto"

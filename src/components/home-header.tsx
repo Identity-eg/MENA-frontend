@@ -48,8 +48,8 @@ export function HomeHeader({ user }: { user?: TUser | null }) {
                   Login
                 </Button>
               </Link>
-              <Link to="/lets-talk" data-testid="link-contact-cta">
-                <Button size="sm">Request a Report</Button>
+              <Link to="/auth/signup" data-testid="link-contact-cta">
+                <Button size="sm">Get Started</Button>
               </Link>
             </nav>
           )}
@@ -113,12 +113,12 @@ export function HomeHeader({ user }: { user?: TUser | null }) {
                   </Button>
                 </Link>
                 <Link
-                  to="/lets-talk"
+                  to="/auth/signup"
                   onClick={() => setMobileOpen(false)}
                   data-testid="link-contact-cta-mobile"
                 >
                   <Button size="sm" className="w-full">
-                    Request a Report
+                    Get Started
                   </Button>
                 </Link>
               </div>
