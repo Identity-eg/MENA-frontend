@@ -1,7 +1,7 @@
 import { StatTile } from './marketing/stat-tile'
 
 const stats = [
-  { value: '10', label: 'Jurisdictions' },
+  { value: '10+', label: 'Jurisdictions' },
   { value: '5M+', label: 'Companies' },
   { value: '6', label: 'Solutions' },
   { value: '1–3 BD', label: 'Turnaround' },

@@ -5,6 +5,7 @@ import { setCookie } from '@tanstack/react-start/server'
 import z from 'zod'
 import { request } from '../base'
 import { getAuthCookieOptions } from '@/lib/cookie-options'
+import { businessEmailSchema } from '@/lib/business-email'
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/constants/auth'
 
 const login = async ({
@@ -28,7 +29,7 @@ const login = async ({
 const loginServerAction = createServerFn()
   .inputValidator(
     z.object({
-      email: z.email('Please enter a valid work email.'),
+      email: businessEmailSchema,
       password: z.string().min(1, 'Password is required'),
     }),
   )

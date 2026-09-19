@@ -24,7 +24,7 @@ export const Route = createFileRoute('/')({
       {
         name: 'description',
         content:
-          'On-demand corporate verification, retrieval, and due diligence across 10 MENA jurisdictions and 5M+ companies.',
+          'On-demand corporate retrieval, verification, and due diligence across 10 MENA jurisdictions.',
       },
     ],
   }),

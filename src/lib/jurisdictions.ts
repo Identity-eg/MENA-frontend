@@ -22,4 +22,5 @@ export const jurisdictions: Array<Jurisdiction> = [
   { code: 'dz', name: 'Algeria' },
   { code: 'tn', name: 'Tunisia' },
   { code: 'ir', name: 'Iran' },
+  { code: 'tr', name: 'Türkiye' },
 ]

@@ -1,10 +1,6 @@
 import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Link,
-  createFileRoute,
-  useRouteContext,
-} from '@tanstack/react-router'
+import { Link, createFileRoute, useRouteContext } from '@tanstack/react-router'
 import { CheckCircle2, Mail, MessageSquare, Send } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -26,6 +22,7 @@ import {
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Flag } from '@/components/marketing/flag'
 import { jurisdictions } from '@/lib/jurisdictions'
+import { businessEmailSchema } from '@/lib/business-email'
 import { useSendContactMessage } from '@/apis/contact/send-contact-message'
 
 export const Route = createFileRoute('/lets-talk')({
@@ -44,16 +41,16 @@ export const Route = createFileRoute('/lets-talk')({
 })
 
 const interestOptions = [
-  { value: 'verification', label: 'Corporate Verification & Retrieval' },
-  { value: 'database', label: 'Structured Company Database' },
+  { value: 'verification', label: 'Corporate Retrieval' },
+  { value: 'database', label: 'Structured Database' },
   { value: 'due-diligence', label: 'Due Diligence Report' },
-  { value: 'partnership', label: 'Partnership' },
+  { value: 'partnership', label: 'Human Source Enquiries' },
   { value: 'other', label: 'Other' },
 ]
 
 const contactSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
-  email: z.email('Please enter a valid work email.'),
+  email: businessEmailSchema,
   companyName: z.string().min(2, 'Company name is required'),
   jurisdiction: z.string().min(1, 'Please select a jurisdiction'),
   interest: z.string().min(1, "Please select what you're looking for"),
@@ -92,13 +89,12 @@ function LetsTalkPage() {
       setSubmitted(true)
     } catch (error) {
       const { message } = error as TFrontendErrorResponse
-      setSubmitError(
-        message || 'Something went wrong. Please try again.',
-      )
+      setSubmitError(message || 'Something went wrong. Please try again.')
     }
   }
 
-  const isSubmitting = form.formState.isSubmitting || sendContactMessage.isPending
+  const isSubmitting =
+    form.formState.isSubmitting || sendContactMessage.isPending
 
   return (
     <div className="min-h-screen bg-background">
@@ -132,7 +128,7 @@ function LetsTalkPage() {
                     Prefer email?
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    hello@ident-ity.com
+                    operations@ident-ity.com
                   </div>
                 </div>
               </div>
@@ -190,7 +186,7 @@ function LetsTalkPage() {
                         render={({ field, fieldState }) => (
                           <Field data-invalid={!!fieldState.error}>
                             <FieldLabel htmlFor="contact-email" required>
-                              Work email
+                              Business email
                             </FieldLabel>
                             <Input
                               {...field}
@@ -245,7 +241,10 @@ function LetsTalkPage() {
                                 className="w-full"
                                 aria-invalid={!!fieldState.error}
                               >
-                                <SelectValue placeholder="Select a country" />
+                                <SelectValue
+                                  placeholder="Select a country"
+                                  className="text-natural-400/50"
+                                />
                               </SelectTrigger>
                               <SelectContent>
                                 {jurisdictions.map((j) => (
@@ -269,35 +268,45 @@ function LetsTalkPage() {
                       <Controller
                         name="interest"
                         control={form.control}
-                        render={({ field, fieldState }) => (
-                          <Field data-invalid={!!fieldState.error}>
-                            <FieldLabel required>Looking for</FieldLabel>
-                            <Select
-                              value={field.value}
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger
-                                className="w-full"
-                                aria-invalid={!!fieldState.error}
+                        render={({ field, fieldState }) => {
+                          const selectedLabel = interestOptions.find(
+                            (opt) => opt.value === field.value,
+                          )?.label
+                          return (
+                            <Field data-invalid={!!fieldState.error}>
+                              <FieldLabel required>Looking for</FieldLabel>
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
                               >
-                                <SelectValue placeholder="Select an option" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {interestOptions.map((option) => (
-                                  <SelectItem
-                                    key={option.value}
-                                    value={option.value}
+                                <SelectTrigger
+                                  className="w-full"
+                                  aria-invalid={!!fieldState.error}
+                                >
+                                  <SelectValue
+                                    placeholder="Select an option"
+                                    className="text-natural-400/50"
                                   >
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            {fieldState.error && (
-                              <FieldError errors={[fieldState.error]} />
-                            )}
-                          </Field>
-                        )}
+                                    {selectedLabel}
+                                  </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {interestOptions.map((option) => (
+                                    <SelectItem
+                                      key={option.value}
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              {fieldState.error && (
+                                <FieldError errors={[fieldState.error]} />
+                              )}
+                            </Field>
+                          )
+                        }}
                       />
                     </div>
 
@@ -337,16 +346,14 @@ function LetsTalkPage() {
                             htmlFor="contact-consent"
                             className="text-xs font-normal text-muted-foreground"
                           >
-                            I agree to Ident-ity processing this information
-                            to respond to my request.
+                            I agree to Ident-ity processing this information to
+                            respond to my request.
                           </FieldLabel>
                         </Field>
                       )}
                     />
                     {form.formState.errors.consent && (
-                      <FieldError
-                        errors={[form.formState.errors.consent]}
-                      />
+                      <FieldError errors={[form.formState.errors.consent]} />
                     )}
 
                     {submitError && (

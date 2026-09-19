@@ -1,8 +1,4 @@
-import {
-  Link,
-  createFileRoute,
-  useRouteContext,
-} from '@tanstack/react-router'
+import { Link, createFileRoute, useRouteContext } from '@tanstack/react-router'
 import { ArrowRight, Check } from 'lucide-react'
 import type { SolutionMark } from '@/components/brand/logo'
 import { FullPageLoading } from '@/components/ui/full-page-loading'
@@ -22,7 +18,7 @@ export const Route = createFileRoute('/solutions')({
       {
         name: 'description',
         content:
-          'Ident-RR, IdentBase, and IdentMedia — Ident-ity\'s active MENA business intelligence solutions, with three more in the pipeline.',
+          "Ident-RR, IdentBase, and IdentMedia — Ident-ity's active MENA business intelligence solutions, with three more in the pipeline.",
       },
     ],
   }),
@@ -68,15 +64,6 @@ function SolutionsPage() {
                         <StatusBadge status={solution.status} />
                       </div>
                     </div>
-                    <Link to="/auth/signup">
-                      <Button
-                        size="sm"
-                        className="h-auto w-full whitespace-normal py-2.5 text-center leading-snug bg-brand-cyan text-brand-navy-deep hover:bg-brand-cyan/90"
-                      >
-                        {solution.cta}
-                        <ArrowRight className="shrink-0" />
-                      </Button>
-                    </Link>
                   </div>
 
                   <div className="p-6 sm:p-8 lg:p-10">

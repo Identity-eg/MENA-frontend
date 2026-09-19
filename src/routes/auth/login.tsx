@@ -10,6 +10,7 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Logo } from '@/components/brand/logo'
 import { useLogin } from '@/apis/auth/login'
+import { businessEmailSchema } from '@/lib/business-email'
 
 export const Route = createFileRoute('/auth/login')({
   pendingComponent: FullPageLoading,
@@ -54,9 +55,7 @@ export default function LoginPage() {
 }
 
 const loginSchema = z.object({
-  email: z
-    .email('Please enter a valid work email.')
-    .min(1, 'Email is required'),
+  email: businessEmailSchema,
   password: z.string().min(1, 'Password is required'),
 })
 
@@ -65,7 +64,6 @@ type LoginValues = z.infer<typeof loginSchema>
 const LoginForm = () => {
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: 'verified@example.com', password: 'password123' },
   })
 
   const loginMutation = useLogin()
@@ -87,7 +85,7 @@ const LoginForm = () => {
         control={form.control}
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor="login-email">Work Email</FieldLabel>
+            <FieldLabel htmlFor="login-email">Business email</FieldLabel>
             <Input
               {...field}
               id="login-email"

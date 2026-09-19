@@ -38,7 +38,7 @@ export function HeroSection() {
           data-testid="text-hero-subtitle"
         >
           On-demand corporate verification, retrieval, and due diligence across
-          10 jurisdictions and 5M+ companies — delivered in 1–3 business days.
+          10+ jurisdictions — delivered in 1–3 business days.
         </p>
 
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">

@@ -14,6 +14,7 @@ import { HomeFooter } from '@/components/home-footer'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError } from '@/components/ui/field'
+import { businessEmailSchema } from '@/lib/business-email'
 
 export const Route = createFileRoute('/portal')({
   pendingComponent: FullPageLoading,
@@ -31,7 +32,7 @@ export const Route = createFileRoute('/portal')({
 })
 
 const notifySchema = z.object({
-  email: z.email('Please enter a valid email address.'),
+  email: businessEmailSchema,
 })
 
 type NotifyValues = z.infer<typeof notifySchema>
