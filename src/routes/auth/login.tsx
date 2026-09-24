@@ -11,6 +11,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 
 import { useLogin } from '@/apis/auth/login'
 import { businessEmailSchema } from '@/lib/business-email'
@@ -120,10 +121,9 @@ const LoginForm = () => {
                 Forgot password?
               </Link>
             </div>
-            <Input
+            <PasswordInput
               {...field}
               id="login-password"
-              type="password"
               autoComplete="current-password"
               aria-invalid={fieldState.invalid}
               data-testid="input-password"

@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/card'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { FullPageLoading } from '@/components/ui/full-page-loading'
-import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 
 import { useSetupPassword } from '@/apis/auth/setup-password'
 
@@ -85,10 +85,9 @@ function RouteComponent() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={!!fieldState.error}>
                   <FieldLabel htmlFor="setup-password">New Password</FieldLabel>
-                  <Input
+                  <PasswordInput
                     {...field}
                     id="setup-password"
-                    type="password"
                     autoComplete="new-password"
                     aria-invalid={!!fieldState.error}
                     data-testid="input-password"
@@ -107,10 +106,9 @@ function RouteComponent() {
                   <FieldLabel htmlFor="setup-confirm">
                     Confirm Password
                   </FieldLabel>
-                  <Input
+                  <PasswordInput
                     {...field}
                     id="setup-confirm"
-                    type="password"
                     autoComplete="new-password"
                     aria-invalid={!!fieldState.error}
                     data-testid="input-confirm"
