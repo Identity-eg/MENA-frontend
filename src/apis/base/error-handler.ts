@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios'
+
 import type {
   TBackendErrorResponse,
   TFrontendErrorResponse,
@@ -6,7 +7,7 @@ import type {
 
 export function getErrorMessage(error: AxiosError): TFrontendErrorResponse {
   if (typeof error === 'string') {
-    return error
+    return { message: error }
   }
 
   if (error.response?.status === 500) {

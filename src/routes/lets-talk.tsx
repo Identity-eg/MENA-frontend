@@ -1,21 +1,18 @@
-import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Link,
-  createFileRoute,
-  useRouteContext,
-} from '@tanstack/react-router'
+import { createFileRoute, Link, useRouteContext } from '@tanstack/react-router'
 import { CheckCircle2, Mail, MessageSquare, Send } from 'lucide-react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import type { TFrontendErrorResponse } from '@/apis/base/error-type'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
-import { HomeHeader } from '@/components/home-header'
+
 import { HomeFooter } from '@/components/home-footer'
+import { HomeHeader } from '@/components/home-header'
+import { Flag } from '@/components/marketing/flag'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -23,10 +20,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'
-import { Flag } from '@/components/marketing/flag'
-import { jurisdictions } from '@/lib/jurisdictions'
+import { Textarea } from '@/components/ui/textarea'
+
+import type { TFrontendErrorResponse } from '@/apis/base/error-type'
 import { useSendContactMessage } from '@/apis/contact/send-contact-message'
+import { jurisdictions } from '@/lib/jurisdictions'
 
 export const Route = createFileRoute('/lets-talk')({
   pendingComponent: FullPageLoading,
@@ -92,13 +90,12 @@ function LetsTalkPage() {
       setSubmitted(true)
     } catch (error) {
       const { message } = error as TFrontendErrorResponse
-      setSubmitError(
-        message || 'Something went wrong. Please try again.',
-      )
+      setSubmitError(message || 'Something went wrong. Please try again.')
     }
   }
 
-  const isSubmitting = form.formState.isSubmitting || sendContactMessage.isPending
+  const isSubmitting =
+    form.formState.isSubmitting || sendContactMessage.isPending
 
   return (
     <div className="min-h-screen bg-background">
@@ -337,16 +334,14 @@ function LetsTalkPage() {
                             htmlFor="contact-consent"
                             className="text-xs font-normal text-muted-foreground"
                           >
-                            I agree to Ident-ity processing this information
-                            to respond to my request.
+                            I agree to Ident-ity processing this information to
+                            respond to my request.
                           </FieldLabel>
                         </Field>
                       )}
                     />
                     {form.formState.errors.consent && (
-                      <FieldError
-                        errors={[form.formState.errors.consent]}
-                      />
+                      <FieldError errors={[form.formState.errors.consent]} />
                     )}
 
                     {submitError && (

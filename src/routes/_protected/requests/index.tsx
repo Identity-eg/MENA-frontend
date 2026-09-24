@@ -1,18 +1,21 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { Eye, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import type { RequestReportItem, TRequest } from '@/types/request'
-import {
-  getRequestsQueryOptions,
-  useGetRequests,
-} from '@/apis/requests/get-requests'
-import { REQUEST_STATUS } from '@/types/request'
+
 import { PageHeader } from '@/components/page-header'
 import { StatusPill } from '@/components/StatusPill'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -21,14 +24,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
+
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  getRequestsQueryOptions,
+  useGetRequests,
+} from '@/apis/requests/get-requests'
+import {
+  REQUEST_STATUS,
+  type RequestReportItem,
+  type TRequest,
+} from '@/types/request'
 
 export const Route = createFileRoute('/_protected/requests/')({
   component: RequestsPage,
@@ -65,7 +70,6 @@ function getCompaniesForSearch(
     })
 }
 
-
 /** Per-company reports (derived from requestReports) */
 function getCompanyWithReports(req: TRequest): Array<{
   company: NonNullable<RequestReportItem['company']>
@@ -99,7 +103,6 @@ function getCompanyWithReports(req: TRequest): Array<{
     reports: Array.from(reports.values()),
   }))
 }
-
 
 function RequestsPage() {
   const [search, setSearch] = useState('')
@@ -234,7 +237,6 @@ function RequestsPage() {
                         ))}
                       </div>
                     )}
-
 
                     {/* Prices + action */}
                     <div className="flex items-center justify-between border-t pt-3">

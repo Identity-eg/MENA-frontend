@@ -3,7 +3,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Loader2, Lock, ShieldCheck } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
+
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -11,9 +12,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { Input } from '@/components/ui/input'
+
 import { useSetupPassword } from '@/apis/auth/setup-password'
 
 export const Route = createFileRoute('/auth/setup-password')({

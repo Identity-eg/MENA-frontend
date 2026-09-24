@@ -1,9 +1,10 @@
 import { Link } from '@tanstack/react-router'
 import { MenuIcon, Undo2Icon } from 'lucide-react'
+
+import { useGetMe } from '@/apis/user/get-me'
 import { Button } from '../ui/button'
 import { NotificationDropdown } from './notification-dropdown'
 import { UserNav } from './user-nav'
-import { useGetMe } from '@/apis/user/get-me'
 
 interface DashboardHeaderProps {
   onToggleSidebar?: () => void

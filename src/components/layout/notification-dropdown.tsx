@@ -1,5 +1,12 @@
 import { Link } from '@tanstack/react-router'
 import { Bell } from 'lucide-react'
+
+import {
+  useMarkNotificationReadMutation,
+  useMarkNotificationsReadMutation,
+  useNotificationsQuery,
+} from '@/hooks/use-notifications-query'
+import { cn } from '@/lib/utils'
 import { Button } from '../ui/button'
 import {
   DropdownMenu,
@@ -9,12 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
-import {
-  useMarkNotificationReadMutation,
-  useMarkNotificationsReadMutation,
-  useNotificationsQuery,
-} from '@/hooks/use-notifications-query'
-import { cn } from '@/lib/utils'
 
 function formatTime(ts: number) {
   const now = Date.now()

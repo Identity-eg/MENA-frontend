@@ -1,13 +1,17 @@
+import { usePostHog } from '@posthog/react'
 import { Activity, Download, Loader2 } from 'lucide-react'
-import type {
-  RequestReportStatusValue,
-  RequestStatusValue,
-} from '@/types/request'
-import { REQUEST_REPORT_STATUS, REQUEST_STATUS } from '@/types/request'
-import { Button } from '@/components/ui/button'
+
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+
 import { useRequestReportUploadDownload } from '@/apis/requests/get-request-report-upload-download-url'
 import { cn } from '@/lib/utils'
+import {
+  REQUEST_REPORT_STATUS,
+  REQUEST_STATUS,
+  type RequestReportStatusValue,
+  type RequestStatusValue,
+} from '@/types/request'
 
 export type RequestReportRowReport = {
   id: number
@@ -49,6 +53,7 @@ function reportStatusLabel(
 export function RequestReportCard({ report, status }: RequestReportRowProps) {
   const { mutate: downloadReportUpload, isPending: isDownloading } =
     useRequestReportUploadDownload()
+  const posthog = usePostHog()
   const hasReportFile = !!report.upload
   const estimatedPrice = report.estimatedPrice ?? report.price ?? 0
   const finalPrice = report.finalPrice ?? null
@@ -108,7 +113,15 @@ export function RequestReportCard({ report, status }: RequestReportRowProps) {
           variant="outline"
           className="h-8 shrink-0 gap-1.5 text-primary border-primary/30 hover:text-primary hover:border-primary"
           disabled={isDownloading}
-          onClick={() => downloadReportUpload(report.upload!.id)}
+          onClick={() =>
+            downloadReportUpload(report.upload!.id, {
+              onSuccess: () => {
+                posthog.capture('request_report_downloaded', {
+                  report_id: report.id,
+                })
+              },
+            })
+          }
         >
           {isDownloading ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />

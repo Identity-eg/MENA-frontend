@@ -1,7 +1,8 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { createServerFn } from '@tanstack/react-start'
-import { request } from '../base'
+
 import type { TUser } from '@/types/user'
+import { request } from '../base'
 
 export const getMe = async (): Promise<{ user: TUser } | null> => {
   try {

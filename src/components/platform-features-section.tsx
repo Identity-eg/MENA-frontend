@@ -1,5 +1,5 @@
-import { FeatureCard } from './marketing/feature-card'
 import { whyUs } from '@/lib/why-us'
+import { FeatureCard } from './marketing/feature-card'
 
 export function PlatformFeaturesSection() {
   return (

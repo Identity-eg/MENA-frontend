@@ -1,7 +1,8 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { request } from '../base'
-import type { TUnlock } from '@/types/unlock'
+
 import type { TApiResponseSingle } from '@/types/api-response-single'
+import type { TUnlock } from '@/types/unlock'
+import { request } from '../base'
 
 type GetUnlocksData = TApiResponseSingle<Array<TUnlock>>
 type GetUnlocksQueryOptionsOverride = Omit<

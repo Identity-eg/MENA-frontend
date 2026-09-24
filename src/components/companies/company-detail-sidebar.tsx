@@ -1,11 +1,8 @@
 import { memo } from 'react'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+
 import type { TCompany } from '@/types/company'
 
 type CompanyDetailSidebarProps = Pick<

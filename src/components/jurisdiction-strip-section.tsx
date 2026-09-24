@@ -7,8 +7,7 @@ export function JurisdictionStripSection() {
         Coverage across the region
       </h2>
       <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">
-        Ten jurisdictions and counting, with a regional legal network to
-        match.
+        Ten jurisdictions and counting, with a regional legal network to match.
       </p>
       <JurisdictionBadgeRow className="mt-8" />
     </section>

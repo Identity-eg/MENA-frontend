@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useState } from 'react'
-import { getRouteApi } from '@tanstack/react-router'
+import { usePostHog } from '@posthog/react'
 import { useQueryClient } from '@tanstack/react-query'
+import { getRouteApi } from '@tanstack/react-router'
+import { useCallback, useEffect, useState } from 'react'
+
 import {
   getCompanyQueryOptions,
   useGetCompany,
 } from '@/apis/company/get-company'
-import { createUnlockPaymentSession } from '@/apis/unlocks/create-unlock-payment-session'
 import { createUnlockAllPaymentSession } from '@/apis/unlocks/create-unlock-all-payment-session'
+import { createUnlockPaymentSession } from '@/apis/unlocks/create-unlock-payment-session'
 import { getUnlocksQueryOptions } from '@/apis/unlocks/get-unlocks'
 import { CompanyDetailBreadcrumb } from './company-detail-breadcrumb'
 import { CompanyDetailComplianceCard } from './company-detail-compliance-card'
@@ -15,8 +17,8 @@ import { CompanyDetailPartnersManagersCard } from './company-detail-partners-man
 import { CompanyDetailPremiumLockedCard } from './company-detail-premium-locked-card'
 import { CompanyDetailProfileCard } from './company-detail-profile-card'
 import { CompanyDetailSidebar } from './company-detail-sidebar'
-import { CompanyDetailUnlockedFieldsCard } from './company-detail-unlocked-fields-card'
 import { CompanyDetailUnlockSuccessBanner } from './company-detail-unlock-success-banner'
+import { CompanyDetailUnlockedFieldsCard } from './company-detail-unlocked-fields-card'
 import { useCompanyDetailDerived } from './use-company-detail-derived'
 
 const routeApi = getRouteApi('/_protected/companies/$companyId')
@@ -27,6 +29,7 @@ export function CompanyDetailView() {
   const navigate = routeApi.useNavigate()
   const id = Number(companyId)
   const queryClient = useQueryClient()
+  const posthog = usePostHog()
   const { data: companyData } = useGetCompany(id)
   const company = companyData.data
   const reports = company.reports
@@ -78,18 +81,22 @@ export function CompanyDetailView() {
     async (lockedFieldId: number) => {
       setUnlockingFieldId(lockedFieldId)
       try {
-        const base = import.meta.env.VITE_HOME_URL
+        const base = window.location.origin
         const { url } = await createUnlockPaymentSession(
           lockedFieldId,
           `${base}/companies/${id}?unlock=success`,
           `${base}/companies/${id}?unlock=cancelled`,
         )
+        posthog.capture('unlock_checkout_started', {
+          company_id: id,
+          unlock_type: 'single_field',
+        })
         window.location.href = url
       } catch {
         setUnlockingFieldId(null)
       }
     },
-    [id],
+    [id, posthog],
   )
 
   const handleUnlockAll = useCallback(async () => {
@@ -105,11 +112,16 @@ export function CompanyDetailView() {
         `${base}/companies/${id}?unlock=success`,
         `${base}/companies/${id}?unlock=cancelled`,
       )
+      posthog.capture('unlock_checkout_started', {
+        company_id: id,
+        unlock_type: 'all_fields',
+        locked_field_count: ids.length,
+      })
       window.location.href = url
     } catch {
       setUnlockingAll(false)
     }
-  }, [id, lockedFields, getLockedFieldByFieldName])
+  }, [id, lockedFields, getLockedFieldByFieldName, posthog])
 
   return (
     <div className="space-y-6 pb-12">
@@ -150,7 +162,6 @@ export function CompanyDetailView() {
               />
             )}
           </CompanyDetailProfileCard>
-
 
           <CompanyDetailComplianceCard
             companyId={id}

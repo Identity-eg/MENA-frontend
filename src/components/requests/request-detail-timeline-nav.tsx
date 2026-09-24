@@ -1,6 +1,7 @@
 import { memo } from 'react'
-import type { RequestStatusValue } from '@/types/request'
+
 import { cn } from '@/lib/utils'
+import type { RequestStatusValue } from '@/types/request'
 import type { RequestDetailTimelineStep } from './use-request-detail-timeline'
 
 type RequestDetailTimelineNavProps = {

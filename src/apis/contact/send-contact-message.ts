@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
-import { request } from '../base'
+
 import type { TApiResponseSingle } from '@/types/api-response-single'
+import { request } from '../base'
 
 export type ContactMessagePayload = {
   fullName: string

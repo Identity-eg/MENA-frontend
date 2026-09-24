@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { request } from '../base'
-import type { CreateCompanyRequestPayload, TRequest } from '@/types/request'
+
 import type { TApiResponseSingle } from '@/types/api-response-single'
+import type { CreateCompanyRequestPayload, TRequest } from '@/types/request'
+import { request } from '../base'
 
 type CreateRequestData = TApiResponseSingle<TRequest>
 

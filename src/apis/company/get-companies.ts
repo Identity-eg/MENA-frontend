@@ -1,7 +1,8 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { request } from '../base'
-import type { TCompany } from '@/types/company'
+
 import type { TApiResponsePaginated } from '@/types/api-response-paginated'
+import type { TCompany } from '@/types/company'
+import { request } from '../base'
 
 type GetCompaniesData = TApiResponsePaginated<TCompany>
 type GetCompaniesQueryOptionsOverride = Omit<

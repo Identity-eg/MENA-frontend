@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
-import { DashboardSidebar } from './dashboard-sidebar'
+
 import { DashboardHeader } from './dashboard-header'
+import { DashboardSidebar } from './dashboard-sidebar'
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)

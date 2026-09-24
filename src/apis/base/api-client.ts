@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 import { getApiBaseUrl } from './api-base-url'
-import { responseErrorInterceptor } from './response-interceptor'
 import { requestSuccessInterceptor } from './request-interceptor'
+import { responseErrorInterceptor } from './response-interceptor'
 
 /** Request timeout (ms) – prevents infinite loading when backend is unreachable */
 const REQUEST_TIMEOUT = 30_000

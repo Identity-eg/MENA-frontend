@@ -1,5 +1,4 @@
-import type { RequestStatusValue } from '@/types/request'
-import { REQUEST_STATUS } from '@/types/request'
+import { REQUEST_STATUS, type RequestStatusValue } from '@/types/request'
 
 /** Aligned with Prisma RequestStatus enum */
 export const requestDetailStatusConfig: Record<

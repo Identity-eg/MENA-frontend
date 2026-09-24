@@ -1,12 +1,9 @@
-import { memo } from 'react'
 import { CheckCircle2, Unlock } from 'lucide-react'
+import { memo } from 'react'
+
 import { Badge } from '@/components/ui/badge'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
 import { cn } from '@/lib/utils'
 import type { CompanyProfileFieldRow } from './company-detail-types'
 import { getCompanyDetailFieldIcon } from './get-company-detail-field-icon'

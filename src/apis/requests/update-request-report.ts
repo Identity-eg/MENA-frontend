@@ -1,5 +1,5 @@
-import { request } from '../base'
 import type { RequestReportStatusValue } from '@/types/request'
+import { request } from '../base'
 
 export type UpdateRequestReportPayload = {
   status?: RequestReportStatusValue

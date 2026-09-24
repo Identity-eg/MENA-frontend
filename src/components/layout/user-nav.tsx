@@ -1,5 +1,8 @@
 import { Link } from '@tanstack/react-router'
 import { LogOut, User as UserIcon } from 'lucide-react'
+
+import { useLogout } from '@/hooks/use-logout'
+import type { TUser } from '@/types/user'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
-import type { TUser } from '@/types/user'
-import { useLogout } from '@/hooks/use-logout'
 
 interface UserNavProps {
   user: TUser

@@ -1,9 +1,11 @@
+import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { ArrowLeft, FileText } from 'lucide-react'
-import { Link, createFileRoute, notFound } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
-import { getRequestQueryOptions } from '@/apis/requests/get-request'
+
 import { RequestDetailLoadingFallback } from '@/components/requests/request-detail-loading-fallback'
 import { RequestDetailView } from '@/components/requests/request-detail-view'
+import { Button } from '@/components/ui/button'
+
+import { getRequestQueryOptions } from '@/apis/requests/get-request'
 
 export const Route = createFileRoute('/_protected/requests/$requestId')({
   component: RequestDetailsPage,

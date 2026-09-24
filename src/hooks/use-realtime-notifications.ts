@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { io } from 'socket.io-client'
-import { NOTIFICATIONS_QUERY_KEY } from './use-notifications-query'
-import type { Socket } from 'socket.io-client'
+import { useEffect, useRef } from 'react'
+import { io, type Socket } from 'socket.io-client'
+
 import { getWsUrl } from '@/lib/get-ws-url'
+import { NOTIFICATIONS_QUERY_KEY } from './use-notifications-query'
 
 const SOCKET_EVENTS = [
   'request:statusChanged',

@@ -1,12 +1,9 @@
-import { memo } from 'react'
 import { Building2, User } from 'lucide-react'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { memo } from 'react'
+
 import { EmptyState } from '@/components/EmptyState'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
 import { cn } from '@/lib/utils'
 import type { RequestDetailSubjectItem } from './request-detail-types'
 

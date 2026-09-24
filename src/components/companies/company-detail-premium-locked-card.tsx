@@ -1,18 +1,10 @@
+import { ChevronRight, Loader2, Lock, Sparkles } from 'lucide-react'
 import { memo } from 'react'
-import {
-  ChevronRight,
-  Loader2,
-  Lock,
-  Sparkles,
-} from 'lucide-react'
+
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
 import { cn } from '@/lib/utils'
 import type { TLockedField } from '@/types/locked-field'
 import type { CompanyProfileFieldRow } from './company-detail-types'

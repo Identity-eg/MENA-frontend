@@ -1,7 +1,9 @@
-import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
-import { useRealtimeNotifications } from '@/hooks/use-realtime-notifications'
 import { FullPageLoading } from '@/components/ui/full-page-loading'
+
+import { useRealtimeNotifications } from '@/hooks/use-realtime-notifications'
 
 export const Route = createFileRoute('/_protected')({
   ssr: false,

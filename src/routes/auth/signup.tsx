@@ -1,9 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { usePostHog } from '@posthog/react'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
+
+import { Logo } from '@/components/brand/logo'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -11,10 +14,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { Input } from '@/components/ui/input'
-import { Logo } from '@/components/brand/logo'
+
 import { useRegister } from '@/apis/auth/register'
 
 export const Route = createFileRoute('/auth/signup')({
@@ -57,9 +60,14 @@ export default function SignupPage() {
   })
 
   const registerMutation = useRegister()
+  const posthog = usePostHog()
 
   const onSubmit = (data: SignupValues) => {
-    registerMutation.mutate(data)
+    registerMutation.mutate(data, {
+      onSuccess: () => {
+        posthog.capture('signup_application_submitted')
+      },
+    })
   }
 
   const isSubmitting = form.formState.isSubmitting || registerMutation.isPending

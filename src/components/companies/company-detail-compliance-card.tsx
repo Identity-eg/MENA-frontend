@@ -1,5 +1,9 @@
-import { memo, useMemo } from 'react'
 import { CheckCircle2, FileSearch } from 'lucide-react'
+import { memo, useMemo } from 'react'
+
+import { EmptyState } from '@/components/EmptyState'
+import { RequestScreeningPackageButton } from '@/components/request-screening-package-button'
+import { Badge } from '@/components/ui/badge'
 import {
   Card,
   CardContent,
@@ -7,9 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { EmptyState } from '@/components/EmptyState'
-import { RequestScreeningPackageButton } from '@/components/request-screening-package-button'
+
 import { cn } from '@/lib/utils'
 import type { TReport } from '@/types/report'
 
@@ -67,7 +69,7 @@ export const CompanyDetailComplianceCard = memo(
                   <button
                     key={report.id}
                     type="button"
-                        onClick={() => onToggleReport(report.id)}
+                    onClick={() => onToggleReport(report.id)}
                     className={cn(
                       'group relative flex w-full items-center justify-between gap-4 rounded-xl border p-4 text-left transition-all',
                       isSelected
@@ -127,7 +129,9 @@ export const CompanyDetailComplianceCard = memo(
               <div className="text-xs font-bold uppercase text-muted-foreground">
                 Total Estimate
               </div>
-              <div className="text-xl font-bold text-primary">${totalPrice}</div>
+              <div className="text-xl font-bold text-primary">
+                ${totalPrice}
+              </div>
             </div>
           </div>
           <RequestScreeningPackageButton

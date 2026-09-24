@@ -1,7 +1,8 @@
 import { Link } from '@tanstack/react-router'
 import { Eye } from 'lucide-react'
-import { useGetRequests } from '@/apis/requests/get-requests'
-import type { TRequest } from '@/types/request'
+
+import { StatusPill } from '@/components/StatusPill'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -11,8 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { StatusPill } from '@/components/StatusPill'
+
+import { useGetRequests } from '@/apis/requests/get-requests'
+import type { TRequest } from '@/types/request'
 
 const RECENT_LIMIT = 5
 
@@ -40,7 +42,6 @@ function getCompanyNames(req: TRequest): string[] {
         : (c.companyNameEn ?? '—'),
     )
 }
-
 
 function formatRequestId(id: number) {
   return `REQ-${String(id).padStart(6, '0')}`
@@ -93,9 +94,7 @@ export function DashboardRecentRequests() {
                   <TableCell className="font-mono font-medium">
                     {formatRequestId(req.id)}
                   </TableCell>
-                  <TableCell>
-                    {getCompanyNames(req).join(', ')}
-                  </TableCell>
+                  <TableCell>{getCompanyNames(req).join(', ')}</TableCell>
                   <TableCell>
                     <StatusPill status={req.status} />
                   </TableCell>

@@ -1,19 +1,16 @@
-import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Link,
-  createFileRoute,
-  useRouteContext,
-} from '@tanstack/react-router'
+import { createFileRoute, Link, useRouteContext } from '@tanstack/react-router'
 import { CheckCircle2, Clock } from 'lucide-react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
-import { HomeHeader } from '@/components/home-header'
+
 import { HomeFooter } from '@/components/home-footer'
+import { HomeHeader } from '@/components/home-header'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Field, FieldError } from '@/components/ui/field'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
+import { Input } from '@/components/ui/input'
 
 export const Route = createFileRoute('/portal')({
   pendingComponent: FullPageLoading,
@@ -64,9 +61,8 @@ function PortalPage() {
             Ident-ity Portal
           </h1>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Request submission, status tracking, and delivery in one place —
-            a closed-cycle online portal with no email chains. Launching
-            soon.
+            Request submission, status tracking, and delivery in one place — a
+            closed-cycle online portal with no email chains. Launching soon.
           </p>
 
           <div className="mt-8 w-full max-w-sm">
@@ -90,10 +86,7 @@ function PortalPage() {
                   name="email"
                   control={form.control}
                   render={({ field, fieldState }) => (
-                    <Field
-                      data-invalid={!!fieldState.error}
-                      className="flex-1"
-                    >
+                    <Field data-invalid={!!fieldState.error} className="flex-1">
                       <Input
                         {...field}
                         type="email"

@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import {
   Building2,
   FileText,
@@ -8,10 +9,9 @@ import {
   X,
 } from 'lucide-react'
 
-import { Link } from '@tanstack/react-router'
-import { Button } from '../ui/button'
-import { Logo } from '../brand/logo'
 import { useLogout } from '@/hooks/use-logout'
+import { Logo } from '../brand/logo'
+import { Button } from '../ui/button'
 
 const items = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },

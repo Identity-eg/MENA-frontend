@@ -1,15 +1,12 @@
-import { memo } from 'react'
 import { Building2, User } from 'lucide-react'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { memo } from 'react'
+
 import { EmptyState } from '@/components/EmptyState'
-import { RequestReportCard } from './request-report-card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
 import type { RequestStatusValue } from '@/types/request'
 import type { RequestDetailSubjectItem } from './request-detail-types'
+import { RequestReportCard } from './request-report-card'
 
 type RequestDetailActiveSubjectSectionProps = {
   selectedSubject: RequestDetailSubjectItem | null
@@ -38,9 +35,7 @@ export const RequestDetailActiveSubjectSection = memo(
               <div>
                 <CardTitle
                   className="text-xl font-semibold"
-                  dir={
-                    selectedSubject.type === 'Individual' ? 'rtl' : 'ltr'
-                  }
+                  dir={selectedSubject.type === 'Individual' ? 'rtl' : 'ltr'}
                 >
                   {selectedSubject.name}
                 </CardTitle>

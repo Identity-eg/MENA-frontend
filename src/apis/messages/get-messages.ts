@@ -1,7 +1,8 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
-import { request } from '../base'
+
 import type { TApiResponseSingle } from '@/types/api-response-single'
 import type { TMessage } from '@/types/message'
+import { request } from '../base'
 
 type GetMessagesData = TApiResponseSingle<TMessage[]>
 

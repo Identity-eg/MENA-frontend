@@ -38,7 +38,11 @@ export function Logo({
           s.mark,
         )}
       >
-        <svg viewBox="0 0 24 24" fill="currentColor" className="h-[55%] w-[55%]">
+        <svg
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          className="h-[55%] w-[55%]"
+        >
           <rect x="10.69" y="10.13" width="2.63" height="9" rx="1.31" />
           <circle cx="12" cy="6.19" r="2.06" />
         </svg>

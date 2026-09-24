@@ -4,7 +4,6 @@
 export type {
   TRequest,
   CreateCompanyRequestPayload,
-  CreateRequestCompanyItem,
   RequestReportItem,
 } from './request'
 export { REQUEST_STATUS } from './request'

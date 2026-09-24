@@ -1,10 +1,11 @@
+import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
+
+import { getContext } from '@/integrations/tanstack-query/root-provider'
+import { clearServerCredentials } from '@/lib/auth'
 import { refreshToken } from '../auth/refresh-token'
 import { apiClient } from './api-client'
 import { getErrorMessage } from './error-handler'
 import { setIsomorphicAccessToken } from './request-interceptor'
-import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
-import { clearServerCredentials } from '@/lib/auth'
-import { getContext } from '@/integrations/tanstack-query/root-provider'
 
 let isRefreshing = false
 let failedQueue: Array<{

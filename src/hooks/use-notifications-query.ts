@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+
 import { getNotifications } from '@/apis/notifications/get-notifications'
-import { markNotificationsRead } from '@/apis/notifications/mark-notifications-read'
 import { markNotificationRead } from '@/apis/notifications/mark-notification-read'
+import { markNotificationsRead } from '@/apis/notifications/mark-notifications-read'
 
 export const NOTIFICATIONS_QUERY_KEY = ['notifications'] as const
 

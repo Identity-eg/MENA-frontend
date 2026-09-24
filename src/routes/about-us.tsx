@@ -1,14 +1,11 @@
-import {
-  Link,
-  createFileRoute,
-  useRouteContext,
-} from '@tanstack/react-router'
+import { createFileRoute, Link, useRouteContext } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
-import { Button } from '@/components/ui/button'
-import { HomeHeader } from '@/components/home-header'
+
 import { HomeFooter } from '@/components/home-footer'
+import { HomeHeader } from '@/components/home-header'
 import { StatTileRow } from '@/components/marketing/stat-tile'
+import { Button } from '@/components/ui/button'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 
 export const Route = createFileRoute('/about-us')({
   pendingComponent: FullPageLoading,
@@ -100,8 +97,8 @@ function AboutUsPage() {
                   Our Team
                 </h2>
                 <p className="mt-2 text-sm text-white/70">
-                  A 10-person team with a clear vision for MENA intelligence
-                  — no rosters, just the roles that get the work done.
+                  A 10-person team with a clear vision for MENA intelligence —
+                  no rosters, just the roles that get the work done.
                 </p>
                 <ul className="mt-5 space-y-2.5">
                   {teamComposition.map((item) => (

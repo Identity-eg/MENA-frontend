@@ -1,6 +1,6 @@
-import { memo } from 'react'
-import { ArrowLeft, ChevronRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { ArrowLeft, ChevronRight } from 'lucide-react'
+import { memo } from 'react'
 
 type RequestDetailBreadcrumbProps = {
   formattedId: string

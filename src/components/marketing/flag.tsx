@@ -1,4 +1,5 @@
 import * as flags from 'country-flag-icons/react/3x2'
+
 import { cn } from '@/lib/utils'
 
 /**
@@ -18,5 +19,7 @@ export function Flag({
   const Icon = flags[code.toUpperCase() as keyof typeof flags]
   if (!Icon) return null
 
-  return <Icon aria-hidden className={cn('h-3.5 w-auto rounded-[2px]', className)} />
+  return (
+    <Icon aria-hidden className={cn('h-3.5 w-auto rounded-[2px]', className)} />
+  )
 }

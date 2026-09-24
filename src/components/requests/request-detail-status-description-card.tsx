@@ -1,9 +1,10 @@
-import { memo } from 'react'
 import { Activity, CheckCircle2, XCircle } from 'lucide-react'
+import { memo } from 'react'
+
 import { Card, CardContent } from '@/components/ui/card'
+
 import { cn } from '@/lib/utils'
-import type { RequestStatusValue } from '@/types/request'
-import { REQUEST_STATUS } from '@/types/request'
+import { REQUEST_STATUS, type RequestStatusValue } from '@/types/request'
 import { requestDetailStatusConfig } from './request-detail-status-config'
 
 type RequestDetailStatusDescriptionCardProps = {

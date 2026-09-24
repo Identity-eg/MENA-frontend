@@ -1,7 +1,8 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { request } from '../base'
-import type { TCompany } from '@/types/company'
+
 import type { TApiResponseSingle } from '@/types/api-response-single'
+import type { TCompany } from '@/types/company'
+import { request } from '../base'
 
 type GetCompanyData = TApiResponseSingle<TCompany>
 type GetCompanyQueryOptionsOverride = Omit<

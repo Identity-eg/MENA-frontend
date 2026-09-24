@@ -1,19 +1,16 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { usePostHog } from '@posthog/react'
 import { getRouteApi } from '@tanstack/react-router'
-import { useGetRequest } from '@/apis/requests/get-request'
-import { downloadRequestInvoicePdf } from '@/apis/requests/download-request-invoice-pdf'
-import { useCreateRequestPaymentSession } from '@/apis/requests/create-request-payment-session'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+
 import { useGetMessages } from '@/apis/messages/get-messages'
 import { useSendMessage } from '@/apis/messages/send-message'
+import { useCreateRequestPaymentSession } from '@/apis/requests/create-request-payment-session'
+import { downloadRequestInvoicePdf } from '@/apis/requests/download-request-invoice-pdf'
+import { useGetRequest } from '@/apis/requests/get-request'
 import { buildRequestDetailSubjects } from './build-request-detail-subjects'
-import { formatRequestDate, formatRequestId } from './request-detail-formatters'
 import { RequestDetailActiveSubjectSection } from './request-detail-active-subject-section'
 import { RequestDetailBreadcrumb } from './request-detail-breadcrumb'
+import { formatRequestDate, formatRequestId } from './request-detail-formatters'
 import { RequestDetailHero } from './request-detail-hero'
 import { RequestDetailMessagesCard } from './request-detail-messages-card'
 import { RequestDetailStatusDescriptionCard } from './request-detail-status-description-card'
@@ -28,11 +25,9 @@ export function RequestDetailView() {
   const id = Number(requestId)
   const { data } = useGetRequest(id)
   const request = data.data
+  const posthog = usePostHog()
 
-  const subjects = useMemo(
-    () => buildRequestDetailSubjects(request),
-    [request],
-  )
+  const subjects = useMemo(() => buildRequestDetailSubjects(request), [request])
   const [activeSubjectId, setActiveSubjectId] = useState('')
 
   useEffect(() => {
@@ -82,16 +77,34 @@ export function RequestDetailView() {
   }, [request.id])
 
   const handlePay = useCallback(() => {
-    createPaymentSession(request.id)
-  }, [createPaymentSession, request.id])
+    const base = window.location.origin
+    createPaymentSession(
+      {
+        requestId: request.id,
+        successUrl: `${base}/requests/${request.id}?payment=success`,
+        cancelUrl: `${base}/requests/${request.id}?payment=cancelled`,
+      },
+      {
+        onSuccess: () => {
+          posthog.capture('request_payment_checkout_started', {
+            request_id: request.id,
+            amount_due: amountDue,
+          })
+        },
+      },
+    )
+  }, [amountDue, createPaymentSession, posthog, request.id])
 
   const handleSubmitMessage = useCallback(() => {
     const content = messageDraft.trim()
     if (!content || sendMessageMutation.isPending) return
     sendMessageMutation.mutate(content, {
-      onSuccess: () => setMessageDraft(''),
+      onSuccess: () => {
+        posthog.capture('request_message_sent', { request_id: request.id })
+        setMessageDraft('')
+      },
     })
-  }, [messageDraft, sendMessageMutation])
+  }, [messageDraft, posthog, request.id, sendMessageMutation])
 
   const setActiveSubject = useCallback((subjectId: string) => {
     setActiveSubjectId(subjectId)

@@ -1,7 +1,8 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { request } from '../base'
-import type { TReport } from '@/types/report'
+
 import type { TApiResponseSingle } from '@/types/api-response-single'
+import type { TReport } from '@/types/report'
+import { request } from '../base'
 
 type GetReportsData = TApiResponseSingle<Array<TReport>>
 type GetReportsQueryOptionsOverride = Omit<

@@ -1,8 +1,8 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
 
-import { Button } from './ui/button'
 import { partnershipTiers } from '@/lib/partnership-tiers'
+import { Button } from './ui/button'
 
 export function PartnershipTeaserSection() {
   return (

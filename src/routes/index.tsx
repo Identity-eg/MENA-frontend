@@ -1,14 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
+
+import { ClosingCtaSection } from '@/components/closing-cta-section'
 import { HeroSection } from '@/components/hero-section'
-import { StatusSection } from '@/components/status-section'
-import { SolutionsOverviewSection } from '@/components/solutions-overview-section'
-import { PlatformFeaturesSection } from '@/components/platform-features-section'
+import { HomeFooter } from '@/components/home-footer'
+import { HomeHeader } from '@/components/home-header'
 import { JurisdictionStripSection } from '@/components/jurisdiction-strip-section'
 import { PartnershipTeaserSection } from '@/components/partnership-teaser-section'
-import { ClosingCtaSection } from '@/components/closing-cta-section'
-import { HomeHeader } from '@/components/home-header'
-import { HomeFooter } from '@/components/home-footer'
+import { PlatformFeaturesSection } from '@/components/platform-features-section'
+import { SolutionsOverviewSection } from '@/components/solutions-overview-section'
+import { StatusSection } from '@/components/status-section'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 
 export const Route = createFileRoute('/')({
   pendingComponent: FullPageLoading,

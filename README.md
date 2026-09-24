@@ -44,15 +44,15 @@ App runs at `http://localhost:3000` by default.
 
 ## Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start Vite dev server (port 3000) |
-| `npm run build` | Production build |
-| `npm run preview` | Preview production build |
-| `npm run test` | Run Vitest tests |
-| `npm run lint` | ESLint |
-| `npm run format` | Prettier |
-| `npm run check` | Format + lint fix |
+| Script            | Description                       |
+| ----------------- | --------------------------------- |
+| `npm run dev`     | Start Vite dev server (port 3000) |
+| `npm run build`   | Production build                  |
+| `npm run preview` | Preview production build          |
+| `npm run test`    | Run Vitest tests                  |
+| `npm run lint`    | ESLint                            |
+| `npm run format`  | Prettier                          |
+| `npm run check`   | Format + lint fix                 |
 
 ## Project Structure
 

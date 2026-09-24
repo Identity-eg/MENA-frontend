@@ -1,12 +1,14 @@
-import { Suspense, useState } from 'react'
-import { Link, createFileRoute } from '@tanstack/react-router'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { ChevronRight, Loader2, Plus, Search } from 'lucide-react'
+import { Suspense, useState } from 'react'
 import z from 'zod'
+
+import { PageHeader } from '@/components/page-header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { Input } from '@/components/ui/input'
-import { PageHeader } from '@/components/page-header'
+
 import {
   getCompaniesQueryOptions,
   useGetCompanies,

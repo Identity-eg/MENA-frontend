@@ -1,10 +1,11 @@
-import { getCookie, setCookie } from '@tanstack/react-start/server'
 import { createIsomorphicFn } from '@tanstack/react-start'
-import { refreshToken } from '../auth/refresh-token'
+import { getCookie, setCookie } from '@tanstack/react-start/server'
 import type { InternalAxiosRequestConfig } from 'axios'
-import { getAuthCookieOptions } from '@/lib/cookie-options'
+
 import { ACCESS_TOKEN_NAME } from '@/constants/auth'
 import { getContext } from '@/integrations/tanstack-query/root-provider'
+import { getAuthCookieOptions } from '@/lib/cookie-options'
+import { refreshToken } from '../auth/refresh-token'
 
 export const requestSuccessInterceptor = async (
   config: InternalAxiosRequestConfig,

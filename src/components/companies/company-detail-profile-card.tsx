@@ -1,12 +1,9 @@
-import { memo, ReactNode } from 'react'
 import { Building2 } from 'lucide-react'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { memo, ReactNode } from 'react'
+
 import { EmptyState } from '@/components/EmptyState'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
 import type { CompanyProfileFieldRow } from './company-detail-types'
 
 type CompanyDetailProfileCardProps = {
@@ -14,12 +11,60 @@ type CompanyDetailProfileCardProps = {
   children?: ReactNode
 }
 
-const REGISTRATION_KEYS = ['registrationNumber', 'UNN', 'centralNumber', 'civilId', 'legalForm', 'classification', 'estDate', 'expiryDate', 'status', 'entityNumber', 'TaxRegNumber', 'unifiedEconomicNumber', 'bcciIssueDate', 'bcciExpiryDate', 'businessNameAr', 'businessNameEn', 'licenseCategory', 'licenseNumber', 'mainLicenseNumber', 'dcciNumber', 'D_B_dunsNumber', 'licenseTarget', 'lastBudgetStatus', 'country']
-const ACTIVITIES_KEYS = ['activityCode', 'activityName', 'activityStatus', 'activity_ISICCode', 'sectorDescription']
-const CAPITAL_KEYS = ['totalShares', 'shareValue', 'currency', 'paid', 'totalCapital', 'cashCapital', 'assetCapital', 'nominated', 'auth', 'capital']
+const REGISTRATION_KEYS = [
+  'registrationNumber',
+  'UNN',
+  'centralNumber',
+  'civilId',
+  'legalForm',
+  'classification',
+  'estDate',
+  'expiryDate',
+  'status',
+  'entityNumber',
+  'TaxRegNumber',
+  'unifiedEconomicNumber',
+  'bcciIssueDate',
+  'bcciExpiryDate',
+  'businessNameAr',
+  'businessNameEn',
+  'licenseCategory',
+  'licenseNumber',
+  'mainLicenseNumber',
+  'dcciNumber',
+  'D_B_dunsNumber',
+  'licenseTarget',
+  'lastBudgetStatus',
+  'country',
+]
+const ACTIVITIES_KEYS = [
+  'activityCode',
+  'activityName',
+  'activityStatus',
+  'activity_ISICCode',
+  'sectorDescription',
+]
+const CAPITAL_KEYS = [
+  'totalShares',
+  'shareValue',
+  'currency',
+  'paid',
+  'totalCapital',
+  'cashCapital',
+  'assetCapital',
+  'nominated',
+  'auth',
+  'capital',
+]
 const AMENDMENTS_KEYS = ['amendDate', 'amendType', 'amendDescription']
 
-function Section({ title, fields }: { title: string, fields: CompanyProfileFieldRow[] }) {
+function Section({
+  title,
+  fields,
+}: {
+  title: string
+  fields: CompanyProfileFieldRow[]
+}) {
   if (fields.length === 0) return null
   return (
     <div className="mb-6 last:mb-0">
@@ -35,9 +80,7 @@ function Section({ title, fields }: { title: string, fields: CompanyProfileField
             <span className="w-36 shrink-0 text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
               {label}
             </span>
-            <p className="text-sm text-foreground wrap-break-word">
-              {value}
-            </p>
+            <p className="text-sm text-foreground wrap-break-word">{value}</p>
           </div>
         ))}
       </div>
@@ -49,12 +92,22 @@ export const CompanyDetailProfileCard = memo(function CompanyDetailProfileCard({
   publicFields,
   children,
 }: CompanyDetailProfileCardProps) {
-  const fieldsWithValue = publicFields.filter(f => f.value !== null && f.value !== undefined && f.value !== '')
+  const fieldsWithValue = publicFields.filter(
+    (f) => f.value !== null && f.value !== undefined && f.value !== '',
+  )
 
-  const registrationData = fieldsWithValue.filter(f => REGISTRATION_KEYS.includes(f.key))
-  const activitiesData = fieldsWithValue.filter(f => ACTIVITIES_KEYS.includes(f.key))
-  const capitalData = fieldsWithValue.filter(f => CAPITAL_KEYS.includes(f.key))
-  const amendmentsData = fieldsWithValue.filter(f => AMENDMENTS_KEYS.includes(f.key))
+  const registrationData = fieldsWithValue.filter((f) =>
+    REGISTRATION_KEYS.includes(f.key),
+  )
+  const activitiesData = fieldsWithValue.filter((f) =>
+    ACTIVITIES_KEYS.includes(f.key),
+  )
+  const capitalData = fieldsWithValue.filter((f) =>
+    CAPITAL_KEYS.includes(f.key),
+  )
+  const amendmentsData = fieldsWithValue.filter((f) =>
+    AMENDMENTS_KEYS.includes(f.key),
+  )
 
   const hasAnyFields = fieldsWithValue.length > 0 || children
 

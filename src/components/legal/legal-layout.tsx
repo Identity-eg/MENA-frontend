@@ -1,6 +1,7 @@
 import { useRouteContext } from '@tanstack/react-router'
-import { HomeHeader } from '@/components/home-header'
+
 import { HomeFooter } from '@/components/home-footer'
+import { HomeHeader } from '@/components/home-header'
 
 /**
  * All three legal pages (Privacy Policy, Terms of Service, Cookie Policy)
@@ -37,9 +38,7 @@ export function LegalLayout({
             </span>
           </div>
           {lastUpdated && (
-            <p className="mt-2 text-sm text-muted-foreground">
-              {lastUpdated}
-            </p>
+            <p className="mt-2 text-sm text-muted-foreground">{lastUpdated}</p>
           )}
 
           <div className="legal-prose mt-8">{children}</div>

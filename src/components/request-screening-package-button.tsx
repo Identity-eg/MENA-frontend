@@ -1,6 +1,9 @@
+import { usePostHog } from '@posthog/react'
 import { useNavigate } from '@tanstack/react-router'
 import { ChevronRight, Loader2 } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
+
 import { useCreateRequest } from '@/apis/requests/create-request'
 
 type RequestScreeningPackageButtonProps = {
@@ -18,17 +21,21 @@ export function RequestScreeningPackageButton({
 }: RequestScreeningPackageButtonProps) {
   const navigate = useNavigate()
   const createRequest = useCreateRequest()
+  const posthog = usePostHog()
 
   const handleClick = () => {
     if (selectedReportIds.length === 0) return
     createRequest.mutate(
       {
-        companiesReports: companyId
-          ? [{ companyId, reportIds: selectedReportIds }]
-          : undefined,
+        companyIds: companyId ? [companyId] : [],
+        reportIds: selectedReportIds,
       },
       {
         onSuccess: () => {
+          posthog.capture('screening_request_created', {
+            selected_report_count: selectedReportIds.length,
+            has_company_context: companyId != null,
+          })
           navigate({ to: '/requests' })
         },
       },

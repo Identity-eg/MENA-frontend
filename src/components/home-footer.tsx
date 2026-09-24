@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
-import { Logo } from './brand/logo'
+
 import { jurisdictions } from '@/lib/jurisdictions'
+import { Logo } from './brand/logo'
 
 const footerLinks = [
   { to: '/about-us' as const, label: 'About Us' },
@@ -59,7 +60,9 @@ export function HomeFooter() {
         </div>
 
         <div className="mt-6 flex flex-col items-center justify-between gap-3 border-t pt-6 text-[11px] text-muted-foreground/70 sm:flex-row">
-          <span>&copy; {new Date().getFullYear()} ident-ity. All rights reserved.</span>
+          <span>
+            &copy; {new Date().getFullYear()} ident-ity. All rights reserved.
+          </span>
           <nav className="flex flex-wrap justify-center gap-x-4 gap-y-1">
             {legalLinks.map((link) => (
               <Link

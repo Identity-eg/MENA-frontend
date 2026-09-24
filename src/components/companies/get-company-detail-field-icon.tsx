@@ -1,4 +1,3 @@
-import type { LucideIcon } from 'lucide-react'
 import {
   Briefcase,
   Globe,
@@ -7,6 +6,7 @@ import {
   MapPin,
   Phone,
   Users,
+  type LucideIcon,
 } from 'lucide-react'
 
 export function getCompanyDetailFieldIcon(key: string): LucideIcon {
@@ -27,6 +27,5 @@ export function getCompanyDetailFieldIcon(key: string): LucideIcon {
       return Users
     default:
       return Lock
-
   }
 }

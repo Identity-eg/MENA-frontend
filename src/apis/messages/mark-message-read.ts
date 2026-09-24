@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { request } from '../base'
+
 import type { TApiResponseSingle } from '@/types/api-response-single'
 import type { TMessage } from '@/types/message'
+import { request } from '../base'
 import { getMessagesQueryKey } from './get-messages'
 
 export const markMessageRead = async (

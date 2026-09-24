@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
-import { StatusPill } from './StatusPill'
 import type { RequestStatus } from '@/types'
+import { StatusPill } from './StatusPill'
 
 interface PageHeaderProps {
   title: string

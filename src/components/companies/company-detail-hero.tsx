@@ -1,8 +1,12 @@
-import { memo } from 'react'
 import { Building2, Globe } from 'lucide-react'
+import { memo } from 'react'
+
 import type { TCompany } from '@/types/company'
 
-type CompanyDetailHeroProps = Pick<TCompany, 'companyNameEn' | 'companyNameAr' | 'activityName' | 'country'>
+type CompanyDetailHeroProps = Pick<
+  TCompany,
+  'companyNameEn' | 'companyNameAr' | 'activityName' | 'country'
+>
 
 export const CompanyDetailHero = memo(function CompanyDetailHero({
   companyNameEn,
@@ -23,7 +27,9 @@ export const CompanyDetailHero = memo(function CompanyDetailHero({
               <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
                 {companyNameEn}
               </h1>
-              <p className="text-sm text-muted-foreground truncate">{companyNameAr}</p>
+              <p className="text-sm text-muted-foreground truncate">
+                {companyNameAr}
+              </p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">

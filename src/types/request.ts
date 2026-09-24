@@ -1,6 +1,6 @@
-import type { ValueOf } from './value-of'
 import type { TCompany } from './company'
 import type { TReport } from './report'
+import type { ValueOf } from './value-of'
 
 /** Backend request status enum values */
 export const REQUEST_STATUS = {
@@ -33,14 +33,9 @@ export type TRequestCompany = {
   country?: { code: string; nameEn: string; nameAr: string }
 }
 
-/** Per-company report selection when creating a request */
-export type CreateRequestCompanyItem = {
-  companyId: number
-  reportIds: Array<number>
-}
-
 export type CreateCompanyRequestPayload = {
-  companiesReports?: Array<CreateRequestCompanyItem>
+  companyIds: number[]
+  reportIds: number[]
 }
 
 /** Report shape as included in request list/detail (backend sends price = estimatedPrice) */
@@ -72,7 +67,6 @@ export type RequestCompanyReportItem = {
   report: RequestReport & { price: number }
   upload?: RequestCompanyReportUploadItem | null
 }
-
 
 /** Upload for a request report (company or individual); backend model: RequestReportUpload */
 export type RequestReportUploadItem = {

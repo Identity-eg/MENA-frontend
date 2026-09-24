@@ -1,8 +1,10 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
-import { Card, CardContent } from '@/components/ui/card'
-import { buttonVariants } from '@/components/ui/button'
+import { createFileRoute, Link } from '@tanstack/react-router'
+
 import { Logo } from '@/components/brand/logo'
+import { buttonVariants } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
+
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/auth/reset')({

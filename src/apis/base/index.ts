@@ -1,7 +1,7 @@
-import qs from 'qs'
-import { apiClient } from './api-client'
-
 import type { AxiosProgressEvent, AxiosRequestConfig } from 'axios'
+import qs from 'qs'
+
+import { apiClient } from './api-client'
 
 type TOptions = {
   onDownloadProgress?: (progress: number) => void

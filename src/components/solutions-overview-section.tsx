@@ -1,10 +1,9 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
 
-import { SolutionWordmark } from './brand/logo'
-import { StatusBadge } from './marketing/status-badge'
-import type { SolutionMark } from './brand/logo'
 import { activeSolutions, pipelineSolutions } from '@/lib/solutions'
+import { SolutionWordmark, type SolutionMark } from './brand/logo'
+import { StatusBadge } from './marketing/status-badge'
 
 export function SolutionsOverviewSection() {
   return (

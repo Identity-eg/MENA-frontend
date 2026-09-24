@@ -1,9 +1,8 @@
-import type { TRequest } from '@/types/request'
+import type { RequestReportItem, TRequest } from '@/types/request'
 import type {
   RequestDetailReportRow,
   RequestDetailSubjectItem,
 } from './request-detail-types'
-import type { RequestReportItem } from '@/types/request'
 
 /** Unified request reports (prefer requestReports; empty when none). */
 export function getRequestReports(
@@ -65,7 +64,6 @@ export function buildRequestDetailSubjects(
         })
       }
     }
-
   }
 
   const companySubjects: Array<RequestDetailSubjectItem> = Array.from(

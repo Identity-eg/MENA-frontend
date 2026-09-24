@@ -1,5 +1,6 @@
 /* source() ensures client and SSR builds scan the same paths → same CSS hash (fixes Docker 404 on assets) */
-@import 'tailwindcss' source('./');
+@import 'tailwindcss';
+@source './';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 @import '@fontsource-variable/inter';
@@ -54,6 +55,9 @@ code {
   --accent: #e7f6fb;
   --accent-foreground: var(--brand-navy);
   --destructive: oklch(0.58 0.22 27);
+  --success: oklch(0.627 0.194 149.214); /* green-500 equivalent */
+  --warning: oklch(0.769 0.188 70.08); /* amber-500 equivalent */
+  --info: oklch(0.546 0.245 262.881); /* blue-500 equivalent */
   --border: #e4e7ef;
   --input: #e4e7ef;
   --ring: var(--brand-navy);
@@ -96,6 +100,9 @@ code {
   --accent: #0e2266;
   --accent-foreground: var(--brand-cyan);
   --destructive: oklch(0.704 0.191 22.216);
+  --success: oklch(0.627 0.194 149.214);
+  --warning: oklch(0.769 0.188 70.08);
+  --info: oklch(0.546 0.245 262.881);
   --border: rgba(244, 246, 250, 0.12);
   --input: rgba(244, 246, 250, 0.14);
   --ring: var(--brand-cyan);
@@ -139,6 +146,9 @@ code {
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);

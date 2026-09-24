@@ -1,5 +1,5 @@
-import { memo } from 'react'
 import { CheckCircle2 } from 'lucide-react'
+import { memo } from 'react'
 
 export const CompanyDetailUnlockSuccessBanner = memo(
   function CompanyDetailUnlockSuccessBanner() {

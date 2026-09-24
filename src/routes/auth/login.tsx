@@ -1,14 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
+
 import { Logo } from '@/components/brand/logo'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
+import { Input } from '@/components/ui/input'
+
 import { useLogin } from '@/apis/auth/login'
 
 export const Route = createFileRoute('/auth/login')({
@@ -71,7 +74,11 @@ const LoginForm = () => {
   const loginMutation = useLogin()
 
   const onSubmit = async (data: LoginValues) => {
-    await loginMutation.mutateAsync(data)
+    try {
+      await loginMutation.mutateAsync(data)
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to sign in')
+    }
   }
 
   const isSubmitting = form.formState.isSubmitting
@@ -137,10 +144,6 @@ const LoginForm = () => {
         {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : 'Sign In'}
         {!isSubmitting && <ArrowRight className="size-4" />}
       </Button>
-
-      {loginMutation.isError && (
-        <FieldError errors={[{ message: loginMutation.error.message }]} />
-      )}
     </form>
   )
 }

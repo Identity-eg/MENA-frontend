@@ -1,12 +1,12 @@
-import { Suspense } from 'react'
+import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { ArrowLeft, Building2 } from 'lucide-react'
-import { Link, createFileRoute, notFound } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
-import {
-  getCompanyQueryOptions,
-} from '@/apis/company/get-company'
+import { Suspense } from 'react'
+
 import { CompanyDetailLoadingFallback } from '@/components/companies/company-detail-loading-fallback'
 import { CompanyDetailView } from '@/components/companies/company-detail-view'
+import { Button } from '@/components/ui/button'
+
+import { getCompanyQueryOptions } from '@/apis/company/get-company'
 
 export const Route = createFileRoute('/_protected/companies/$companyId')({
   component: CompanyDetailsPage,

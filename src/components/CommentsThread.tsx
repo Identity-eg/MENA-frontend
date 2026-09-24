@@ -1,9 +1,10 @@
+import { Bot, MessageSquare, Shield, User } from 'lucide-react'
 import { useState } from 'react'
-import { MessageSquare, User, Shield, Bot } from 'lucide-react'
+
 import { cn } from '@/lib/utils'
 import type { Comment } from '@/types'
-import { Card, CardContent, CardHeader } from './ui/card'
 import { Button } from './ui/button'
+import { Card, CardContent, CardHeader } from './ui/card'
 import { Textarea } from './ui/textarea'
 
 interface CommentsThreadProps {

@@ -1,10 +1,11 @@
-import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
-import { Button } from './ui/button'
+import { useState } from 'react'
+
+import type { TUser } from '@/types/user'
 import { Logo } from './brand/logo'
 import { UserNav } from './layout/user-nav'
-import type { TUser } from '@/types/user'
+import { Button } from './ui/button'
 
 const navLinks = [
   { to: '/' as const, label: 'Home' },

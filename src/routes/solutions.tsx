@@ -1,17 +1,18 @@
-import {
-  Link,
-  createFileRoute,
-  useRouteContext,
-} from '@tanstack/react-router'
+import { createFileRoute, Link, useRouteContext } from '@tanstack/react-router'
 import { ArrowRight, Check } from 'lucide-react'
-import type { SolutionMark } from '@/components/brand/logo'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
-import { Button } from '@/components/ui/button'
-import { HomeHeader } from '@/components/home-header'
+
+import {
+  Logo,
+  SolutionWordmark,
+  type SolutionMark,
+} from '@/components/brand/logo'
 import { HomeFooter } from '@/components/home-footer'
-import { Logo, SolutionWordmark } from '@/components/brand/logo'
-import { StatusBadge } from '@/components/marketing/status-badge'
+import { HomeHeader } from '@/components/home-header'
 import { JurisdictionBadgeRow } from '@/components/marketing/jurisdiction-badge-row'
+import { StatusBadge } from '@/components/marketing/status-badge'
+import { Button } from '@/components/ui/button'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
+
 import { activeSolutions, pipelineSolutions } from '@/lib/solutions'
 
 export const Route = createFileRoute('/solutions')({
@@ -22,7 +23,7 @@ export const Route = createFileRoute('/solutions')({
       {
         name: 'description',
         content:
-          'Ident-RR, IdentBase, and IdentMedia — Ident-ity\'s active MENA business intelligence solutions, with three more in the pipeline.',
+          "Ident-RR, IdentBase, and IdentMedia — Ident-ity's active MENA business intelligence solutions, with three more in the pipeline.",
       },
     ],
   }),

@@ -1,8 +1,9 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { AlertCircle, ArrowLeft, CreditCard } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
 
 export const Route = createFileRoute(
   '/_protected/requests/payment-failed/$requestId',

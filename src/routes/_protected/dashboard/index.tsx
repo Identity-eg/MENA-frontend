@@ -1,21 +1,26 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
-import { Suspense } from 'react'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { CheckCircle2, Clock, FileText, Loader2, Unlock } from 'lucide-react'
-import type { RequestStatusValue, TRequest } from '@/types/request'
-import { REQUEST_STATUS } from '@/types/request'
-import {
-  getUnlocksQueryOptions,
-  useGetUnlocks,
-} from '@/apis/unlocks/get-unlocks'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { PageHeader } from '@/components/page-header'
+import { Suspense } from 'react'
+
 import { DashboardRecentRequests } from '@/components/dashboard-recent-requests'
+import { PageHeader } from '@/components/page-header'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { FullPageLoading } from '@/components/ui/full-page-loading'
+
 import {
   getRequestsQueryOptions,
   useGetRequests,
 } from '@/apis/requests/get-requests'
+import {
+  getUnlocksQueryOptions,
+  useGetUnlocks,
+} from '@/apis/unlocks/get-unlocks'
 import { useGetMe } from '@/apis/user/get-me'
-import { FullPageLoading } from '@/components/ui/full-page-loading'
+import {
+  REQUEST_STATUS,
+  type RequestStatusValue,
+  type TRequest,
+} from '@/types/request'
 
 export const Route = createFileRoute('/_protected/dashboard/')({
   component: DashboardPage,
