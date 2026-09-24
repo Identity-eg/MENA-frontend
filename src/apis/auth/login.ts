@@ -28,10 +28,10 @@ const login = async ({
 }
 
 const loginServerAction = createServerFn()
-  .inputValidator(
+  .validator(
     z.object({
       email: businessEmailSchema,
-      password: z.string().min(1, 'Password is required'),
+      password: z.string('Password is required').min(1, 'Password is required'),
     }),
   )
   .handler(async ({ data }) => {

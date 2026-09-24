@@ -60,7 +60,7 @@ function LoginPage() {
 
 const loginSchema = z.object({
   email: businessEmailSchema,
-  password: z.string().min(1, 'Password is required'),
+  password: z.string('Password is required').min(1, 'Password is required'),
 })
 
 type LoginValues = z.infer<typeof loginSchema>
@@ -68,6 +68,10 @@ type LoginValues = z.infer<typeof loginSchema>
 const LoginForm = () => {
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   })
 
   const loginMutation = useLogin()

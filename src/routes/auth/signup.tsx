@@ -28,17 +28,17 @@ export const Route = createFileRoute('/auth/signup')({
 
 const signupSchema = z.object({
   name: z
-    .string({ error: 'Full name is required' })
+    .string('Full name is required')
     .min(1, 'Full name is required')
     .min(2, 'Full name must be at least 2 characters'),
   email: businessEmailSchema,
   companyName: z
-    .string({ error: 'Company name is required' })
+    .string('Company name is required')
     .min(1, 'Company name is required')
     .min(2, 'Company name must be at least 2 characters'),
   roleInCompany: z.string().optional(),
   phone: z
-    .string({ error: 'Phone number is required' })
+    .string('Phone number is required')
     .min(1, 'Phone number is required')
     .min(6, 'Please enter a valid phone number'),
 })

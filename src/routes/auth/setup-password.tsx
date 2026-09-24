@@ -22,17 +22,17 @@ export const Route = createFileRoute('/auth/setup-password')({
   pendingComponent: FullPageLoading,
   component: RouteComponent,
   validateSearch: z.object({
-    token: z.string().min(1, 'Token is required'),
+    token: z.string('Token is required').min(1, 'Token is required'),
   }),
 })
 
 const setupPasswordSchema = z
   .object({
     password: z
-      .string()
+      .string('Password is required')
       .min(1, 'Password is required')
       .min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string().min(1, 'Please confirm your password'),
+    confirmPassword: z.string('Please confirm your password').min(1, 'Please confirm your password'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',

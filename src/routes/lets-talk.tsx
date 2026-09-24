@@ -51,11 +51,11 @@ const interestOptions = [
 ]
 
 const contactSchema = z.object({
-  fullName: z.string().min(2, 'Full name is required'),
+  fullName: z.string('Full name is required').min(1, 'Full name is required').min(2, 'Full name must be at least 2 characters'),
   email: businessEmailSchema,
-  companyName: z.string().min(2, 'Company name is required'),
-  jurisdiction: z.string().min(1, 'Please select a jurisdiction'),
-  interest: z.string().min(1, "Please select what you're looking for"),
+  companyName: z.string('Company name is required').min(1, 'Company name is required').min(2, 'Company name must be at least 2 characters'),
+  jurisdiction: z.string('Please select a jurisdiction').min(1, 'Please select a jurisdiction'),
+  interest: z.string("Please select what you're looking for").min(1, "Please select what you're looking for"),
   message: z.string().optional(),
   consent: z.boolean().refine((v) => v === true, {
     message: 'Please accept to continue',
