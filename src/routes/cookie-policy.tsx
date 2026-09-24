@@ -10,7 +10,8 @@ export const Route = createFileRoute('/cookie-policy')({
       { title: 'Cookie Policy | Ident-ity' },
       {
         name: 'description',
-        content: "Ident-ity's Cookie Policy — draft, pending legal review.",
+        content:
+          'How Ident-ity uses cookies and similar technologies, and how you can manage your preferences.',
       },
     ],
   }),
@@ -21,20 +22,9 @@ function CookiePolicyPage() {
   return (
     <LegalLayout
       title="Cookie Policy"
-      lastUpdated="Last updated: [insert date at publish]"
+      lastUpdated="Last updated: September 2026"
     >
-      <blockquote>
-        As with the Privacy Policy and Terms of Service, this is a
-        standard-practice draft, not legal advice. If you plan to serve visitors
-        from the EU/UK, note that cookie-consent rules there (ePrivacy/GDPR)
-        generally require a <strong>prior opt-in</strong> for anything beyond
-        strictly necessary cookies, via a consent banner with a genuine
-        &ldquo;reject&rdquo; option — not just a notice. Confirm with counsel
-        whether that applies to your expected audience, and make sure the actual
-        consent-banner implementation matches whatever this policy ends up
-        saying.
-      </blockquote>
-
+      {' '}
       <h2>1. What Are Cookies</h2>
       <p>
         Cookies are small text files placed on your device when you visit a
@@ -42,7 +32,6 @@ function CookiePolicyPage() {
         pixels) for some of the purposes described below; where we say
         &ldquo;cookies,&rdquo; we mean all of these unless stated otherwise.
       </p>
-
       <h2>2. How We Use Cookies</h2>
       <table>
         <thead>
@@ -70,12 +59,8 @@ function CookiePolicyPage() {
             </td>
             <td>
               Helps us understand how visitors use the site (e.g., which pages
-              are viewed, how long, referral source) so we can improve it. We
-              use{' '}
-              <strong>
-                [Google Analytics 4 / Plausible / your chosen tool]
-              </strong>
-              , which may set its own cookies.
+              are viewed, how long, referral source) so we can improve it. These
+              are set by our analytics provider, which may set its own cookies.
             </td>
             <td>Yes, via the cookie banner or your browser settings.</td>
           </tr>
@@ -94,11 +79,8 @@ function CookiePolicyPage() {
               <strong>Marketing</strong>
             </td>
             <td>
-              Only used if we run targeted advertising or retargeting campaigns;{' '}
-              <strong>
-                [remove this row entirely if you don&rsquo;t plan to do this]
-              </strong>
-              .
+              Only used where we run targeted advertising or retargeting
+              campaigns.
             </td>
             <td>Yes.</td>
           </tr>
@@ -109,41 +91,27 @@ function CookiePolicyPage() {
         named individuals for advertising purposes, and we do not sell
         cookie/tracking data to third parties.
       </p>
-
       <h2>3. Third-Party Cookies</h2>
       <p>
         Some cookies are placed by third-party services we use to operate the
         site (for example, our analytics provider). These third parties have
-        their own privacy and cookie policies, which we encourage you to review.{' '}
-        <strong>
-          [List specific third parties once your analytics/tooling stack is
-          finalized.]
-        </strong>
+        their own privacy and cookie policies, which we encourage you to review.
+        We limit these to the providers needed to operate, secure, and measure
+        the performance of the site.
       </p>
-
       <h2>4. Managing Your Cookie Preferences</h2>
       <p>
-        When you first visit our site, you will be shown a cookie banner
-        allowing you to accept or reject non-essential cookies. You can change
-        your preferences at any time via{' '}
-        <strong>
-          [a persistent &ldquo;cookie settings&rdquo; link in the footer]
-        </strong>
-        . You can also control or delete cookies through your browser settings;
-        note that blocking cookies may affect site functionality, particularly
-        for the registration/login system.
+        Where a cookie banner is presented, you can accept or reject
+        non-essential cookies and change that choice at any time. You can also
+        control or delete cookies through your browser settings; note that
+        blocking cookies may affect site functionality, particularly for the
+        registration/login system.
       </p>
-
       <h2>5. Changes to This Policy</h2>
       <p>
         We may update this Cookie Policy from time to time to reflect changes in
         the cookies and technologies we use. The &ldquo;Last updated&rdquo; date
         above reflects the most recent revision.
-      </p>
-
-      <h2>6. Contact Us</h2>
-      <p>
-        <strong>[privacy@ident-ity.com]</strong>
       </p>
     </LegalLayout>
   )

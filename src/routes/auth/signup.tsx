@@ -19,6 +19,7 @@ import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { Input } from '@/components/ui/input'
 
 import { useRegister } from '@/apis/auth/register'
+import { businessEmailSchema } from '@/lib/business-email'
 
 export const Route = createFileRoute('/auth/signup')({
   pendingComponent: FullPageLoading,
@@ -30,9 +31,7 @@ const signupSchema = z.object({
     .string({ error: 'Full name is required' })
     .min(1, 'Full name is required')
     .min(2, 'Full name must be at least 2 characters'),
-  email: z
-    .email('Please enter a valid work email.')
-    .min(1, 'Email is required'),
+  email: businessEmailSchema,
   companyName: z
     .string({ error: 'Company name is required' })
     .min(1, 'Company name is required')
@@ -120,7 +119,7 @@ export default function SignupPage() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={!!fieldState.error}>
                   <FieldLabel htmlFor="signup-email" required>
-                    Work Email
+                    Business email
                   </FieldLabel>
                   <Input
                     {...field}

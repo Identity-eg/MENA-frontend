@@ -4,6 +4,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { setCookie } from '@tanstack/react-start/server'
 import z from 'zod'
 
+import { businessEmailSchema } from '@/lib/business-email'
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/constants/auth'
 import { getAuthCookieOptions } from '@/lib/cookie-options'
 import { request } from '../base'
@@ -29,7 +30,7 @@ const login = async ({
 const loginServerAction = createServerFn()
   .inputValidator(
     z.object({
-      email: z.email('Please enter a valid work email.'),
+      email: businessEmailSchema,
       password: z.string().min(1, 'Password is required'),
     }),
   )

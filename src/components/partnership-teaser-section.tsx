@@ -44,7 +44,7 @@ export function PartnershipTeaserSection() {
               size="lg"
               className="bg-brand-cyan text-brand-navy-deep hover:bg-brand-cyan/90"
             >
-              Talk to us about partnering
+              Talk to us about partnership
               <ArrowRight />
             </Button>
           </Link>

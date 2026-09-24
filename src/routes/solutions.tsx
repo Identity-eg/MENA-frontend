@@ -69,15 +69,6 @@ function SolutionsPage() {
                         <StatusBadge status={solution.status} />
                       </div>
                     </div>
-                    <Link to="/auth/signup">
-                      <Button
-                        size="sm"
-                        className="h-auto w-full whitespace-normal py-2.5 text-center leading-snug bg-brand-cyan text-brand-navy-deep hover:bg-brand-cyan/90"
-                      >
-                        {solution.cta}
-                        <ArrowRight className="shrink-0" />
-                      </Button>
-                    </Link>
                   </div>
 
                   <div className="p-6 sm:p-8 lg:p-10">

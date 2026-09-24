@@ -30,7 +30,7 @@ export const activeSolutions: Array<Solution> = [
     mark: 'ident-base',
     status: 'Active',
     description:
-      'A structured, continuously verified database covering 5M+ MENA companies, refreshed monthly and available via bulk delivery.',
+      'A structured, continuously verified database covering 5M+ MENA companies, refreshed monthly and available via bulk delivery or API integration.',
     bullets: [
       'Ownership, amendments & corporate structure',
       'Monthly refresh cycle',
@@ -44,7 +44,7 @@ export const activeSolutions: Array<Solution> = [
     mark: 'ident-media',
     status: 'Active',
     description:
-      'Due diligence research reports produced by our research team — delivered in Arabic, English, or both, with two levels of depth depending on your needs.',
+      'Human source enquiries and due diligence research reports produced by our research team — delivered in Arabic, English, or both, with two levels of depth depending on your needs.',
     bullets: [
       'Arabic & English delivery',
       'Two depth levels available',
@@ -61,7 +61,7 @@ export const pipelineSolutions: Array<Solution> = [
     mark: 'ident-legas',
     status: 'Soon',
     description:
-      'Official gazette & legal publications database across 10 jurisdictions, Arabic-first.',
+      'Official gazette & legal publications database across 10+ jurisdictions.',
   },
   {
     slug: 'ident-map',

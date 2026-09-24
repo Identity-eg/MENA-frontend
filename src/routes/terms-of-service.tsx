@@ -10,7 +10,8 @@ export const Route = createFileRoute('/terms-of-service')({
       { title: 'Terms of Service | Ident-ity' },
       {
         name: 'description',
-        content: "Ident-ity's Terms of Service — draft, pending legal review.",
+        content:
+          'The terms governing use of the Ident-ity website, registration system, client portal, and services.',
       },
     ],
   }),
@@ -21,24 +22,9 @@ function TermsOfServicePage() {
   return (
     <LegalLayout
       title="Terms of Service"
-      lastUpdated="Last updated: [insert date at publish] · Effective date: [insert date at publish]"
+      lastUpdated="Last updated: September 2026 · Effective date: September 2026"
     >
-      <blockquote>
-        <strong>Important note before you publish this:</strong> this draft
-        follows the structure and protective language typical of established
-        business-intelligence/due-diligence and data providers. It is{' '}
-        <strong>not legal advice</strong>, and it has not been reviewed by a
-        lawyer. Given that Ident-ity (a) processes personal data about third
-        parties, (b) operates across jurisdictions with different legal regimes,
-        and (c) lists services covering jurisdictions subject to international
-        sanctions (see Section 12), we strongly recommend a qualified lawyer
-        reviews this before it goes live — particularly the limitation of
-        liability, sanctions, and governing law sections, which are the ones
-        most likely to need adjustment for your specific corporate structure and
-        risk tolerance. Bracketed items <code>[like this]</code> need to be
-        filled in or confirmed.
-      </blockquote>
-
+      {' '}
       <h2>1. Acceptance of Terms</h2>
       <p>
         By accessing or using the Ident-ity website, registration system, client
@@ -49,18 +35,16 @@ function TermsOfServicePage() {
         company or other legal entity, you represent that you have authority to
         bind that entity, and &ldquo;you&rdquo; refers to that entity.
       </p>
-
       <h2>2. Who May Use the Services</h2>
       <p>
         The Services are intended for{' '}
         <strong>business and professional use only</strong> and are not directed
         at consumers. By registering, you represent that you are acting in a
         business capacity, that the information you provide (company name, role,
-        nationality, work email, LinkedIn profile) is accurate, and that you are
-        legally permitted to request the type of information or service you are
-        seeking.
+        nationality, Business email, LinkedIn profile) is accurate, and that you
+        are legally permitted to request the type of information or service you
+        are seeking.
       </p>
-
       <h2>3. Description of Services</h2>
       <p>
         Ident-ity provides, among other things: on-demand corporate verification
@@ -72,7 +56,6 @@ function TermsOfServicePage() {
         are made available only to registered and approved users, as described
         in Section 5.
       </p>
-
       <h2>4. Nature of the Data — Read Carefully</h2>
       <p>
         <strong>
@@ -105,15 +88,14 @@ function TermsOfServicePage() {
         screening decisions regulated by such laws, our Services are not
         appropriate for that purpose, and you must not use them for it.
       </p>
-
       <h2>5. Registration &amp; Access Approval</h2>
       <p>
         Certain content — including our full service and pricing catalogue,
         jurisdiction-level coverage detail, and sample downloads — is only
         available after registration. To register, you must submit: your company
-        name, your role at the company, your nationality, a work email address
-        associated with your company, and a link to your LinkedIn profile, and
-        verify control of that email address via a one-time code.
+        name, your role at the company, your nationality, a Business email
+        address associated with your company, and a link to your LinkedIn
+        profile, and verify control of that email address via a one-time code.
       </p>
       <p>
         <strong>Registration does not guarantee access.</strong> We review each
@@ -124,7 +106,6 @@ function TermsOfServicePage() {
         determine (or reasonably suspect) that our Services are being used in
         violation of these Terms.
       </p>
-
       <h2>6. Acceptable Use</h2>
       <p>
         You agree that you will <strong>not</strong> use the Services to:
@@ -167,7 +148,6 @@ function TermsOfServicePage() {
         or terminate access without notice where we reasonably believe a
         violation has occurred.
       </p>
-
       <h2>7. Intellectual Property</h2>
       <p>
         All content on the Ident-ity website and within our reports and database
@@ -180,18 +160,14 @@ function TermsOfServicePage() {
         your own internal business purposes, no license is granted to you to
         reproduce, distribute, or create derivative works from our content.
       </p>
-
       <h2>8. Fees &amp; Payment</h2>
       <p>
         Pricing for our Services is provided to approved registered users and
-        clients directly and is not published on our public website.{' '}
-        <strong>
-          [Insert payment terms, invoicing cadence, currency, and late-payment
-          terms once commercial terms are finalized — recommend counsel/finance
-          input here.]
-        </strong>
+        clients directly and is not published on our public website. Payment
+        terms, invoicing cadence, currency, and any late-payment charges are set
+        out in the quotation, order form, or service agreement applicable to
+        your engagement, which forms part of these Terms.
       </p>
-
       <h2>9. Disclaimer of Warranties</h2>
       <p>
         TO THE MAXIMUM EXTENT PERMITTED BY LAW, IDENT-ITY DISCLAIMS ALL
@@ -201,7 +177,6 @@ function TermsOfServicePage() {
         ARISING FROM COURSE OF DEALING OR USAGE OF TRADE. WE DO NOT WARRANT THAT
         THE SERVICES WILL BE UNINTERRUPTED, ERROR-FREE, OR SECURE.
       </p>
-
       <h2>10. Limitation of Liability</h2>
       <p>
         TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL IDENT-ITY, ITS
@@ -212,20 +187,11 @@ function TermsOfServicePage() {
         PROVIDED, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH
         DAMAGES. OUR TOTAL AGGREGATE LIABILITY FOR ANY CLAIM ARISING FROM THESE
         TERMS OR THE SERVICES SHALL NOT EXCEED THE AMOUNT YOU PAID TO US FOR THE
-        SPECIFIC SERVICE GIVING RISE TO THE CLAIM IN THE{' '}
-        <strong>[X months]</strong> PRECEDING THE CLAIM, OR{' '}
-        <strong>[a nominal fixed amount, e.g., USD 100]</strong> IF NO FEES WERE
-        PAID.
+        SPECIFIC SERVICE GIVING RISE TO THE CLAIM IN THE TWELVE (12) MONTHS
+        PRECEDING THE CLAIM, OR USD 100 IF NO FEES WERE PAID. NOTHING IN THESE
+        TERMS EXCLUDES OR LIMITS LIABILITY THAT CANNOT BE EXCLUDED OR LIMITED
+        UNDER APPLICABLE LAW.
       </p>
-      <p>
-        <em>
-          [Note: liability caps like this are standard in the industry but the
-          specific cap amount and carve-outs (e.g., for gross negligence,
-          willful misconduct, or fraud, which many jurisdictions won&rsquo;t let
-          you disclaim anyway) should be set with counsel.]
-        </em>
-      </p>
-
       <h2>11. Indemnification</h2>
       <p>
         You agree to indemnify and hold Ident-ity harmless from any claims,
@@ -234,7 +200,6 @@ function TermsOfServicePage() {
         your violation of any law or third-party right in connection with your
         use of the Services.
       </p>
-
       <h2>12. Sanctions &amp; Export Compliance</h2>
       <p>
         Some jurisdictions covered by our Services (including, without
@@ -260,7 +225,6 @@ function TermsOfServicePage() {
         the Services would violate applicable sanctions or export control law,
         without liability to you.
       </p>
-
       <h2>13. Termination</h2>
       <p>
         We may suspend or terminate your access to the Services at any time,
@@ -268,39 +232,21 @@ function TermsOfServicePage() {
         Services at any time. Sections of these Terms that by their nature
         should survive termination (including Sections 4, 6–13) will survive.
       </p>
-
       <h2>14. Governing Law &amp; Dispute Resolution</h2>
       <p>
-        These Terms are governed by the laws of{' '}
-        <strong>
-          [Arab Republic of Egypt — confirm entity&rsquo;s jurisdiction of
-          incorporation]
-        </strong>
-        , without regard to conflict-of-law principles. Any dispute arising out
-        of or relating to these Terms or the Services shall be resolved{' '}
-        <strong>
-          [insert preferred mechanism — courts of Cairo / arbitration under
-          (e.g.) the Cairo Regional Centre for International Commercial
-          Arbitration — to be confirmed with counsel]
-        </strong>
-        .
+        These Terms are governed by the laws of the jurisdiction in which
+        Ident-ity is established, without regard to conflict-of-law principles.
+        Any dispute arising out of or relating to these Terms or the Services
+        shall be subject to the exclusive jurisdiction of the competent courts
+        of that jurisdiction, unless the parties have agreed in writing to
+        another forum or to arbitration.
       </p>
-
       <h2>15. Changes to These Terms</h2>
       <p>
         We may revise these Terms from time to time. Continued use of the
         Services after changes take effect constitutes acceptance of the revised
         Terms. Material changes will be reflected by an updated &ldquo;Last
         updated&rdquo; date.
-      </p>
-
-      <h2>16. Contact</h2>
-      <p>
-        <strong>[Ident-ity legal entity name]</strong>
-        <br />
-        <strong>[Registered address]</strong>
-        <br />
-        <strong>[legal@ident-ity.com]</strong>
       </p>
     </LegalLayout>
   )

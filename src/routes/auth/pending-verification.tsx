@@ -44,7 +44,7 @@ export default function PendingVerificationPage() {
               <div>
                 <h4 className="font-bold text-sm">Step 1: Admin Review</h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  We verify your work email and institutional affiliation to
+                  We verify your Business email and institutional affiliation to
                   ensure platform security.
                 </p>
               </div>

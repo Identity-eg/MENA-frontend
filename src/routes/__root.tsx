@@ -64,7 +64,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       {
         name: 'description',
         content:
-          'On-demand corporate verification, retrieval, and due diligence across 10 MENA jurisdictions and 5M+ companies.',
+          'On-demand corporate verification, retrieval, and due diligence across 10 MENA jurisdictions.',
       },
     ],
     links: [
