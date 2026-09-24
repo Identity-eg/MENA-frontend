@@ -71,7 +71,7 @@ export const Route = createFileRoute('/_protected/companies/$companyId')({
   },
 })
 
-export default function CompanyDetailsPage() {
+function CompanyDetailsPage() {
   return (
     <Suspense fallback={<CompanyDetailLoadingFallback />}>
       <CompanyDetailView />

@@ -45,7 +45,7 @@ const signupSchema = z.object({
 
 type SignupValues = z.infer<typeof signupSchema>
 
-export default function SignupPage() {
+function SignupPage() {
   const form = useForm<SignupValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {

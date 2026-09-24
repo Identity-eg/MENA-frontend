@@ -16,7 +16,7 @@ export const Route = createFileRoute('/auth/pending-verification')({
   component: PendingVerificationPage,
 })
 
-export default function PendingVerificationPage() {
+function PendingVerificationPage() {
   return (
     <div className="min-h-screen bg-background grid place-items-center p-6 relative">
       <div className="absolute inset-0 app-grid opacity-[0.2]" />

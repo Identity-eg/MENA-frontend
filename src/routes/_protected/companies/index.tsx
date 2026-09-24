@@ -143,7 +143,7 @@ function CompanySearchResults({
   )
 }
 
-export default function CompanySearchPage() {
+function CompanySearchPage() {
   const { q = '', mode = 'hybrid' } = Route.useSearch()
   const navigate = Route.useNavigate()
 

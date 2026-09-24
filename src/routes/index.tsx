@@ -32,7 +32,7 @@ export const Route = createFileRoute('/')({
   component: HomePage,
 })
 
-export default function HomePage() {
+function HomePage() {
   const user = Route.useLoaderData()
 
   return (

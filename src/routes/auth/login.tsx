@@ -20,7 +20,7 @@ export const Route = createFileRoute('/auth/login')({
   component: LoginPage,
 })
 
-export default function LoginPage() {
+function LoginPage() {
   return (
     <div className="min-h-screen bg-background grid place-items-center p-6 relative">
       <div className="w-full max-w-sm space-y-6 relative z-10">
