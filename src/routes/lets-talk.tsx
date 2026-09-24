@@ -324,7 +324,7 @@ function LetsTalkPage() {
                             {...field}
                             id="contact-message"
                             placeholder="Tell us more about your request..."
-                            className="min-h-[110px] resize-none"
+                            className="min-h-27.5 resize-none"
                           />
                         </Field>
                       )}
