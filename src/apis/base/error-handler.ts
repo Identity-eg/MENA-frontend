@@ -17,10 +17,19 @@ export function getErrorMessage(error: AxiosError): TFrontendErrorResponse {
     }
   }
 
-  const responseError = error.response?.data as TBackendErrorResponse
+  const responseError = error.response?.data as TBackendErrorResponse | undefined
 
-  if (responseError.error) {
+  if (responseError?.error) {
     return { status: error.response?.status, message: responseError.error }
+  }
+  
+  if (responseError?.message) {
+    const msg = Array.isArray(responseError.message) ? responseError.message[0] : responseError.message
+    return { status: error.response?.status, message: msg }
+  }
+
+  if (error.message) {
+    return { status: error.response?.status, message: error.message }
   }
 
   return {
