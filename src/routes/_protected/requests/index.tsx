@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Eye, Search } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useState } from 'react';
 
 import { PageHeader } from '@/components/page-header'
 import { StatusPill } from '@/components/StatusPill'
@@ -111,7 +111,7 @@ function RequestsPage() {
   const { data } = useGetRequests()
   const requests: Array<TRequest> = data?.data ?? []
 
-  const filtered = useMemo(() => {
+  const filtered = (() => {
     return requests.filter((req) => {
       const requestIdStr = formatRequestId(req.id)
       const searchLower = search.toLowerCase()
@@ -129,7 +129,7 @@ function RequestsPage() {
       const matchStatus = statusFilter === 'all' || req.status === statusFilter
       return matchSearch && matchStatus
     })
-  }, [requests, search, statusFilter])
+  })()
 
   return (
     <div>

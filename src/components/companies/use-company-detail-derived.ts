@@ -1,5 +1,3 @@
-import { useMemo } from 'react'
-
 import type { TCompany } from '@/types/company'
 import type { CompanyProfileFieldRow } from './company-detail-types'
 
@@ -26,7 +24,7 @@ export type CompanyDetailDerived = {
 export function useCompanyDetailDerived(
   company: TCompany,
 ): CompanyDetailDerived {
-  return useMemo(() => {
+  return (() => {
     const getLockedFieldByFieldName = (fieldName: string) =>
       company.lockedFields.find((lf) => lf.lockedType.fieldName === fieldName)
 
@@ -279,5 +277,5 @@ export function useCompanyDetailDerived(
       authSignatoriesIsList,
       showPartnersManagersCard,
     }
-  }, [company])
+  })();
 }

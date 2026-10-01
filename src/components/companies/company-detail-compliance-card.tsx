@@ -1,5 +1,5 @@
 import { CheckCircle2, FileSearch } from 'lucide-react'
-import { memo, useMemo } from 'react'
+import { memo } from 'react';
 
 import { EmptyState } from '@/components/EmptyState'
 import { RequestScreeningPackageButton } from '@/components/request-screening-package-button'
@@ -29,13 +29,9 @@ export const CompanyDetailComplianceCard = memo(
     selectedReports,
     onToggleReport,
   }: CompanyDetailComplianceCardProps) {
-    const totalPrice = useMemo(
-      () =>
-        reports
-          .filter((r) => selectedReports.includes(r.id))
-          .reduce((acc, r) => acc + r.estimatedPrice, 0),
-      [reports, selectedReports],
-    )
+    const totalPrice = reports
+      .filter((r) => selectedReports.includes(r.id))
+      .reduce((acc, r) => acc + r.estimatedPrice, 0)
 
     return (
       <Card>

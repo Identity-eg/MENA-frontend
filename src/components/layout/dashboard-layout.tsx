@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react';
 
 import { DashboardHeader } from './dashboard-header'
 import { DashboardSidebar } from './dashboard-sidebar'
@@ -6,8 +6,8 @@ import { DashboardSidebar } from './dashboard-sidebar'
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), [])
-  const closeSidebar = useCallback(() => setSidebarOpen(false), [])
+  const toggleSidebar = () => setSidebarOpen((v) => !v)
+  const closeSidebar = () => setSidebarOpen(false)
 
   return (
     <div className="flex min-h-screen bg-background">

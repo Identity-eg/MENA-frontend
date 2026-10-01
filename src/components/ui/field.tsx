@@ -1,5 +1,4 @@
 import { cva, type VariantProps } from 'class-variance-authority'
-import { useMemo } from 'react'
 
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
@@ -185,7 +184,7 @@ function FieldError({
 }: React.ComponentProps<'div'> & {
   errors?: Array<{ message?: string } | undefined>
 }) {
-  const content = useMemo(() => {
+  const content = (() => {
     if (children) {
       return children
     }
@@ -210,7 +209,7 @@ function FieldError({
         )}
       </ul>
     )
-  }, [children, errors])
+  })()
 
   if (!content) {
     return null

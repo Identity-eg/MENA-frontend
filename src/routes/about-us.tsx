@@ -41,14 +41,6 @@ const story = [
   },
 ]
 
-const teamComposition = [
-  'Two co-founders — one focused on strategy and operations, the other bringing a legal background',
-  '3 legal specialists (Egypt-based)',
-  '3 developers, including 1 AI specialist',
-  '1 research function',
-  '1 finance function',
-  'An extended network of 4 regional lawyers across MENA',
-]
 
 function AboutUsPage() {
   const { user } = useRouteContext({ from: '__root__' })

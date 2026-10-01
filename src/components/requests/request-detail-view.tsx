@@ -1,6 +1,6 @@
 import { usePostHog } from '@posthog/react'
 import { getRouteApi } from '@tanstack/react-router'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react';
 
 import { useGetMessages } from '@/apis/messages/get-messages'
 import { useSendMessage } from '@/apis/messages/send-message'
@@ -27,7 +27,7 @@ export function RequestDetailView() {
   const request = data.data
   const posthog = usePostHog()
 
-  const subjects = useMemo(() => buildRequestDetailSubjects(request), [request])
+  const subjects = buildRequestDetailSubjects(request)
   const [activeSubjectId, setActiveSubjectId] = useState('')
 
   useEffect(() => {
@@ -58,13 +58,13 @@ export function RequestDetailView() {
   const { data: messagesData, isLoading: messagesLoading } = useGetMessages(
     request.id,
   )
-  const messages = useMemo(() => {
+  const messages = (() => {
     const list = messagesData?.data ?? []
     return [...list].sort(
       (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     )
-  }, [messagesData?.data])
+  })()
 
   const sendMessageMutation = useSendMessage(request.id)
   const [messageDraft, setMessageDraft] = useState('')
@@ -72,11 +72,11 @@ export function RequestDetailView() {
   const { mutate: createPaymentSession, isPending: isPaymentRedirecting } =
     useCreateRequestPaymentSession()
 
-  const handleDownloadInvoice = useCallback(() => {
+  const handleDownloadInvoice = () => {
     downloadRequestInvoicePdf(request.id)
-  }, [request.id])
+  }
 
-  const handlePay = useCallback(() => {
+  const handlePay = () => {
     const base = window.location.origin
     createPaymentSession(
       {
@@ -93,9 +93,9 @@ export function RequestDetailView() {
         },
       },
     )
-  }, [amountDue, createPaymentSession, posthog, request.id])
+  }
 
-  const handleSubmitMessage = useCallback(() => {
+  const handleSubmitMessage = () => {
     const content = messageDraft.trim()
     if (!content || sendMessageMutation.isPending) return
     sendMessageMutation.mutate(content, {
@@ -104,11 +104,11 @@ export function RequestDetailView() {
         setMessageDraft('')
       },
     })
-  }, [messageDraft, posthog, request.id, sendMessageMutation])
+  }
 
-  const setActiveSubject = useCallback((subjectId: string) => {
+  const setActiveSubject = (subjectId: string) => {
     setActiveSubjectId(subjectId)
-  }, [])
+  }
 
   return (
     <div className="space-y-6 pb-12">

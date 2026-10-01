@@ -1,7 +1,7 @@
 import { usePostHog } from '@posthog/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
 import {
   getCompanyQueryOptions,
@@ -69,37 +69,34 @@ export function CompanyDetailView() {
     }
   }, [id, queryClient, search.unlock, navigate])
 
-  const toggleReport = useCallback((reportId: number) => {
+  const toggleReport = (reportId: number) => {
     setSelectedReports((prev) =>
       prev.includes(reportId)
         ? prev.filter((x) => x !== reportId)
         : [...prev, reportId],
     )
-  }, [])
+  }
 
-  const handleUnlock = useCallback(
-    async (lockedFieldId: number) => {
-      setUnlockingFieldId(lockedFieldId)
-      try {
-        const base = window.location.origin
-        const { url } = await createUnlockPaymentSession(
-          lockedFieldId,
-          `${base}/companies/${id}?unlock=success`,
-          `${base}/companies/${id}?unlock=cancelled`,
-        )
-        posthog.capture('unlock_checkout_started', {
-          company_id: id,
-          unlock_type: 'single_field',
-        })
-        window.location.href = url
-      } catch {
-        setUnlockingFieldId(null)
-      }
-    },
-    [id, posthog],
-  )
+  const handleUnlock = async (lockedFieldId: number) => {
+    setUnlockingFieldId(lockedFieldId)
+    try {
+      const base = window.location.origin
+      const { url } = await createUnlockPaymentSession(
+        lockedFieldId,
+        `${base}/companies/${id}?unlock=success`,
+        `${base}/companies/${id}?unlock=cancelled`,
+      )
+      posthog.capture('unlock_checkout_started', {
+        company_id: id,
+        unlock_type: 'single_field',
+      })
+      window.location.href = url
+    } catch {
+      setUnlockingFieldId(null)
+    }
+  }
 
-  const handleUnlockAll = useCallback(async () => {
+  const handleUnlockAll = async () => {
     const ids = lockedFields
       .map(({ key }) => getLockedFieldByFieldName(key)?.id)
       .filter((x): x is number => x != null)
@@ -121,7 +118,7 @@ export function CompanyDetailView() {
     } catch {
       setUnlockingAll(false)
     }
-  }, [id, lockedFields, getLockedFieldByFieldName, posthog])
+  }
 
   return (
     <div className="space-y-6 pb-12">

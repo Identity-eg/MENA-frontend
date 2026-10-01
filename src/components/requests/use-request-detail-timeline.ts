@@ -1,5 +1,3 @@
-import { useMemo } from 'react'
-
 import { REQUEST_STATUS, type RequestStatusValue } from '@/types/request'
 import { formatRequestDate } from './request-detail-formatters'
 import {
@@ -22,7 +20,7 @@ export function useRequestDetailTimeline(
   const submittedDate = formatRequestDate(createdAt)
   const updatedDate = formatRequestDate(updatedAt)
 
-  return useMemo(() => {
+  return (() => {
     const currentStepIndex = REQUEST_DETAIL_TIMELINE_STATUSES.indexOf(status)
     const isRejectedOrCancelled =
       status === REQUEST_STATUS.REJECTED || status === REQUEST_STATUS.CANCELLED
@@ -42,5 +40,5 @@ export function useRequestDetailTimeline(
         active: active || (idx === currentStepIndex && isRejectedOrCancelled),
       }
     })
-  }, [status, submittedDate, updatedDate])
+  })();
 }
