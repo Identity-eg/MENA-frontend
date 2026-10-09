@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useRouteContext } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
 
-import { HomeFooter } from '@/components/home-footer'
-import { HomeHeader } from '@/components/home-header'
-import { StatTileRow } from '@/components/marketing/stat-tile'
+import { MarketingShell } from '@/components/marketing/marketing-shell'
+import { Reveal } from '@/components/marketing/reveal'
+import { Section, SectionHeading } from '@/components/marketing/section'
 import { Button } from '@/components/ui/button'
 import { FullPageLoading } from '@/components/ui/full-page-loading'
 
@@ -15,7 +15,7 @@ export const Route = createFileRoute('/about-us')({
       {
         name: 'description',
         content:
-          'Ident-ity is a multidisciplinary MENA business intelligence company — legal, research, and technology specialists active across 10+ jurisdictions.',
+          'Ident-ity is a multidisciplinary MENA business intelligence company. Legal, research, and technology specialists active across 12 jurisdictions.',
       },
     ],
   }),
@@ -25,10 +25,10 @@ export const Route = createFileRoute('/about-us')({
 const story = [
   {
     heading: 'Where we started',
-    body: 'Ident-ity began with due diligence and verification work for companies operating in a highly regulated industry, where accuracy and source integrity were non-negotiable. That experience meant building the relationships and processes needed to verify information directly at the source — a discipline that still defines how we work today.',
+    body: 'Ident-ity began with due diligence and verification work for companies operating in a highly regulated industry, where accuracy and source integrity were non-negotiable. That experience meant building the relationships and processes needed to verify information directly at the source, a discipline that still defines how we work today.',
   },
   {
-    heading: '2022 — Ident-ity founded',
+    heading: 'Founded in 2022',
     body: 'What started as a focused corporate verification and retrieval operation grew into Ident-ity, built around our own proprietary database and a commitment to verified, first-hand information.',
   },
   {
@@ -37,80 +37,82 @@ const story = [
   },
   {
     heading: 'Today',
-    body: 'A multidisciplinary team of legal, research, and technology specialists, active across 10+ jurisdictions, offering 6 solutions — with a clear, focused vision for business intelligence across the region.',
+    body: 'A multidisciplinary team of legal, research, and technology specialists, active across 12 jurisdictions, offering six solutions with a clear, focused vision for business intelligence across the region.',
   },
 ]
 
+const team = [
+  { value: '2', label: 'Co-founders, strategy and legal' },
+  { value: '3', label: 'Legal specialists, Egypt based' },
+  { value: '3', label: 'Developers, one AI specialist' },
+  { value: '4', label: 'Regional lawyers across MENA' },
+]
 
 function AboutUsPage() {
   const { user } = useRouteContext({ from: '__root__' })
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="relative overflow-hidden">
-        <HomeHeader user={user ?? undefined} />
+    <MarketingShell user={user}>
+      <Section className="pt-16 sm:pt-24">
+        <SectionHeading
+          eyebrow="About"
+          title="A MENA-focused corporate intelligence company, founded 2022."
+          body="Legal, research, and technology specialists who retrieve the corporate record where it is filed, not where it is resold."
+        />
+      </Section>
 
-        <main className="relative">
-          <section className="mx-auto max-w-4xl px-4 pt-16 pb-4 text-center sm:px-6 sm:pt-24">
-            <h1 className="text-3xl font-extrabold tracking-tight text-brand-navy sm:text-5xl">
-              About Ident-ity.
-            </h1>
-            <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground sm:text-base">
-              A MENA-focused business intelligence and corporate due-diligence
-              company, founded 2022.
-            </p>
-          </section>
+      <Section className="border-t border-border pt-0 sm:pt-0">
+        <ol className="divide-y divide-border border-y border-border">
+          {story.map((block, index) => (
+            <Reveal as="li" key={block.heading} delay={index * 60}>
+              <div className="grid gap-4 py-9 sm:grid-cols-12 sm:gap-8">
+                <h2 className="text-lg font-medium leading-[1.25] tracking-title text-brand-navy sm:col-span-4">
+                  {block.heading}
+                </h2>
+                <p className="max-w-[64ch] text-base leading-relaxed text-muted-foreground sm:col-span-8">
+                  {block.body}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </ol>
+      </Section>
 
-          <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
-            <h2 className="text-xs font-bold uppercase tracking-wide text-brand-cyan">
-              Our Story
-            </h2>
-            <div className="mt-4 space-y-6 sm:mt-6 sm:space-y-8">
-              {story.map((block) => (
-                <div
-                  key={block.heading}
-                  className="border-l-2 border-brand-cyan/40 pl-4 sm:pl-6"
-                >
-                  <h3 className="text-sm font-bold uppercase tracking-wide text-brand-navy">
-                    {block.heading}
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground sm:text-base">
-                    {block.body}
-                  </p>
-                </div>
-              ))}
+      <Section className="border-t border-border">
+        <SectionHeading eyebrow="The team" title="Who does the work." />
+        <dl className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+          {team.map((item) => (
+            <div key={item.label} className="bg-white p-7">
+              <dt className="sr-only">{item.label}</dt>
+              <dd className="text-3xl font-semibold tabular-nums leading-none tracking-display text-brand-navy">
+                {item.value}
+              </dd>
+              <p className="mt-2 text-sm leading-snug text-muted-foreground">
+                {item.label}
+              </p>
             </div>
-          </section>
+          ))}
+        </dl>
+      </Section>
 
-          <section className="bg-brand-navy">
-            <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6 sm:py-20">
-              <StatTileRow
-                stats={[
-                  { value: '10+', label: 'Jurisdictions' },
-                  { value: '5M+', label: 'Companies' },
-                  { value: '6', label: 'Solutions' },
-                ]}
-              />
-            </div>
-          </section>
-
-          <section className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6 sm:py-20">
-            <h2 className="text-2xl font-bold text-brand-navy sm:text-3xl">
-              Work with us.
-            </h2>
-            <div className="mt-6">
-              <Link to="/lets-talk">
-                <Button size="lg">
-                  Contact Us
-                  <ArrowRight />
-                </Button>
-              </Link>
-            </div>
-          </section>
-        </main>
-
-        <HomeFooter />
-      </div>
-    </div>
+      <Section className="border-t border-border">
+        <div className="text-center">
+          <h2 className="text-3xl font-semibold leading-[1.02] tracking-heading text-brand-navy sm:text-4xl">
+            Work with us.
+          </h2>
+          <div className="mt-8">
+            <Link to="/lets-talk">
+              <Button
+                size="lg"
+                className="h-11 rounded-full bg-brand-navy px-7 text-[15px] font-semibold text-white hover:bg-brand-navy/90 active:scale-[0.98]"
+              >
+                Talk to us
+                <ArrowRight />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </Section>
+    </MarketingShell>
   )
 }

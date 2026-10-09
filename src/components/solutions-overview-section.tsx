@@ -1,66 +1,86 @@
 import { Link } from '@tanstack/react-router'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Check } from 'lucide-react'
 
 import { activeSolutions, pipelineSolutions } from '@/lib/solutions'
 import { SolutionWordmark, type SolutionMark } from './brand/logo'
+import { Reveal } from './marketing/reveal'
+import { Section, SectionHeading } from './marketing/section'
 import { StatusBadge } from './marketing/status-badge'
 
 export function SolutionsOverviewSection() {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
-      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <h2 className="text-2xl font-bold text-brand-navy sm:text-3xl">
-            Our Solutions
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-            6 solutions — 3 active, 3 in the pipeline.
-          </p>
-        </div>
-        <Link
-          to="/solutions"
-          className="inline-flex items-center gap-1 text-sm font-semibold text-brand-navy hover:text-brand-cyan transition-colors"
-        >
-          See all solutions
-          <ArrowRight className="size-4" />
-        </Link>
-      </div>
-
-      <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-3 sm:gap-5">
-        {activeSolutions.map((solution) => (
-          <div
-            key={solution.slug}
-            className="flex flex-col rounded-xl bg-brand-navy p-6"
+    <Section id="solutions" className="border-t border-border">
+      <SectionHeading
+        eyebrow="What we run"
+        title="Three services live today, three more in build."
+        body="Each one answers a different question about a MENA counterparty: what the registry says, what the market looks like at scale, and what the record does not tell you."
+        aside={
+          <Link
+            to="/solutions"
+            className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-medium text-brand-navy transition-colors hover:border-brand-cyan/50 hover:text-brand-cyan-ink"
           >
-            <div className="flex items-center justify-between">
-              <SolutionWordmark
-                mark={solution.mark as SolutionMark}
-                className="text-lg"
-              />
-              <StatusBadge status={solution.status} />
-            </div>
-            <p className="mt-4 flex-1 text-sm leading-relaxed text-white/70">
-              {solution.description}
-            </p>
-          </div>
+            All solutions
+            <ArrowRight className="size-4" />
+          </Link>
+        }
+      />
+
+      <div className="mt-14 divide-y divide-border border-y border-border sm:mt-16">
+        {activeSolutions.map((solution, index) => (
+          <Reveal key={solution.slug} delay={index * 70}>
+            <article className="grid gap-6 py-9 lg:grid-cols-12 lg:gap-10 lg:py-11">
+              <div className="lg:col-span-4">
+                <div className="flex items-center gap-3">
+                  <SolutionWordmark
+                    mark={solution.mark as SolutionMark}
+                    tone="navy"
+                    className="text-2xl"
+                  />
+                  <StatusBadge status={solution.status} />
+                </div>
+              </div>
+
+              <div className="lg:col-span-8">
+                <p className="max-w-[62ch] text-base leading-relaxed text-muted-foreground">
+                  {solution.description}
+                </p>
+
+                {solution.bullets && (
+                  <ul className="mt-6 grid gap-2.5 sm:grid-cols-2">
+                    {solution.bullets.map((bullet) => (
+                      <li
+                        key={bullet}
+                        className="flex items-start gap-2.5 text-sm text-foreground"
+                      >
+                        <Check className="mt-0.5 size-4 shrink-0 text-brand-cyan-ink" />
+                        {bullet}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </article>
+          </Reveal>
         ))}
       </div>
 
-      <div className="mt-6 rounded-xl border border-dashed border-border p-4 sm:p-5">
-        <div className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-          Coming soon
+      <Reveal className="mt-14 rounded-2xl border border-border bg-brand-mist/50 p-6 sm:p-8">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm font-medium text-muted-foreground">
+            In build for 2027
+          </p>
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+            {pipelineSolutions.map((solution) => (
+              <SolutionWordmark
+                key={solution.slug}
+                mark={solution.mark as SolutionMark}
+                tone="navy"
+                className="text-lg opacity-60"
+              />
+            ))}
+          </div>
         </div>
-        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
-          {pipelineSolutions.map((solution) => (
-            <SolutionWordmark
-              key={solution.slug}
-              mark={solution.mark as SolutionMark}
-              tone="navy"
-              className="text-sm opacity-60"
-            />
-          ))}
-        </div>
-      </div>
-    </section>
+      </Reveal>
+    </Section>
   )
 }

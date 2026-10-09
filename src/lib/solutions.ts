@@ -16,12 +16,12 @@ export const activeSolutions: Array<Solution> = [
     mark: 'ident-RR',
     status: 'Active',
     description:
-      'On-demand corporate verification, retrieval, and due diligence checks across 10+ MENA jurisdictions, sourced directly from official channels and delivered in 1–3 business days.',
+      'On-demand corporate verification, retrieval, and due diligence checks across 12 MENA jurisdictions, sourced directly from official channels and delivered in 1-3 business days.',
     bullets: [
-      'Direct-from-source retrieval — no intermediaries',
-      '10+ jurisdictions across the Middle East & North Africa',
-      '1–3 business day turnaround',
-      'Litigation, reputational & corporate registry checks',
+      'Direct-from-source retrieval, no intermediaries',
+      '12 jurisdictions across the Middle East and North Africa',
+      '1-3 business day turnaround',
+      'Litigation, reputational, and corporate registry checks',
     ],
     cta: 'Register for the full service & pricing catalogue',
   },
@@ -32,7 +32,7 @@ export const activeSolutions: Array<Solution> = [
     description:
       'A structured, continuously verified database covering 5M+ MENA companies, refreshed monthly and available via bulk delivery or API integration.',
     bullets: [
-      'Ownership, amendments & corporate structure',
+      'Ownership, amendments, and corporate structure',
       'Monthly refresh cycle',
       'Bulk file delivery for enrichment pipelines',
       'Multi-jurisdiction coverage',
@@ -44,12 +44,12 @@ export const activeSolutions: Array<Solution> = [
     mark: 'ident-media',
     status: 'Active',
     description:
-      'Human source enquiries and due diligence research reports produced by our research team — delivered in Arabic, English, or both, with two levels of depth depending on your needs.',
+      'Human source enquiries and due diligence research reports produced by our research team, delivered in Arabic, English, or both, with two levels of depth depending on your needs.',
     bullets: [
-      'Arabic & English delivery',
+      'Arabic and English delivery',
       'Two depth levels available',
-      'Human-researched — not automated',
-      'Regional media & legal filings',
+      'Human-researched, not automated',
+      'Regional media and legal filings',
     ],
     cta: 'Request a sample report',
   },
@@ -61,20 +61,20 @@ export const pipelineSolutions: Array<Solution> = [
     mark: 'ident-legas',
     status: 'Soon',
     description:
-      'Official gazette & legal publications database across 10+ jurisdictions.',
+      'Official gazette and legal publications database across 12 jurisdictions.',
   },
   {
     slug: 'ident-map',
     mark: 'ident-Map',
     status: 'Soon',
     description:
-      'Personnel intelligence across ministries, state-owned entities & quasi-government bodies.',
+      'Personnel intelligence across ministries, state-owned entities, and quasi-government bodies.',
   },
   {
     slug: 'ident-media-plus',
     mark: 'ident-media+',
     status: 'Soon',
     description:
-      'AI-generated adverse media reports, trained on MENA risk data — designed to complement human research.',
+      'AI-generated adverse media reports, trained on MENA risk data, designed to complement human research.',
   },
 ]

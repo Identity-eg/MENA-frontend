@@ -8,31 +8,31 @@ export type Differentiator = {
 // (PRD §6.1 / §7 UI pattern: feature card with a colored top-border accent).
 export const whyUs: Array<Differentiator> = [
   {
-    title: 'Direct Source Access',
+    title: 'Direct source access',
     description:
-      'Verification retrieved directly from official channels — no intermediaries, no aggregators.',
+      'Verification retrieved directly from official channels. No intermediaries, no aggregators.',
   },
   {
-    title: 'Competitive Pricing',
+    title: 'Competitive pricing',
     description:
       'Competitive pricing per service, with bulk arrangements available for regular partners.',
   },
   {
-    title: '1–3 Business Day Turnaround',
+    title: '1-3 business day turnaround',
     description: 'We deliver fast without compromising source integrity.',
   },
   {
-    title: 'Digital Platform',
+    title: 'Digital platform',
     description:
-      'A closed-cycle online portal for request submission, status tracking, and delivery — no email chains. Launching soon.',
+      'A closed-cycle online portal for request submission, status tracking, and delivery. No email chains, launching soon.',
   },
   {
-    title: 'Flexible Scope',
+    title: 'Flexible scope',
     description:
-      "Don't see what you need in our catalogue? Ask us — our network extends beyond the standard list.",
+      "Don't see what you need in our catalogue? Ask us. Our network extends beyond the standard list.",
   },
   {
-    title: 'Sample & Guidance Library',
+    title: 'Sample and guidance library',
     description:
       'Every service item comes with a verified output sample and guidance note, so you know exactly what to expect.',
   },

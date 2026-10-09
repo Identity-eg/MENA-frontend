@@ -1,12 +1,23 @@
-import { JurisdictionBadgeRow } from './marketing/jurisdiction-badge-row'
+import { Reveal } from './marketing/reveal'
+import { Section, SectionHeading } from './marketing/section'
+import { RegistryCoverage } from './marketing/visuals/registry-coverage'
 
 export function JurisdictionStripSection() {
   return (
-    <section className="mx-auto max-w-5xl px-4 py-16 text-center sm:px-6 sm:py-20">
-      <h2 className="text-2xl font-bold text-brand-navy sm:text-3xl">
-        Coverage across the region
-      </h2>
-      <JurisdictionBadgeRow className="mt-8" />
-    </section>
+    <Section id="coverage" className="border-t border-border">
+      <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-4">
+          <SectionHeading
+            eyebrow="Coverage"
+            title="Twelve jurisdictions, one counterparty at a time."
+            body="Depth varies by registry. We tell you which record is available where before you commit to a request."
+          />
+        </div>
+
+        <Reveal delay={80} className="lg:col-span-8">
+          <RegistryCoverage />
+        </Reveal>
+      </div>
+    </Section>
   )
 }

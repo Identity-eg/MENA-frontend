@@ -1,4 +1,5 @@
 /* source() ensures client and SSR builds scan the same paths → same CSS hash (fixes Docker 404 on assets) */
+@import 'tailwindcss' source('./');
 @import 'tailwindcss';
 @source './';
 @import 'tw-animate-css';
@@ -36,6 +37,9 @@ code {
   --brand-navy: #0b2472;
   --brand-navy-deep: #071a52;
   --brand-cyan: #29b6d8;
+  /* Cyan darkened for text and icons on white: #29b6d8 is only 2.2:1 on
+     #ffffff, which fails WCAG AA. Use this wherever cyan carries meaning. */
+  --brand-cyan-ink: #0b7591;
   --brand-lime: #c6e94a;
   --brand-mist: #f4f6fa;
   --brand-ink: #1a1a1a;
@@ -81,6 +85,7 @@ code {
   --brand-navy: #0b2472;
   --brand-navy-deep: #050f33;
   --brand-cyan: #29b6d8;
+  --brand-cyan-ink: #6fd3ec;
   --brand-lime: #c6e94a;
   --brand-mist: #f4f6fa;
   --brand-ink: #1a1a1a;
@@ -126,6 +131,7 @@ code {
   --color-brand-navy: var(--brand-navy);
   --color-brand-navy-deep: var(--brand-navy-deep);
   --color-brand-cyan: var(--brand-cyan);
+  --color-brand-cyan-ink: var(--brand-cyan-ink);
   --color-brand-lime: var(--brand-lime);
   --color-brand-mist: var(--brand-mist);
   --color-brand-ink: var(--brand-ink);
@@ -225,4 +231,40 @@ code {
   .legal-prose td {
     @apply border border-border p-2.5 align-top;
   }
+}
+
+/* Marketing site (dark surface) ------------------------------------------- */
+
+@theme {
+  /* Optical tracking: the larger the type, the tighter it is set. Named by
+     role so headings stay consistent instead of each one guessing a value. */
+  --tracking-display: -0.04em;
+  --tracking-heading: -0.032em;
+  --tracking-title: -0.022em;
+
+  --animate-marquee: marquee 46s linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Sticky header clearance for in-page anchors on the marketing site. */
+section[id] {
+  scroll-margin-top: 5.5rem;
 }

@@ -1,7 +1,6 @@
 import { useRouteContext } from '@tanstack/react-router'
 
-import { HomeFooter } from '@/components/home-footer'
-import { HomeHeader } from '@/components/home-header'
+import { MarketingShell } from '@/components/marketing/marketing-shell'
 
 export function LegalLayout({
   title,
@@ -15,23 +14,17 @@ export function LegalLayout({
   const { user } = useRouteContext({ from: '__root__' })
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="relative overflow-hidden">
-        <HomeHeader user={user ?? undefined} />
+    <MarketingShell user={user}>
+      <div className="mx-auto max-w-3xl px-5 py-20 sm:px-8 sm:py-28">
+        <h1 className="text-3xl font-semibold leading-[1.02] tracking-heading text-brand-navy sm:text-4xl">
+          {title}
+        </h1>
+        {lastUpdated && (
+          <p className="mt-3 text-sm text-muted-foreground">{lastUpdated}</p>
+        )}
 
-        <main className="relative mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-20">
-          <h1 className="text-3xl font-extrabold tracking-tight text-brand-navy sm:text-4xl">
-            {title}
-          </h1>
-          {lastUpdated && (
-            <p className="mt-2 text-sm text-muted-foreground">{lastUpdated}</p>
-          )}
-
-          <div className="legal-prose mt-8">{children}</div>
-        </main>
-
-        <HomeFooter />
+        <div className="legal-prose mt-10">{children}</div>
       </div>
-    </div>
+    </MarketingShell>
   )
 }

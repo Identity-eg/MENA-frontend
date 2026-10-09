@@ -1,27 +1,39 @@
 import { whyUs } from '@/lib/why-us'
-import { FeatureCard } from './marketing/feature-card'
+import { Reveal } from './marketing/reveal'
+import { Section, SectionHeading } from './marketing/section'
 
+/**
+ * Six differentiators on a hairline grid. Deliberately not six cards: the list
+ * is read, not scanned, and card chrome on every item flattens the hierarchy.
+ */
 export function PlatformFeaturesSection() {
   return (
-    <section className="border-t bg-brand-mist/40">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
-        <div className="max-w-2xl">
-          <h2 className="text-2xl font-bold text-brand-navy sm:text-3xl">
-            The Ident-ity Advantage
-          </h2>
-        </div>
+    <Section id="why-us" className="border-t border-border bg-brand-mist/40">
+      <SectionHeading
+        eyebrow="Why buyers move to us"
+        title="What changes when the source is ours."
+      />
 
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-2 lg:grid-cols-3">
-          {whyUs.map((item) => (
-            <FeatureCard
-              key={item.title}
-              title={item.title}
-              description={item.description}
-              accent={item.accent ?? 'cyan'}
+      <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:mt-16 sm:grid-cols-2 lg:grid-cols-3">
+        {whyUs.map((item, index) => (
+          <Reveal
+            key={item.title}
+            delay={(index % 3) * 60}
+            className="bg-white p-7 transition-colors hover:bg-brand-mist/70 sm:p-8"
+          >
+            <span
+              aria-hidden
+              className="block h-0.5 w-8 rounded-full bg-brand-cyan-ink"
             />
-          ))}
-        </div>
+            <h3 className="mt-5 text-base font-medium text-brand-navy">
+              {item.title}
+            </h3>
+            <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+              {item.description}
+            </p>
+          </Reveal>
+        ))}
       </div>
-    </section>
+    </Section>
   )
 }
