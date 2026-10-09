@@ -72,7 +72,7 @@ function Section({
         {title}
       </h3>
       <div className="space-y-1">
-        {fields.map(({ key, label, value }) => (
+        {fields.map(({ key, label, value, unavailable }) => (
           <div
             key={key}
             className="flex flex-col gap-0.5 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50 sm:flex-row sm:items-baseline sm:gap-4"
@@ -80,7 +80,13 @@ function Section({
             <span className="w-36 shrink-0 text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
               {label}
             </span>
-            <p className="text-sm text-foreground wrap-break-word">{value}</p>
+            {unavailable ? (
+              <p className="text-sm italic text-muted-foreground">
+                Not available for purchase
+              </p>
+            ) : (
+              <p className="text-sm text-foreground wrap-break-word">{value}</p>
+            )}
           </div>
         ))}
       </div>
@@ -93,7 +99,9 @@ export const CompanyDetailProfileCard = memo(function CompanyDetailProfileCard({
   children,
 }: CompanyDetailProfileCardProps) {
   const fieldsWithValue = publicFields.filter(
-    (f) => f.value !== null && f.value !== undefined && f.value !== '',
+    (f) =>
+      f.unavailable ||
+      (f.value !== null && f.value !== undefined && f.value !== ''),
   )
 
   const registrationData = fieldsWithValue.filter((f) =>

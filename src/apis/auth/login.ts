@@ -4,8 +4,9 @@ import { createServerFn } from '@tanstack/react-start'
 import { setCookie } from '@tanstack/react-start/server'
 import z from 'zod'
 
-import { businessEmailSchema } from '@/lib/business-email'
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/constants/auth'
+import { businessEmailSchema } from '@/lib/business-email'
+import { getClientIpHeaders } from '@/lib/client-ip'
 import { getAuthCookieOptions } from '@/lib/cookie-options'
 import { request } from '../base'
 
@@ -24,6 +25,8 @@ const login = async ({
     url: '/auth/login',
     method: 'POST',
     data: { email, password },
+    // Server-side call: forward the browser's IP so the login rate limit is per user, not per frontend server.
+    headers: getClientIpHeaders(),
   })
 }
 

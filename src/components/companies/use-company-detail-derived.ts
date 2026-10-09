@@ -1,4 +1,4 @@
-import type { TCompany } from '@/types/company'
+import { COMPANY_MASKED_VALUE, type TCompany } from '@/types/company'
 import type { CompanyProfileFieldRow } from './company-detail-types'
 
 export type CompanyDetailDerived = {
@@ -18,6 +18,9 @@ export type CompanyDetailDerived = {
   partnersIsList: boolean
   managersIsList: boolean
   authSignatoriesIsList: boolean
+  partnersUnavailable: boolean
+  managersUnavailable: boolean
+  authSignatoriesUnavailable: boolean
   showPartnersManagersCard: boolean
 }
 
@@ -27,6 +30,15 @@ export function useCompanyDetailDerived(
   return (() => {
     const getLockedFieldByFieldName = (fieldName: string) =>
       company.lockedFields.find((lf) => lf.lockedType.fieldName === fieldName)
+
+    const unavailableFields = company.unavailableFields ?? []
+    /**
+     * Masked with nothing to buy. Also guards against ever showing the mask as a
+     * public value when a masked field has no offer.
+     */
+    const isUnavailable = (fieldName: string, value: unknown) =>
+      unavailableFields.includes(fieldName) ||
+      (value === COMPANY_MASKED_VALUE && !getLockedFieldByFieldName(fieldName))
 
     const profileFields: CompanyProfileFieldRow[] = [
       {
@@ -182,10 +194,16 @@ export function useCompanyDetailDerived(
       return locked != null && locked.unlocks.length > 0
     })
 
-    const publicFields = profileFields.filter(({ key }) => {
-      const locked = getLockedFieldByFieldName(key)
-      return locked == null
-    })
+    const publicFields = profileFields
+      .filter(({ key }) => {
+        const locked = getLockedFieldByFieldName(key)
+        return locked == null
+      })
+      .map((field) =>
+        isUnavailable(field.key, field.value)
+          ? { ...field, value: null, unavailable: true }
+          : field,
+      )
 
     const profileLockedFields = profileFields.filter(({ key, value }) => {
       // Don't show empty fields as locked if they are null
@@ -201,6 +219,13 @@ export function useCompanyDetailDerived(
     const partnersIsList = Array.isArray(partnersRaw)
     const managersIsList = Array.isArray(managersRaw)
     const authSignatoriesIsList = Array.isArray(authSignatoriesRaw)
+
+    const partnersUnavailable = isUnavailable('partners', partnersRaw)
+    const managersUnavailable = isUnavailable('managers', managersRaw)
+    const authSignatoriesUnavailable = isUnavailable(
+      'authSignatories',
+      authSignatoriesRaw,
+    )
 
     const peopleLockedExtras: CompanyProfileFieldRow[] = []
 
@@ -275,7 +300,10 @@ export function useCompanyDetailDerived(
       partnersIsList,
       managersIsList,
       authSignatoriesIsList,
+      partnersUnavailable,
+      managersUnavailable,
+      authSignatoriesUnavailable,
       showPartnersManagersCard,
     }
-  })();
+  })()
 }

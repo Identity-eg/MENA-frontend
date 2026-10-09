@@ -1,14 +1,12 @@
 import { CreditCard, FileDown, FileText, Loader2 } from 'lucide-react'
-import { memo } from 'react'
+import { memo, type ReactNode } from 'react'
 
 import { StatusPill } from '@/components/StatusPill'
 import { Button } from '@/components/ui/button'
 
-import {
-  REQUEST_STATUS,
-  type RequestStatusValue,
-  type TRequestInvoice,
-} from '@/types/request'
+import type { InvoiceDisplay } from '@/lib/request-billing'
+import { cn } from '@/lib/utils'
+import type { RequestStatusValue } from '@/types/request'
 
 type RequestDetailHeroProps = {
   formattedId: string
@@ -16,11 +14,69 @@ type RequestDetailHeroProps = {
   subjectsCount: number
   submittedDate: string
   totalEstimatedPrice: number
-  amountDue: number
-  invoice: TRequestInvoice | null | undefined
+  /** Derived from request.status + invoice.status (see lib/request-billing). */
+  invoiceDisplay: InvoiceDisplay
+  canDownloadInvoice: boolean
+  /** Payable and no payment currently being confirmed. */
+  canPay: boolean
+  /** Returned from Stripe; waiting for the payment webhook to land. */
+  isPaymentProcessing: boolean
   isPaymentRedirecting: boolean
+  isDownloadingInvoice: boolean
   onDownloadInvoice: () => void
   onPay: () => void
+  /** Extra action (e.g. the owner's Cancel request button). */
+  cancelAction?: ReactNode
+}
+
+function InvoiceAmountTile({ display }: { display: InvoiceDisplay }) {
+  if (display.kind === 'none') return null
+
+  if (display.kind === 'withdrawn') {
+    return (
+      <div className="flex-1 sm:flex-none rounded-lg border border-dashed px-3 py-2">
+        <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          Invoice
+        </p>
+        <p className="text-sm font-semibold text-muted-foreground">
+          Invoice withdrawn
+        </p>
+      </div>
+    )
+  }
+
+  const label =
+    display.kind === 'due'
+      ? display.overdue
+        ? 'Amount due · Overdue'
+        : 'Amount due'
+      : display.kind === 'paid'
+        ? 'Paid'
+        : 'Invoice'
+
+  return (
+    <div
+      className={cn(
+        'flex-1 sm:flex-none rounded-lg border px-3 py-2',
+        display.kind === 'due' && 'border-primary/30 bg-primary/5',
+        display.kind === 'paid' &&
+          'border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10',
+      )}
+    >
+      <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
+      <p
+        className={cn(
+          'text-base font-bold tabular-nums tracking-tight',
+          display.kind === 'due' && 'text-primary',
+          display.kind === 'paid' && 'text-emerald-700 dark:text-emerald-400',
+        )}
+      >
+        ${display.amount.toLocaleString()}
+      </p>
+    </div>
+  )
 }
 
 export const RequestDetailHero = memo(function RequestDetailHero({
@@ -29,12 +85,19 @@ export const RequestDetailHero = memo(function RequestDetailHero({
   subjectsCount,
   submittedDate,
   totalEstimatedPrice,
-  amountDue,
-  invoice,
+  invoiceDisplay,
+  canDownloadInvoice,
+  canPay,
+  isPaymentProcessing,
   isPaymentRedirecting,
+  isDownloadingInvoice,
   onDownloadInvoice,
   onPay,
+  cancelAction,
 }: RequestDetailHeroProps) {
+  const hasActions =
+    canDownloadInvoice || canPay || isPaymentProcessing || cancelAction != null
+
   return (
     <header className="relative overflow-hidden rounded-xl sm:rounded-2xl border bg-linear-to-br from-card via-card to-muted/30 px-4 py-5 shadow-sm sm:px-8 sm:py-7">
       <div className="absolute right-0 top-0 h-24 w-40 bg-linear-to-bl from-primary/5 to-transparent rounded-bl-full pointer-events-none" />
@@ -59,33 +122,50 @@ export const RequestDetailHero = memo(function RequestDetailHero({
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-          {(invoice != null || status === REQUEST_STATUS.INVOICE_GENERATED) && (
-            <div className="flex items-center gap-2">
-              {invoice != null && (
+          {hasActions && (
+            <div className="flex flex-wrap items-center gap-2">
+              {cancelAction}
+              {canDownloadInvoice && (
                 <Button
                   size="sm"
                   variant="outline"
                   className="flex-1 sm:flex-none gap-2"
+                  disabled={isDownloadingInvoice}
                   onClick={onDownloadInvoice}
                 >
-                  <FileDown className="h-4 w-4" />
+                  {isDownloadingInvoice ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <FileDown className="h-4 w-4" />
+                  )}
                   Download Invoice
                 </Button>
               )}
-              {status === REQUEST_STATUS.INVOICE_GENERATED && (
-                <Button
-                  size="sm"
-                  className="flex-1 sm:flex-none gap-2 bg-orange-500 hover:bg-orange-600 focus-visible:ring-orange-500 border-none shadow-sm"
-                  disabled={isPaymentRedirecting}
-                  onClick={onPay}
+              {isPaymentProcessing ? (
+                <span
+                  role="status"
+                  className="inline-flex flex-1 sm:flex-none items-center justify-center gap-2 rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300"
                 >
-                  {isPaymentRedirecting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <CreditCard className="h-4 w-4" />
-                  )}{' '}
-                  Pay ${amountDue.toLocaleString()}
-                </Button>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Payment processing
+                </span>
+              ) : (
+                canPay &&
+                invoiceDisplay.kind === 'due' && (
+                  <Button
+                    size="sm"
+                    className="flex-1 sm:flex-none gap-2 bg-orange-500 hover:bg-orange-600 focus-visible:ring-orange-500 border-none shadow-sm"
+                    disabled={isPaymentRedirecting}
+                    onClick={onPay}
+                  >
+                    {isPaymentRedirecting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <CreditCard className="h-4 w-4" />
+                    )}{' '}
+                    Pay ${invoiceDisplay.amount.toLocaleString()}
+                  </Button>
+                )
               )}
             </div>
           )}
@@ -98,16 +178,7 @@ export const RequestDetailHero = memo(function RequestDetailHero({
                 ${totalEstimatedPrice.toLocaleString()}
               </p>
             </div>
-            {invoice != null && (
-              <div className="flex-1 sm:flex-none rounded-lg border border-primary/30 bg-primary/5 px-3 py-2">
-                <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                  Amount due
-                </p>
-                <p className="text-base font-bold tabular-nums tracking-tight text-primary">
-                  ${invoice.amount.toLocaleString()}
-                </p>
-              </div>
-            )}
+            <InvoiceAmountTile display={invoiceDisplay} />
           </div>
         </div>
       </div>

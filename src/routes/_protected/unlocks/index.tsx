@@ -17,6 +17,11 @@ import {
   getUnlocksQueryOptions,
   useGetUnlocks,
 } from '@/apis/unlocks/get-unlocks'
+import {
+  describeUnlockedPerson,
+  formatUnlockFieldName,
+} from '@/lib/unlocked-value'
+import type { TUnlock } from '@/types/unlock'
 
 export const Route = createFileRoute('/_protected/unlocks/')({
   pendingComponent: FullPageLoading,
@@ -27,18 +32,37 @@ export const Route = createFileRoute('/_protected/unlocks/')({
   },
 })
 
-function formatFieldName(fieldName: string) {
-  return (
-    fieldName.charAt(0).toUpperCase() + fieldName.slice(1).replace(/_/g, ' ')
-  )
-}
+function UnlockedValue({ unlock }: { unlock: TUnlock }) {
+  const value = unlock.unlockedValue
+  const fieldName = unlock.lockedField.lockedType.fieldName
 
-function formatUnlockedValue(
-  value: string | number | Array<string> | null | undefined,
-): string {
-  if (value == null) return '—'
-  if (Array.isArray(value)) return value.join(', ')
-  return String(value)
+  if (value == null || value === '') {
+    return <span className="font-medium">—</span>
+  }
+  if (!Array.isArray(value)) {
+    return <span className="font-medium wrap-break-word">{value}</span>
+  }
+  if (value.length === 0) {
+    return <span className="text-muted-foreground">No records</span>
+  }
+
+  return (
+    <ul className="divide-y rounded-lg border">
+      {value.map((person, index) => {
+        const { name, details } = describeUnlockedPerson(fieldName, person)
+        return (
+          <li key={person.id ?? index} className="px-3 py-2">
+            <p className="font-medium">{name}</p>
+            {details.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                {details.join(' · ')}
+              </p>
+            )}
+          </li>
+        )
+      })}
+    </ul>
+  )
 }
 
 function UnlocksPage() {
@@ -87,23 +111,30 @@ function UnlocksPage() {
                     Unlocked
                   </Badge>
                 </div>
-                <CardTitle className="text-lg mt-3 font-sans" dir="rtl">
-                  {unlock.lockedField.company.companyNameAr ??
-                    unlock.lockedField.company.companyNameEn}
+                <CardTitle
+                  className="text-lg mt-3 font-sans"
+                  dir={unlock.lockedField.company.nameAr ? 'rtl' : 'ltr'}
+                >
+                  {unlock.lockedField.company.nameAr ??
+                    unlock.lockedField.company.nameEn ??
+                    '—'}
                 </CardTitle>
-                <div className="text-sm text-muted-foreground font-medium">
-                  {unlock.lockedField.company.companyNameEn}
-                </div>
+                {unlock.lockedField.company.nameAr &&
+                  unlock.lockedField.company.nameEn && (
+                    <div className="text-sm text-muted-foreground font-medium">
+                      {unlock.lockedField.company.nameEn}
+                    </div>
+                  )}
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="flex flex-col gap-1">
                   <span className="text-muted-foreground flex items-center gap-2">
                     <Unlock size={16} />
-                    {formatFieldName(unlock.lockedField.lockedType.fieldName)}
+                    {formatUnlockFieldName(
+                      unlock.lockedField.lockedType.fieldName,
+                    )}
                   </span>
-                  <span className="font-medium">
-                    {formatUnlockedValue(unlock.unlockedValue)}
-                  </span>
+                  <UnlockedValue unlock={unlock} />
                 </div>
               </CardContent>
               <CardFooter className="bg-transparent p-2">

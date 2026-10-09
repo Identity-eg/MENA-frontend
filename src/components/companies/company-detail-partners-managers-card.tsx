@@ -1,4 +1,4 @@
-import { Lock } from 'lucide-react'
+import { Ban, Lock } from 'lucide-react'
 import { memo } from 'react'
 
 import type { TAuthSignatory, TManager, TPartner } from '@/types/company'
@@ -13,6 +13,24 @@ type CompanyDetailPartnersManagersCardProps = {
   partnersIsList: boolean
   managersIsList: boolean
   authSignatoriesIsList: boolean
+  /** Masked and not offered for sale (company.unavailableFields). */
+  partnersUnavailable: boolean
+  managersUnavailable: boolean
+  authSignatoriesUnavailable: boolean
+}
+
+function NotAvailableForPurchase({ subject }: { subject: string }) {
+  return (
+    <div className="rounded-xl border border-dashed border-muted-foreground/25 bg-muted/30 px-4 py-6 text-center">
+      <Ban className="mx-auto h-6 w-6 text-muted-foreground/60 mb-2" />
+      <p className="text-sm font-medium text-foreground">
+        Not available for purchase
+      </p>
+      <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+        {subject} for this company are not offered at the moment.
+      </p>
+    </div>
+  )
 }
 
 export const CompanyDetailPartnersManagersCard = memo(
@@ -23,6 +41,9 @@ export const CompanyDetailPartnersManagersCard = memo(
     partnersIsList,
     managersIsList,
     authSignatoriesIsList,
+    partnersUnavailable,
+    managersUnavailable,
+    authSignatoriesUnavailable,
   }: CompanyDetailPartnersManagersCardProps) {
     return (
       <div className="space-y-6">
@@ -32,6 +53,8 @@ export const CompanyDetailPartnersManagersCard = memo(
           </h3>
           {partnersIsList ? (
             <CompanyDetailPartnersTable rows={partnersRaw as TPartner[]} />
+          ) : partnersUnavailable ? (
+            <NotAvailableForPurchase subject="Partner details" />
           ) : typeof partnersRaw === 'string' ? (
             <div className="rounded-xl border border-dashed border-muted-foreground/25 bg-muted/30 px-4 py-6 text-center">
               <Lock className="mx-auto h-6 w-6 text-muted-foreground/60 mb-2" />
@@ -54,6 +77,8 @@ export const CompanyDetailPartnersManagersCard = memo(
           </h3>
           {managersIsList ? (
             <CompanyDetailManagersTable rows={managersRaw as TManager[]} />
+          ) : managersUnavailable ? (
+            <NotAvailableForPurchase subject="Manager details" />
           ) : typeof managersRaw === 'string' ? (
             <div className="rounded-xl border border-dashed border-muted-foreground/25 bg-muted/30 px-4 py-6 text-center">
               <Lock className="mx-auto h-6 w-6 text-muted-foreground/60 mb-2" />
@@ -78,6 +103,8 @@ export const CompanyDetailPartnersManagersCard = memo(
             <CompanyDetailAuthSignatoriesTable
               rows={authSignatoriesRaw as TAuthSignatory[]}
             />
+          ) : authSignatoriesUnavailable ? (
+            <NotAvailableForPurchase subject="Authorized signatory details" />
           ) : typeof authSignatoriesRaw === 'string' ? (
             <div className="rounded-xl border border-dashed border-muted-foreground/25 bg-muted/30 px-4 py-6 text-center">
               <Lock className="mx-auto h-6 w-6 text-muted-foreground/60 mb-2" />

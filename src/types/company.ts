@@ -1,7 +1,7 @@
 import type { TLockedField } from './locked-field'
 import type { TReport } from './report'
 
-/** Masked locked value from API (see maskCompanyLockedFields). */
+/** Masked value of a Sensitive field the viewer has not unlocked (also used for the array fields). */
 export const COMPANY_MASKED_VALUE = '••••••'
 
 export type TPartner = {
@@ -77,6 +77,7 @@ export type TCompany = {
   id: number
   companyNameAr: string
   companyNameEn?: string | null
+  /** Sensitive: COMPANY_MASKED_VALUE unless unlocked */
   registrationNumber: string
   UNN?: string | null
   centralNumber?: string | null
@@ -126,6 +127,12 @@ export type TCompany = {
     nameAr: string
   }
   lockedFields: Array<TLockedField>
+  /**
+   * Sensitive fields that are masked AND have no Field offer, so they cannot be
+   * bought: show "Not available for purchase" (never an unlock button).
+   * Always sent by GET /api/companies/:id; optional only for older responses.
+   */
+  unavailableFields?: Array<string>
   reports: Array<TReport>
   /** Present when unlocked; masked string when locked. */
   partners?: TPartner[] | string

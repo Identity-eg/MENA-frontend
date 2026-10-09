@@ -16,6 +16,7 @@ import {
   useGetUnlocks,
 } from '@/apis/unlocks/get-unlocks'
 import { useGetMe } from '@/apis/user/get-me'
+import { isRequestPayable } from '@/lib/request-billing'
 import {
   REQUEST_STATUS,
   type RequestStatusValue,
@@ -59,12 +60,9 @@ function DashboardPage() {
     activeRequestStatuses.has(request.status),
   ).length
 
-  const pendingPaymentRequests = requests.filter(
-    (request) => request.status === REQUEST_STATUS.INVOICE_GENERATED,
-  )
+  const pendingPaymentRequests = requests.filter(isRequestPayable)
   const pendingPaymentsTotal = pendingPaymentRequests.reduce(
-    (sum, request) =>
-      sum + (request.invoice?.amount ?? request.totalEstimatedPrice),
+    (sum, request) => sum + (request.invoice?.amount ?? 0),
     0,
   )
 

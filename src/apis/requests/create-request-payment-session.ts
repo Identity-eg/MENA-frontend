@@ -1,6 +1,7 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { request } from '../base'
+import { getErrorMessage } from '../base/error-handler'
 
 type CreatePaymentSessionResponse = {
   success: boolean
@@ -25,6 +26,8 @@ export async function createRequestPaymentSession(
 }
 
 export const useCreateRequestPaymentSession = () => {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: (params: {
       requestId: number
@@ -38,6 +41,15 @@ export const useCreateRequestPaymentSession = () => {
       ),
     onSuccess: (data) => {
       window.location.href = data.url
+    },
+    onError: (error, params) => {
+      // 409 NOT_PAYABLE: the request/invoice changed (withdrawn, paid, cancelled). Refetch it.
+      if (getErrorMessage(error).status === 409) {
+        queryClient.invalidateQueries({
+          queryKey: ['request', params.requestId],
+        })
+        queryClient.invalidateQueries({ queryKey: ['requests'] })
+      }
     },
   })
 }

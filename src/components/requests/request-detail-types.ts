@@ -9,6 +9,7 @@ export type RequestDetailReportRow = RequestReport & {
   upload?: RequestReportUploadItem | null
   reportStatus?: RequestReportItem['status']
   finalPrice?: number | null
+  refundDueAt?: string | null
 }
 
 export type RequestDetailSubjectItem = {

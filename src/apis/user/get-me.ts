@@ -1,5 +1,4 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { createServerFn } from '@tanstack/react-start'
 
 import type { TUser } from '@/types/user'
 import { request } from '../base'
@@ -14,10 +13,6 @@ export const getMe = async (): Promise<{ user: TUser } | null> => {
     return null
   }
 }
-
-export const getMeAction = createServerFn().handler(async () => {
-  return getMe()
-})
 
 export const getMeQueryOptions = () =>
   queryOptions({

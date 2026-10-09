@@ -1,14 +1,12 @@
-import type { TCompany } from './company'
-
+/** A Field offer on a company, as embedded in GET /api/companies/:id `lockedFields[]`. */
 export type TLockedField = {
   id: number
-  companyId: string
   lockedTypeId: number
   lockedType: {
     fieldName: string
   }
   price: number
-  company: TCompany
+  /** The viewer's own unlocks only (empty when not unlocked) */
   unlocks: Array<{
     id: number
     userId: number

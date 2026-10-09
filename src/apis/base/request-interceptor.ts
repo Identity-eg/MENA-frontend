@@ -1,11 +1,15 @@
 import { createIsomorphicFn } from '@tanstack/react-start'
-import { getCookie, setCookie } from '@tanstack/react-start/server'
+import { getCookie, getRequest, setCookie } from '@tanstack/react-start/server'
 import type { InternalAxiosRequestConfig } from 'axios'
 
 import { ACCESS_TOKEN_NAME } from '@/constants/auth'
 import { getContext } from '@/integrations/tanstack-query/root-provider'
 import { getAuthCookieOptions } from '@/lib/cookie-options'
-import { refreshToken } from '../auth/refresh-token'
+import {
+  isTransientRefreshFailure,
+  refreshToken,
+  type TRefreshTokenResult,
+} from '../auth/refresh-token'
 
 export const requestSuccessInterceptor = async (
   config: InternalAxiosRequestConfig,
@@ -18,20 +22,52 @@ export const requestSuccessInterceptor = async (
   return config
 }
 
-export const getIsomorphicAccessToken = createIsomorphicFn()
-  .server(async () => {
-    let accessToken = getCookie(ACCESS_TOKEN_NAME) || null
+export type TAccessTokenState = {
+  accessToken: string | null
+  /** True when there is a session but the refresh failed transiently (429/5xx/network). */
+  authTransient: boolean
+}
 
-    if (!accessToken) {
-      accessToken = await refreshToken()
+/**
+ * One refresh per incoming SSR request. `setCookie` only affects the response, so
+ * `getCookie` keeps returning no access token for the rest of the request; without
+ * this every API call during SSR would refresh again (and spend the refresh rate limit).
+ */
+const refreshesByRequest = new WeakMap<Request, Promise<TRefreshTokenResult>>()
+
+const refreshOncePerRequest = () => {
+  const currentRequest = getRequest()
+  let pending = refreshesByRequest.get(currentRequest)
+  if (!pending) {
+    pending = refreshToken()
+    refreshesByRequest.set(currentRequest, pending)
+  }
+  return pending
+}
+
+export const getIsomorphicAccessTokenState = createIsomorphicFn()
+  .server(async (): Promise<TAccessTokenState> => {
+    const accessToken = getCookie(ACCESS_TOKEN_NAME) || null
+    if (accessToken) return { accessToken, authTransient: false }
+
+    const result = await refreshOncePerRequest()
+    if (result.status === 'ok') {
+      return { accessToken: result.accessToken, authTransient: false }
     }
-
-    return accessToken
+    return {
+      accessToken: null,
+      authTransient: isTransientRefreshFailure(result),
+    }
   })
-  .client(() => {
+  .client((): TAccessTokenState => {
     const context = getContext()
-    return context.queryClient.getQueryData(['access-token'])
+    const accessToken =
+      context.queryClient.getQueryData<string>(['access-token']) ?? null
+    return { accessToken, authTransient: false }
   })
+
+export const getIsomorphicAccessToken = async () =>
+  (await getIsomorphicAccessTokenState()).accessToken
 
 export const setIsomorphicAccessToken = createIsomorphicFn()
   .server((data) => {

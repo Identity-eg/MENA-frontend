@@ -1,5 +1,5 @@
 import { usePostHog } from '@posthog/react'
-import { Activity, Download, Loader2 } from 'lucide-react'
+import { Activity, Download, Loader2, RotateCcw } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -23,6 +23,8 @@ export type RequestReportRowReport = {
   reportStatus?: RequestReportStatusValue | null
   /** Request-report-level final price (overrides price when set) */
   finalPrice?: number | null
+  /** Set when the line was rejected after payment: a refund is due */
+  refundDueAt?: string | null
 }
 
 type RequestReportRowProps = {
@@ -59,12 +61,26 @@ export function RequestReportCard({ report, status }: RequestReportRowProps) {
   const finalPrice = report.finalPrice ?? null
   const displayPrice = finalPrice ?? estimatedPrice
   const reportStatus = report.reportStatus ?? null
+  const isRejected = reportStatus === REQUEST_REPORT_STATUS.REJECTED
+  const isRefundDue = report.refundDueAt != null
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border bg-card p-4 transition-colors hover:border-primary/20 hover:bg-muted/20">
+    <div
+      className={cn(
+        'flex items-center justify-between gap-4 rounded-xl border bg-card p-4 transition-colors hover:border-primary/20 hover:bg-muted/20',
+        isRejected && 'bg-muted/30',
+      )}
+    >
       <div className="min-w-0 space-y-1.5">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="text-sm font-semibold leading-tight">{report.name}</p>
+          <p
+            className={cn(
+              'text-sm font-semibold leading-tight',
+              isRejected && 'text-muted-foreground',
+            )}
+          >
+            {report.name}
+          </p>
           <Badge
             variant={
               reportStatus ? reportStatusVariant[reportStatus] : 'secondary'
@@ -80,9 +96,28 @@ export function RequestReportCard({ report, status }: RequestReportRowProps) {
           >
             {reportStatusLabel(reportStatus)}
           </Badge>
+          {isRefundDue && (
+            <Badge
+              variant="outline"
+              className="gap-1 border-sky-300 bg-sky-50 text-sky-800 dark:border-sky-800 dark:bg-sky-950/50 dark:text-sky-300"
+              title="This report was rejected after payment. Our team will refund it."
+            >
+              <RotateCcw className="h-3 w-3" />
+              Refund due
+            </Badge>
+          )}
         </div>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
-          {finalPrice != null ? (
+          {isRejected ? (
+            <span className="text-sm tabular-nums text-muted-foreground">
+              <span className="line-through">
+                ${displayPrice.toLocaleString()}
+              </span>
+              <span className="ml-1.5 text-[10px] uppercase tracking-wider">
+                Not charged
+              </span>
+            </span>
+          ) : finalPrice != null ? (
             <>
               <span className="text-sm font-semibold tabular-nums text-foreground">
                 ${finalPrice.toLocaleString()}
@@ -90,7 +125,7 @@ export function RequestReportCard({ report, status }: RequestReportRowProps) {
                   Final
                 </span>
               </span>
-              {estimatedPrice > 0 && (
+              {estimatedPrice > 0 && estimatedPrice !== finalPrice && (
                 <span className="text-xs tabular-nums text-muted-foreground line-through">
                   Est. ${estimatedPrice.toLocaleString()}
                 </span>
@@ -106,7 +141,7 @@ export function RequestReportCard({ report, status }: RequestReportRowProps) {
           )}
         </div>
       </div>
-      {hasReportFile ? (
+      {isRejected ? null : hasReportFile ? (
         <Button
           type="button"
           size="sm"
@@ -140,7 +175,8 @@ export function RequestReportCard({ report, status }: RequestReportRowProps) {
         >
           <Download className="h-3.5 w-3.5" /> Report
         </Button>
-      ) : (
+      ) : status === REQUEST_STATUS.CANCELLED ||
+        status === REQUEST_STATUS.REJECTED ? null : (
         <span className="flex h-8 w-8 shrink-0 items-center justify-center text-muted-foreground">
           <Activity className="h-4 w-4 animate-pulse" />
         </span>

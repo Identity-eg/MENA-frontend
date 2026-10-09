@@ -1,3 +1,4 @@
+import { getLinePrice } from '@/lib/request-billing'
 import type { RequestReportItem, TRequest } from '@/types/request'
 import type {
   RequestDetailReportRow,
@@ -28,14 +29,17 @@ export function buildRequestDetailSubjects(
   >()
 
   for (const rr of requestReports) {
-    const price = rr.report.price ?? rr.report.estimatedPrice ?? 0
+    const estimatedPrice = rr.report.estimatedPrice ?? rr.report.price ?? 0
     const reportWithUploads: RequestDetailReportRow = {
       ...rr.report,
-      totalEstimatedPrice: rr.report.totalEstimatedPrice ?? price,
-      price,
+      totalEstimatedPrice: rr.report.totalEstimatedPrice ?? estimatedPrice,
+      // Line price = finalPrice (frozen at invoicing) ?? report.estimatedPrice
+      price: getLinePrice(rr),
+      estimatedPrice,
       upload: rr.upload ?? null,
       reportStatus: rr.status,
       finalPrice: rr.finalPrice ?? null,
+      refundDueAt: rr.refundDueAt ?? null,
     }
 
     if (rr.companyId != null && rr.company != null) {

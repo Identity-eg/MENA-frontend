@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/table'
 
 import { useGetRequests } from '@/apis/requests/get-requests'
+import { getInvoiceDisplay } from '@/lib/request-billing'
 import type { TRequest } from '@/types/request'
 
 const RECENT_LIMIT = 5
@@ -47,9 +48,19 @@ function formatRequestId(id: number) {
   return `REQ-${String(id).padStart(6, '0')}`
 }
 
-function formatPrice(estimatedPrice: number, invoiceAmount?: number | null) {
-  const amount = invoiceAmount ?? estimatedPrice
-  return `$${amount}`
+/** Invoice amount only when it is due or paid; otherwise the estimate. */
+function formatAmount(req: TRequest) {
+  const invoice = getInvoiceDisplay(req)
+  switch (invoice.kind) {
+    case 'due':
+      return `$${invoice.amount} due`
+    case 'paid':
+      return `$${invoice.amount} paid`
+    case 'withdrawn':
+      return `$${req.totalEstimatedPrice} est. · Invoice withdrawn`
+    default:
+      return `$${req.totalEstimatedPrice}`
+  }
 }
 
 export function DashboardRecentRequests() {
@@ -99,7 +110,7 @@ export function DashboardRecentRequests() {
                     <StatusPill status={req.status} />
                   </TableCell>
                   <TableCell className="text-right font-medium">
-                    {formatPrice(req.totalEstimatedPrice, req.invoice?.amount)}
+                    {formatAmount(req)}
                   </TableCell>
                   <TableCell className="text-right">
                     <Link
