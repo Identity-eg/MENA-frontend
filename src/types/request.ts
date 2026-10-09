@@ -15,6 +15,16 @@ export const REQUEST_STATUS = {
 
 export type RequestStatusValue = ValueOf<typeof REQUEST_STATUS>
 
+/** Invoice status enum values (`invoice` on a request is the LATEST invoice) */
+export const INVOICE_STATUS = {
+  PENDING: 'PENDING',
+  OVERDUE: 'OVERDUE',
+  PAID: 'PAID',
+  CANCELLED: 'CANCELLED',
+} as const
+
+export type InvoiceStatusValue = ValueOf<typeof INVOICE_STATUS>
+
 /** Request report (line) status enum values */
 export const REQUEST_REPORT_STATUS = {
   PENDING: 'PENDING',
@@ -38,13 +48,16 @@ export type CreateCompanyRequestPayload = {
   reportIds: number[]
 }
 
-/** Report shape as included in request list/detail (backend sends price = estimatedPrice) */
+/** Report shape as included in request list/detail */
 export type RequestReport = {
   id: number
   name: string
   description: string
   turnaround: string
   totalEstimatedPrice: number
+  /** Live catalogue price; a line's price is `finalPrice ?? estimatedPrice` */
+  estimatedPrice?: number
+  /** Legacy alias of estimatedPrice */
   price?: number
   isActive?: boolean
 }
@@ -83,18 +96,21 @@ export type RequestReportItem = {
   reportId: number
   companyId?: number | null
   status?: RequestReportStatusValue
+  /** Price frozen at invoicing; null until then (line price = finalPrice ?? report.estimatedPrice) */
   finalPrice?: number | null
+  /** Set when the line was rejected after payment: a refund is due (issued manually by the team) */
+  refundDueAt?: string | null
   company?: TRequestCompany | null
   report: RequestReport & { price?: number; estimatedPrice?: number }
   upload?: RequestReportUploadItem | null
 }
 
-/** Invoice shape when included on a request */
+/** Invoice shape when included on a request (the latest invoice) */
 export type TRequestInvoice = {
   id: number
   requestId: number
   amount: number
-  status: string
+  status: InvoiceStatusValue
   invoiceNumber?: string
 }
 
@@ -106,7 +122,7 @@ export type TRequest = {
   totalEstimatedPrice: number
   createdAt: string
   updatedAt: string
-  /** Present when request has an invoice */
+  /** Latest invoice, or null. Only payable when `isRequestPayable` (see lib/request-billing). */
   invoice?: TRequestInvoice | null
   /** Report lines (Prisma RequestReport). Source of truth for companies, individuals, reports. */
   requestReports?: Array<RequestReportItem>

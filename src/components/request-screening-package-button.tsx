@@ -1,9 +1,11 @@
 import { usePostHog } from '@posthog/react'
 import { useNavigate } from '@tanstack/react-router'
 import { ChevronRight, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 
+import { getErrorMessage } from '@/apis/base/error-handler'
 import { useCreateRequest } from '@/apis/requests/create-request'
 
 type RequestScreeningPackageButtonProps = {
@@ -37,6 +39,12 @@ export function RequestScreeningPackageButton({
             has_company_context: companyId != null,
           })
           navigate({ to: '/requests' })
+        },
+        onError: (error) => {
+          // e.g. 400 REPORT_UNAVAILABLE (report deactivated), 404 COMPANY_NOT_FOUND
+          toast.error(
+            getErrorMessage(error, 'Could not submit your request.').message,
+          )
         },
       },
     )

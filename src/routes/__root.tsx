@@ -13,7 +13,7 @@ import { NotFoundPage } from '@/components/layout/not-found-page'
 import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { Toaster } from '@/components/ui/sonner'
 
-import { getIsomorphicAccessToken } from '@/apis/base/request-interceptor'
+import { getIsomorphicAccessTokenState } from '@/apis/base/request-interceptor'
 import { getMeQueryOptions } from '@/apis/user/get-me'
 import type { TUser } from '@/types/user'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
@@ -22,6 +22,12 @@ import appCss from '../styles.css?url'
 interface MyRouterContext {
   queryClient: QueryClient
   user: TUser | null
+  /**
+   * True when the user has a session but it could not be refreshed right now
+   * (refresh rate-limited / backend unavailable). Protected routes must not
+   * treat this as logged out.
+   */
+  authTransient?: boolean
 }
 
 const posthogProjectToken = import.meta.env.VITE_PUBLIC_POSTHOG_PROJECT_TOKEN
@@ -42,16 +48,16 @@ if (!posthogHost && import.meta.env.DEV) {
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   pendingComponent: FullPageLoading,
   beforeLoad: async ({ context }) => {
-    const accessToken = await getIsomorphicAccessToken()
+    const { accessToken, authTransient } = await getIsomorphicAccessTokenState()
 
-    if (!accessToken) return { user: null }
+    if (!accessToken) return { user: null, authTransient }
 
     const meData =
       await context.queryClient.ensureQueryData(getMeQueryOptions())
 
     await context.queryClient.setQueryData(['access-token'], accessToken)
 
-    return { user: meData?.user ?? null }
+    return { user: meData?.user ?? null, authTransient: false }
   },
   notFoundComponent: NotFoundPage,
   head: () => ({

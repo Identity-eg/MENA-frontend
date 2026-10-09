@@ -7,8 +7,19 @@ import { Button } from '@/components/ui/button'
 
 import { getRequestQueryOptions } from '@/apis/requests/get-request'
 
+type RequestDetailSearch = {
+  /** Set by the Stripe success/cancel URLs (see handlePay). */
+  payment?: 'success' | 'cancelled'
+}
+
 export const Route = createFileRoute('/_protected/requests/$requestId')({
   component: RequestDetailsPage,
+  validateSearch: (search: Record<string, unknown>): RequestDetailSearch => ({
+    payment:
+      search.payment === 'success' || search.payment === 'cancelled'
+        ? search.payment
+        : undefined,
+  }),
   loader: async ({ context, params }) => {
     const requestId = Number(params.requestId)
     if (Number.isNaN(requestId)) throw notFound()

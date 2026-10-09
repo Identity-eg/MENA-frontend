@@ -2,9 +2,10 @@ import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 
 import { getContext } from '@/integrations/tanstack-query/root-provider'
 import { clearServerCredentials } from '@/lib/auth'
-import { refreshToken } from '../auth/refresh-token'
+import { isTransientRefreshFailure, refreshToken } from '../auth/refresh-token'
 import { apiClient } from './api-client'
 import { getErrorMessage } from './error-handler'
+import type { TFrontendErrorResponse } from './error-type'
 import { setIsomorphicAccessToken } from './request-interceptor'
 
 let isRefreshing = false
@@ -28,7 +29,13 @@ const forceLogout = async () => {
   await clearServerCredentials()
   const context = getContext()
   context.queryClient.removeQueries({ queryKey: ['access-token'] })
-  window.location.href = '/auth/login'
+  if (typeof window !== 'undefined') window.location.href = '/auth/login'
+}
+
+/** Returned when the refresh failed transiently (429/5xx/network): the session is kept. */
+const TRANSIENT_AUTH_ERROR: TFrontendErrorResponse = {
+  message:
+    "We couldn't refresh your session right now. Please try again in a moment.",
 }
 
 export const responseErrorInterceptor = async (error: AxiosError) => {
@@ -54,23 +61,28 @@ export const responseErrorInterceptor = async (error: AxiosError) => {
     isRefreshing = true
 
     try {
-      const accessToken = await refreshToken()
+      const result = await refreshToken()
 
-      if (accessToken) {
+      if (result.status === 'ok') {
+        const { accessToken } = result
         originalRequest.headers.Authorization = `Bearer ${accessToken}`
         setIsomorphicAccessToken({ accessToken })
 
         processQueue(null)
         return apiClient(originalRequest)
-      } else {
-        processQueue(error)
-        await forceLogout()
-        return Promise.reject(error)
       }
-    } catch (refreshError) {
-      processQueue(refreshError as AxiosError)
+
+      processQueue(error)
+      if (isTransientRefreshFailure(result)) {
+        // 429 / backend hiccup: the refresh token is still valid, so keep the session.
+        return Promise.reject(TRANSIENT_AUTH_ERROR)
+      }
       await forceLogout()
-      return Promise.reject(refreshError)
+      return Promise.reject(error)
+    } catch (refreshError) {
+      // The refresh call itself failed (e.g. network): transient, do not log out.
+      processQueue(refreshError as AxiosError)
+      return Promise.reject(TRANSIENT_AUTH_ERROR)
     } finally {
       isRefreshing = false
     }

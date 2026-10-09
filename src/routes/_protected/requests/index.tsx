@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Eye, Search } from 'lucide-react'
-import { useState } from 'react';
+import { useState } from 'react'
 
 import { PageHeader } from '@/components/page-header'
 import { StatusPill } from '@/components/StatusPill'
@@ -29,6 +29,13 @@ import {
   getRequestsQueryOptions,
   useGetRequests,
 } from '@/apis/requests/get-requests'
+import {
+  formatInvoiceSummary,
+  isLineRefundDue,
+  isLineRejected,
+  requestHasRefundDue,
+} from '@/lib/request-billing'
+import { cn } from '@/lib/utils'
 import {
   REQUEST_STATUS,
   type RequestReportItem,
@@ -70,10 +77,17 @@ function getCompaniesForSearch(
     })
 }
 
+type RequestListReport = {
+  id: number
+  name: string
+  rejected: boolean
+  refundDue: boolean
+}
+
 /** Per-company reports (derived from requestReports) */
 function getCompanyWithReports(req: TRequest): Array<{
   company: NonNullable<RequestReportItem['company']>
-  reports: Array<{ id: number; name: string }>
+  reports: Array<RequestListReport>
 }> {
   const items = getRequestReports(req).filter(
     (
@@ -86,7 +100,7 @@ function getCompanyWithReports(req: TRequest): Array<{
     number,
     {
       company: NonNullable<RequestReportItem['company']>
-      reports: Map<number, { id: number; name: string }>
+      reports: Map<number, RequestListReport>
     }
   >()
   for (const rr of items) {
@@ -94,14 +108,54 @@ function getCompanyWithReports(req: TRequest): Array<{
     if (!byCompany.has(key)) {
       byCompany.set(key, { company: rr.company!, reports: new Map() })
     }
-    byCompany
-      .get(key)!
-      .reports.set(rr.report.id, { id: rr.report.id, name: rr.report.name })
+    byCompany.get(key)!.reports.set(rr.report.id, {
+      id: rr.report.id,
+      name: rr.report.name,
+      rejected: isLineRejected(rr),
+      refundDue: isLineRefundDue(rr),
+    })
   }
   return Array.from(byCompany.values()).map(({ company, reports }) => ({
     company,
     reports: Array.from(reports.values()),
   }))
+}
+
+function ReportBadges({ reports }: { reports: Array<RequestListReport> }) {
+  return (
+    <div className="flex flex-wrap gap-1">
+      {reports.map((r) => (
+        <Badge
+          key={r.id}
+          variant="secondary"
+          className={cn(
+            'text-[10px]',
+            r.rejected && 'line-through text-muted-foreground',
+          )}
+          title={
+            r.refundDue
+              ? 'Rejected after payment: refund due'
+              : r.rejected
+                ? 'Rejected: not charged'
+                : undefined
+          }
+        >
+          {r.name}
+        </Badge>
+      ))}
+    </div>
+  )
+}
+
+function RefundDueBadge() {
+  return (
+    <Badge
+      variant="outline"
+      className="text-[10px] border-sky-300 bg-sky-50 text-sky-800 dark:border-sky-800 dark:bg-sky-950/50 dark:text-sky-300"
+    >
+      Refund due
+    </Badge>
+  )
 }
 
 function RequestsPage() {
@@ -197,7 +251,10 @@ function RequestsPage() {
                       <span className="font-mono text-sm font-medium">
                         {formatRequestId(req.id)}
                       </span>
-                      <StatusPill status={req.status} />
+                      <div className="flex items-center gap-1.5">
+                        {requestHasRefundDue(req) && <RefundDueBadge />}
+                        <StatusPill status={req.status} />
+                      </div>
                     </div>
 
                     {/* Date */}
@@ -222,17 +279,7 @@ function RequestsPage() {
                                 ? `${company.companyNameEn} (${company.companyNameAr})`
                                 : company.companyNameEn}
                             </span>
-                            <div className="flex flex-wrap gap-1">
-                              {reports.map((r) => (
-                                <Badge
-                                  key={r.id}
-                                  variant="secondary"
-                                  className="text-[10px]"
-                                >
-                                  {r.name}
-                                </Badge>
-                              ))}
-                            </div>
+                            <ReportBadges reports={reports} />
                           </div>
                         ))}
                       </div>
@@ -251,12 +298,10 @@ function RequestsPage() {
                         </div>
                         <div>
                           <span className="text-muted-foreground text-xs">
-                            Final{' '}
+                            Invoice{' '}
                           </span>
                           <span className="font-medium">
-                            {req.invoice?.amount != null
-                              ? `$${req.invoice.amount}`
-                              : '—'}
+                            {formatInvoiceSummary(req)}
                           </span>
                         </div>
                       </div>
@@ -290,7 +335,7 @@ function RequestsPage() {
                       <TableHead className="text-right">
                         Estimated price
                       </TableHead>
-                      <TableHead className="text-right">Final price</TableHead>
+                      <TableHead className="text-right">Invoice</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -325,17 +370,7 @@ function RequestsPage() {
                                           ? `${company.companyNameEn} (${company.companyNameAr})`
                                           : company.companyNameEn}
                                       </span>
-                                      <div className="flex flex-wrap gap-1">
-                                        {reports.map((r) => (
-                                          <Badge
-                                            key={r.id}
-                                            variant="secondary"
-                                            className="text-[10px]"
-                                          >
-                                            {r.name}
-                                          </Badge>
-                                        ))}
-                                      </div>
+                                      <ReportBadges reports={reports} />
                                     </div>
                                   ),
                                 )
@@ -343,15 +378,16 @@ function RequestsPage() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <StatusPill status={req.status} />
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <StatusPill status={req.status} />
+                              {requestHasRefundDue(req) && <RefundDueBadge />}
+                            </div>
                           </TableCell>
                           <TableCell className="text-right font-medium">
                             ${req.totalEstimatedPrice ?? 0}
                           </TableCell>
                           <TableCell className="text-right font-medium">
-                            {req.invoice?.amount != null
-                              ? `$${req.invoice.amount}`
-                              : '—'}
+                            {formatInvoiceSummary(req)}
                           </TableCell>
                           <TableCell className="text-right">
                             <Link

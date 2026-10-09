@@ -36,8 +36,8 @@ function CompaniesStartSearchingState() {
         <div className="space-y-1">
           <h3 className="font-semibold text-lg">Start searching</h3>
           <p className="text-sm text-muted-foreground max-w-sm">
-            Enter a company name, registration number, or keywords in the search
-            box above to find companies across the MENA region.
+            Enter a company name or keywords in the search box above to find
+            companies across the MENA region.
           </p>
         </div>
       </CardContent>
@@ -164,7 +164,7 @@ function CompanySearchPage() {
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           className="pl-9 h-10"
-          placeholder="Search by name, registration number, or keywords..."
+          placeholder="Search by company name or keywords..."
           value={value}
           onChange={(e) => {
             setValue(e.target.value)

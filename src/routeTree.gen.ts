@@ -22,6 +22,7 @@ import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthPendingVerificationRouteImport } from './routes/auth/pending-verification'
 import { Route as AuthResetRouteImport } from './routes/auth/reset'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as AuthSetupPasswordRouteImport } from './routes/auth/setup-password'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
@@ -32,7 +33,6 @@ import { Route as ProtectedRequestsIndexRouteImport } from './routes/_protected/
 import { Route as ProtectedRequestsRequestIdRouteImport } from './routes/_protected/requests/$requestId'
 import { Route as ProtectedUnlocksIndexRouteImport } from './routes/_protected/unlocks/index'
 import { Route as ProtectedRequestsNewCompanyRouteImport } from './routes/_protected/requests/new.company'
-import { Route as ProtectedRequestsPaymentFailedRequestIdRouteImport } from './routes/_protected/requests/payment-failed.$requestId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -98,6 +98,11 @@ const AuthResetRoute = AuthResetRouteImport.update({
   path: '/auth/reset',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/auth/reset-password',
+  path: '/auth/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthSetupPasswordRoute = AuthSetupPasswordRouteImport.update({
   id: '/auth/setup-password',
   path: '/auth/setup-password',
@@ -151,12 +156,6 @@ const ProtectedRequestsNewCompanyRoute =
     path: '/requests/new/company',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
-const ProtectedRequestsPaymentFailedRequestIdRoute =
-  ProtectedRequestsPaymentFailedRequestIdRouteImport.update({
-    id: '/requests/payment-failed/$requestId',
-    path: '/requests/payment-failed/$requestId',
-    getParentRoute: () => ProtectedRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -171,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/pending-verification': typeof AuthPendingVerificationRoute
   '/auth/reset': typeof AuthResetRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/setup-password': typeof AuthSetupPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
@@ -181,7 +181,6 @@ export interface FileRoutesByFullPath {
   '/requests/': typeof ProtectedRequestsIndexRoute
   '/unlocks/': typeof ProtectedUnlocksIndexRoute
   '/requests/new/company': typeof ProtectedRequestsNewCompanyRoute
-  '/requests/payment-failed/$requestId': typeof ProtectedRequestsPaymentFailedRequestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -196,6 +195,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/pending-verification': typeof AuthPendingVerificationRoute
   '/auth/reset': typeof AuthResetRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/setup-password': typeof AuthSetupPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
@@ -206,7 +206,6 @@ export interface FileRoutesByTo {
   '/requests': typeof ProtectedRequestsIndexRoute
   '/unlocks': typeof ProtectedUnlocksIndexRoute
   '/requests/new/company': typeof ProtectedRequestsNewCompanyRoute
-  '/requests/payment-failed/$requestId': typeof ProtectedRequestsPaymentFailedRequestIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -223,6 +222,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/pending-verification': typeof AuthPendingVerificationRoute
   '/auth/reset': typeof AuthResetRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/setup-password': typeof AuthSetupPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
@@ -233,7 +233,6 @@ export interface FileRoutesById {
   '/_protected/requests/': typeof ProtectedRequestsIndexRoute
   '/_protected/unlocks/': typeof ProtectedUnlocksIndexRoute
   '/_protected/requests/new/company': typeof ProtectedRequestsNewCompanyRoute
-  '/_protected/requests/payment-failed/$requestId': typeof ProtectedRequestsPaymentFailedRequestIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -250,6 +249,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/pending-verification'
     | '/auth/reset'
+    | '/auth/reset-password'
     | '/auth/setup-password'
     | '/auth/signup'
     | '/auth/verify-email'
@@ -260,7 +260,6 @@ export interface FileRouteTypes {
     | '/requests/'
     | '/unlocks/'
     | '/requests/new/company'
-    | '/requests/payment-failed/$requestId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -275,6 +274,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/pending-verification'
     | '/auth/reset'
+    | '/auth/reset-password'
     | '/auth/setup-password'
     | '/auth/signup'
     | '/auth/verify-email'
@@ -285,7 +285,6 @@ export interface FileRouteTypes {
     | '/requests'
     | '/unlocks'
     | '/requests/new/company'
-    | '/requests/payment-failed/$requestId'
   id:
     | '__root__'
     | '/'
@@ -301,6 +300,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/pending-verification'
     | '/auth/reset'
+    | '/auth/reset-password'
     | '/auth/setup-password'
     | '/auth/signup'
     | '/auth/verify-email'
@@ -311,7 +311,6 @@ export interface FileRouteTypes {
     | '/_protected/requests/'
     | '/_protected/unlocks/'
     | '/_protected/requests/new/company'
-    | '/_protected/requests/payment-failed/$requestId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -328,6 +327,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthPendingVerificationRoute: typeof AuthPendingVerificationRoute
   AuthResetRoute: typeof AuthResetRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthSetupPasswordRoute: typeof AuthSetupPasswordRoute
   AuthSignupRoute: typeof AuthSignupRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
@@ -426,6 +426,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthResetRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/auth/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/setup-password': {
       id: '/auth/setup-password'
       path: '/auth/setup-password'
@@ -496,13 +503,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedRequestsNewCompanyRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
-    '/_protected/requests/payment-failed/$requestId': {
-      id: '/_protected/requests/payment-failed/$requestId'
-      path: '/requests/payment-failed/$requestId'
-      fullPath: '/requests/payment-failed/$requestId'
-      preLoaderRoute: typeof ProtectedRequestsPaymentFailedRequestIdRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
   }
 }
 
@@ -514,7 +514,6 @@ interface ProtectedRouteRouteChildren {
   ProtectedRequestsIndexRoute: typeof ProtectedRequestsIndexRoute
   ProtectedUnlocksIndexRoute: typeof ProtectedUnlocksIndexRoute
   ProtectedRequestsNewCompanyRoute: typeof ProtectedRequestsNewCompanyRoute
-  ProtectedRequestsPaymentFailedRequestIdRoute: typeof ProtectedRequestsPaymentFailedRequestIdRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
@@ -525,8 +524,6 @@ const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedRequestsIndexRoute: ProtectedRequestsIndexRoute,
   ProtectedUnlocksIndexRoute: ProtectedUnlocksIndexRoute,
   ProtectedRequestsNewCompanyRoute: ProtectedRequestsNewCompanyRoute,
-  ProtectedRequestsPaymentFailedRequestIdRoute:
-    ProtectedRequestsPaymentFailedRequestIdRoute,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
@@ -547,6 +544,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthPendingVerificationRoute: AuthPendingVerificationRoute,
   AuthResetRoute: AuthResetRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthSetupPasswordRoute: AuthSetupPasswordRoute,
   AuthSignupRoute: AuthSignupRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
