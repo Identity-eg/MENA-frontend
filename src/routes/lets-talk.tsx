@@ -73,8 +73,8 @@ function LetsTalkPage() {
   const form = useForm<ContactValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
-      fullName: '',
-      email: '',
+      fullName: user?.name ?? '',
+      email: user?.email ?? '',
       companyName: '',
       jurisdiction: '',
       interest: '',
@@ -161,7 +161,7 @@ function LetsTalkPage() {
                     className="space-y-5"
                     noValidate
                   >
-                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <div className={`grid grid-cols-1 gap-5 ${!user ? 'sm:grid-cols-2' : ''}`}>
                       <Controller
                         name="fullName"
                         control={form.control}
@@ -182,27 +182,29 @@ function LetsTalkPage() {
                           </Field>
                         )}
                       />
-                      <Controller
-                        name="email"
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                          <Field data-invalid={!!fieldState.error}>
-                            <FieldLabel htmlFor="contact-email" required>
-                              Business email
-                            </FieldLabel>
-                            <Input
-                              {...field}
-                              id="contact-email"
-                              type="email"
-                              placeholder="jane@company.com"
-                              aria-invalid={!!fieldState.error}
-                            />
-                            {fieldState.error && (
-                              <FieldError errors={[fieldState.error]} />
-                            )}
-                          </Field>
-                        )}
-                      />
+                      {!user && (
+                        <Controller
+                          name="email"
+                          control={form.control}
+                          render={({ field, fieldState }) => (
+                            <Field data-invalid={!!fieldState.error}>
+                              <FieldLabel htmlFor="contact-email" required>
+                                Business email
+                              </FieldLabel>
+                              <Input
+                                {...field}
+                                id="contact-email"
+                                type="email"
+                                placeholder="jane@company.com"
+                                aria-invalid={!!fieldState.error}
+                              />
+                              {fieldState.error && (
+                                <FieldError errors={[fieldState.error]} />
+                              )}
+                            </Field>
+                          )}
+                        />
+                      )}
                     </div>
 
                     <Controller

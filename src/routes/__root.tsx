@@ -96,7 +96,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
   const content = (
     <>
       {children}
-      <Toaster richColors position="bottom-right" />
+      <Toaster richColors position="bottom-right" closeButton />
       <TanStackDevtools
         config={{ position: 'bottom-right' }}
         plugins={[
