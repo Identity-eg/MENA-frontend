@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import {
+  BadgeDollarSign,
   Building2,
   Coins,
   FileText,
@@ -20,6 +21,7 @@ const items = [
   { label: 'Companies', href: '/companies', icon: Building2 },
   { label: 'Individuals', href: '/individuals', icon: Users },
   { label: 'My Unlocks', href: '/unlocks', icon: Unlock },
+  { label: 'Pricing', href: '/pricing', icon: BadgeDollarSign },
   { label: 'Credits', href: '/credits', icon: Coins },
 ]
 
