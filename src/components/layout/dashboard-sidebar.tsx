@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import {
   Building2,
+  Coins,
   FileText,
   LayoutDashboard,
   LogOut,
@@ -19,6 +20,7 @@ const items = [
   { label: 'Companies', href: '/companies', icon: Building2 },
   { label: 'Individuals', href: '/individuals', icon: Users },
   { label: 'My Unlocks', href: '/unlocks', icon: Unlock },
+  { label: 'Credits', href: '/credits', icon: Coins },
 ]
 
 interface DashboardSidebarProps {

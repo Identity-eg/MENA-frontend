@@ -3,6 +3,7 @@ import { MenuIcon, Undo2Icon } from 'lucide-react'
 
 import { useGetMe } from '@/apis/user/get-me'
 import { Button } from '../ui/button'
+import { CreditBalanceChip } from './credit-balance-chip'
 import { NotificationDropdown } from './notification-dropdown'
 import { UserNav } from './user-nav'
 
@@ -33,6 +34,7 @@ export function DashboardHeader({ onToggleSidebar }: DashboardHeaderProps) {
         </Link>
       </div>
       <div className="flex flex-1 items-center justify-end gap-4">
+        <CreditBalanceChip />
         <NotificationDropdown />
 
         <div className="flex items-center gap-2">

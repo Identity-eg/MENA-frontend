@@ -28,6 +28,7 @@ import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
 import { Route as ProtectedCompaniesIndexRouteImport } from './routes/_protected/companies/index'
 import { Route as ProtectedCompaniesCompanyIdRouteImport } from './routes/_protected/companies/$companyId'
+import { Route as ProtectedCreditsIndexRouteImport } from './routes/_protected/credits/index'
 import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
 import { Route as ProtectedRequestsIndexRouteImport } from './routes/_protected/requests/index'
 import { Route as ProtectedRequestsRequestIdRouteImport } from './routes/_protected/requests/$requestId'
@@ -129,6 +130,11 @@ const ProtectedCompaniesCompanyIdRoute =
     path: '/companies/$companyId',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
+const ProtectedCreditsIndexRoute = ProtectedCreditsIndexRouteImport.update({
+  id: '/credits/',
+  path: '/credits/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
 const ProtectedDashboardIndexRoute = ProtectedDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
@@ -177,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/companies/$companyId': typeof ProtectedCompaniesCompanyIdRoute
   '/requests/$requestId': typeof ProtectedRequestsRequestIdRoute
   '/companies/': typeof ProtectedCompaniesIndexRoute
+  '/credits/': typeof ProtectedCreditsIndexRoute
   '/dashboard/': typeof ProtectedDashboardIndexRoute
   '/requests/': typeof ProtectedRequestsIndexRoute
   '/unlocks/': typeof ProtectedUnlocksIndexRoute
@@ -202,6 +209,7 @@ export interface FileRoutesByTo {
   '/companies/$companyId': typeof ProtectedCompaniesCompanyIdRoute
   '/requests/$requestId': typeof ProtectedRequestsRequestIdRoute
   '/companies': typeof ProtectedCompaniesIndexRoute
+  '/credits': typeof ProtectedCreditsIndexRoute
   '/dashboard': typeof ProtectedDashboardIndexRoute
   '/requests': typeof ProtectedRequestsIndexRoute
   '/unlocks': typeof ProtectedUnlocksIndexRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/_protected/companies/$companyId': typeof ProtectedCompaniesCompanyIdRoute
   '/_protected/requests/$requestId': typeof ProtectedRequestsRequestIdRoute
   '/_protected/companies/': typeof ProtectedCompaniesIndexRoute
+  '/_protected/credits/': typeof ProtectedCreditsIndexRoute
   '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
   '/_protected/requests/': typeof ProtectedRequestsIndexRoute
   '/_protected/unlocks/': typeof ProtectedUnlocksIndexRoute
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId'
     | '/requests/$requestId'
     | '/companies/'
+    | '/credits/'
     | '/dashboard/'
     | '/requests/'
     | '/unlocks/'
@@ -281,6 +291,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId'
     | '/requests/$requestId'
     | '/companies'
+    | '/credits'
     | '/dashboard'
     | '/requests'
     | '/unlocks'
@@ -307,6 +318,7 @@ export interface FileRouteTypes {
     | '/_protected/companies/$companyId'
     | '/_protected/requests/$requestId'
     | '/_protected/companies/'
+    | '/_protected/credits/'
     | '/_protected/dashboard/'
     | '/_protected/requests/'
     | '/_protected/unlocks/'
@@ -468,6 +480,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedCompaniesCompanyIdRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/credits/': {
+      id: '/_protected/credits/'
+      path: '/credits'
+      fullPath: '/credits/'
+      preLoaderRoute: typeof ProtectedCreditsIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_protected/dashboard/': {
       id: '/_protected/dashboard/'
       path: '/dashboard'
@@ -510,6 +529,7 @@ interface ProtectedRouteRouteChildren {
   ProtectedCompaniesCompanyIdRoute: typeof ProtectedCompaniesCompanyIdRoute
   ProtectedRequestsRequestIdRoute: typeof ProtectedRequestsRequestIdRoute
   ProtectedCompaniesIndexRoute: typeof ProtectedCompaniesIndexRoute
+  ProtectedCreditsIndexRoute: typeof ProtectedCreditsIndexRoute
   ProtectedDashboardIndexRoute: typeof ProtectedDashboardIndexRoute
   ProtectedRequestsIndexRoute: typeof ProtectedRequestsIndexRoute
   ProtectedUnlocksIndexRoute: typeof ProtectedUnlocksIndexRoute
@@ -520,6 +540,7 @@ const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedCompaniesCompanyIdRoute: ProtectedCompaniesCompanyIdRoute,
   ProtectedRequestsRequestIdRoute: ProtectedRequestsRequestIdRoute,
   ProtectedCompaniesIndexRoute: ProtectedCompaniesIndexRoute,
+  ProtectedCreditsIndexRoute: ProtectedCreditsIndexRoute,
   ProtectedDashboardIndexRoute: ProtectedDashboardIndexRoute,
   ProtectedRequestsIndexRoute: ProtectedRequestsIndexRoute,
   ProtectedUnlocksIndexRoute: ProtectedUnlocksIndexRoute,
