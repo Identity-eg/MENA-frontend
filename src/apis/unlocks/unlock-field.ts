@@ -1,12 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { request } from '../base'
-import { getCompanyQueryOptions } from '../company/get-company'
-import { getCreditBalanceQueryOptions } from '../credits/get-credit-balance'
-import { getUnlocksQueryOptions } from './get-unlocks'
-import type { TCreditBalance } from '@/types/credits'
-import type { TCompany, TSensitiveField } from '@/types/company'
+import { refetchAfterUnlock, writeUnlockedFields } from './unlock-cache'
 import type { TApiResponseSingle } from '@/types/api-response-single'
+import type { TSensitiveField } from '@/types/company'
 
 export type TUnlockFieldInput = {
   companyId: number
@@ -49,37 +46,9 @@ export const useUnlockField = () => {
 
   return useMutation({
     mutationFn: unlockField,
-    onSuccess: ({ data }, { companyId }) => {
-      queryClient.setQueryData(
-        getCompanyQueryOptions(companyId).queryKey,
-        (previous: TApiResponseSingle<TCompany> | undefined) =>
-          previous && {
-            ...previous,
-            data: {
-              ...previous.data,
-              sensitiveFields: previous.data.sensitiveFields.map((field) =>
-                field.key === data.field.key ? data.field : field,
-              ),
-            },
-          },
-      )
-      queryClient.setQueryData(
-        getCreditBalanceQueryOptions().queryKey,
-        (previous: TApiResponseSingle<TCreditBalance> | undefined) => ({
-          success: previous?.success ?? true,
-          data: { balance: data.balance },
-        }),
-      )
-    },
-    onSettled: (_data, _error, { companyId }) => {
-      // On success the field, balance and history changed; on a refusal our copy is stale.
-      queryClient.invalidateQueries({
-        queryKey: getCompanyQueryOptions(companyId).queryKey,
-      })
-      queryClient.invalidateQueries({ queryKey: ['credits'] })
-      queryClient.invalidateQueries({
-        queryKey: getUnlocksQueryOptions().queryKey,
-      })
-    },
+    onSuccess: ({ data }, { companyId }) =>
+      writeUnlockedFields(queryClient, companyId, [data.field], data.balance),
+    onSettled: (_data, _error, { companyId }) =>
+      refetchAfterUnlock(queryClient, companyId),
   })
 }

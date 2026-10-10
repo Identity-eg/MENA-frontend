@@ -27,7 +27,18 @@ describe('readUnlockRefusal', () => {
         code: 'FIELD_COST_CHANGED',
         details: { currentCost: 120 },
       }),
-    ).toEqual({ kind: 'costChanged', currentCost: 120 })
+    ).toEqual({ kind: 'costChanged', current: 120 })
+  })
+
+  it('reads the new total of an "Unlock all" FIELD_COST_CHANGED refusal', () => {
+    expect(
+      readUnlockRefusal({
+        status: 409,
+        message: 'The total for the remaining fields changed to 320 Credits',
+        code: 'FIELD_COST_CHANGED',
+        details: { currentTotal: 320 },
+      }),
+    ).toEqual({ kind: 'costChanged', current: 320 })
   })
 
   it('shows anything else, including a refusal missing its details, as a message', () => {

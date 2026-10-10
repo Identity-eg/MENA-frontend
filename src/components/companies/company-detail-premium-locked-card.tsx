@@ -14,22 +14,25 @@ type CompanyDetailPremiumLockedCardProps = {
   lockedFields: Array<TSensitiveField>
   unavailableFields: Array<TSensitiveField>
   unlockAllCost: number
+  /** Offered only while at least two fields remain locked. */
+  offerUnlockAll: boolean
   onUnlockField: (field: TSensitiveField) => void
+  onUnlockAll: () => void
 }
-
-const UNLOCK_ALL_SOON_ID = 'sensitive-fields-unlock-all-soon'
 
 /**
  * Sensitive fields the viewer can't see yet: locked ones with their Field cost in Credits,
  * and ones that can't be unlocked at the moment. Labels and costs come from the server.
- * Unlock opens the confirmation dialog; "Unlock all" is not active yet and shown disabled.
+ * Unlock and "Unlock all" open the confirmation dialog.
  */
 export const CompanyDetailPremiumLockedCard = memo(
   function CompanyDetailPremiumLockedCard({
     lockedFields,
     unavailableFields,
     unlockAllCost,
+    offerUnlockAll,
     onUnlockField,
+    onUnlockAll,
   }: CompanyDetailPremiumLockedCardProps) {
     const fields = [...lockedFields, ...unavailableFields]
     if (fields.length === 0) return null
@@ -135,31 +138,26 @@ export const CompanyDetailPremiumLockedCard = memo(
             })}
           </ul>
 
-          {lockedFields.length > 1 && unlockAllCost > 0 && (
+          {offerUnlockAll && unlockAllCost > 0 && (
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4 dark:bg-primary/10">
               <div>
                 <p className="text-sm font-semibold">
-                  Unlock all {lockedFields.length} remaining fields
+                  Unlock all remaining fields
                 </p>
                 <p className="text-xs text-muted-foreground tabular-nums">
-                  {formatCredits(unlockAllCost)} in total, no discount
+                  {lockedFields.length} fields, {formatCredits(unlockAllCost)}{' '}
+                  in total, no discount
                 </p>
               </div>
               <Button
                 size="lg"
-                className="min-h-11"
-                disabled
-                aria-describedby={UNLOCK_ALL_SOON_ID}
+                className="min-h-11 tabular-nums active:scale-[0.98]"
+                aria-label={`Unlock all ${lockedFields.length} remaining fields for ${formatCredits(unlockAllCost)}`}
+                onClick={onUnlockAll}
               >
-                Unlock all
+                Unlock all for {formatCredits(unlockAllCost)}
                 <ChevronRight className="h-4 w-4" aria-hidden />
               </Button>
-              <p
-                id={UNLOCK_ALL_SOON_ID}
-                className="basis-full text-xs text-muted-foreground"
-              >
-                Unlocking all fields in one step is coming soon.
-              </p>
             </div>
           )}
         </CardContent>
