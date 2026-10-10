@@ -30,6 +30,7 @@ import { Route as ProtectedCompaniesIndexRouteImport } from './routes/_protected
 import { Route as ProtectedCompaniesCompanyIdRouteImport } from './routes/_protected/companies/$companyId'
 import { Route as ProtectedCreditsIndexRouteImport } from './routes/_protected/credits/index'
 import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
+import { Route as ProtectedPricingIndexRouteImport } from './routes/_protected/pricing/index'
 import { Route as ProtectedRequestsIndexRouteImport } from './routes/_protected/requests/index'
 import { Route as ProtectedRequestsRequestIdRouteImport } from './routes/_protected/requests/$requestId'
 import { Route as ProtectedUnlocksIndexRouteImport } from './routes/_protected/unlocks/index'
@@ -140,6 +141,11 @@ const ProtectedDashboardIndexRoute = ProtectedDashboardIndexRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedPricingIndexRoute = ProtectedPricingIndexRouteImport.update({
+  id: '/pricing/',
+  path: '/pricing/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
 const ProtectedRequestsIndexRoute = ProtectedRequestsIndexRouteImport.update({
   id: '/requests/',
   path: '/requests/',
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/companies/': typeof ProtectedCompaniesIndexRoute
   '/credits/': typeof ProtectedCreditsIndexRoute
   '/dashboard/': typeof ProtectedDashboardIndexRoute
+  '/pricing/': typeof ProtectedPricingIndexRoute
   '/requests/': typeof ProtectedRequestsIndexRoute
   '/unlocks/': typeof ProtectedUnlocksIndexRoute
   '/requests/new/company': typeof ProtectedRequestsNewCompanyRoute
@@ -211,6 +218,7 @@ export interface FileRoutesByTo {
   '/companies': typeof ProtectedCompaniesIndexRoute
   '/credits': typeof ProtectedCreditsIndexRoute
   '/dashboard': typeof ProtectedDashboardIndexRoute
+  '/pricing': typeof ProtectedPricingIndexRoute
   '/requests': typeof ProtectedRequestsIndexRoute
   '/unlocks': typeof ProtectedUnlocksIndexRoute
   '/requests/new/company': typeof ProtectedRequestsNewCompanyRoute
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/_protected/companies/': typeof ProtectedCompaniesIndexRoute
   '/_protected/credits/': typeof ProtectedCreditsIndexRoute
   '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
+  '/_protected/pricing/': typeof ProtectedPricingIndexRoute
   '/_protected/requests/': typeof ProtectedRequestsIndexRoute
   '/_protected/unlocks/': typeof ProtectedUnlocksIndexRoute
   '/_protected/requests/new/company': typeof ProtectedRequestsNewCompanyRoute
@@ -267,6 +276,7 @@ export interface FileRouteTypes {
     | '/companies/'
     | '/credits/'
     | '/dashboard/'
+    | '/pricing/'
     | '/requests/'
     | '/unlocks/'
     | '/requests/new/company'
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/companies'
     | '/credits'
     | '/dashboard'
+    | '/pricing'
     | '/requests'
     | '/unlocks'
     | '/requests/new/company'
@@ -320,6 +331,7 @@ export interface FileRouteTypes {
     | '/_protected/companies/'
     | '/_protected/credits/'
     | '/_protected/dashboard/'
+    | '/_protected/pricing/'
     | '/_protected/requests/'
     | '/_protected/unlocks/'
     | '/_protected/requests/new/company'
@@ -494,6 +506,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardIndexRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/pricing/': {
+      id: '/_protected/pricing/'
+      path: '/pricing'
+      fullPath: '/pricing/'
+      preLoaderRoute: typeof ProtectedPricingIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_protected/requests/': {
       id: '/_protected/requests/'
       path: '/requests'
@@ -531,6 +550,7 @@ interface ProtectedRouteRouteChildren {
   ProtectedCompaniesIndexRoute: typeof ProtectedCompaniesIndexRoute
   ProtectedCreditsIndexRoute: typeof ProtectedCreditsIndexRoute
   ProtectedDashboardIndexRoute: typeof ProtectedDashboardIndexRoute
+  ProtectedPricingIndexRoute: typeof ProtectedPricingIndexRoute
   ProtectedRequestsIndexRoute: typeof ProtectedRequestsIndexRoute
   ProtectedUnlocksIndexRoute: typeof ProtectedUnlocksIndexRoute
   ProtectedRequestsNewCompanyRoute: typeof ProtectedRequestsNewCompanyRoute
@@ -542,6 +562,7 @@ const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedCompaniesIndexRoute: ProtectedCompaniesIndexRoute,
   ProtectedCreditsIndexRoute: ProtectedCreditsIndexRoute,
   ProtectedDashboardIndexRoute: ProtectedDashboardIndexRoute,
+  ProtectedPricingIndexRoute: ProtectedPricingIndexRoute,
   ProtectedRequestsIndexRoute: ProtectedRequestsIndexRoute,
   ProtectedUnlocksIndexRoute: ProtectedUnlocksIndexRoute,
   ProtectedRequestsNewCompanyRoute: ProtectedRequestsNewCompanyRoute,

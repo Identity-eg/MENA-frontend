@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { ArrowUpRight, Coins } from 'lucide-react'
 
 import { formatCredits } from '@/lib/credits'
@@ -26,16 +27,15 @@ export function CreditBalanceSummary({ balance }: { balance: number }) {
             </p>
           </div>
         </div>
-        {/* Plain link until the Pricing route exists on this branch (ticket 05). */}
-        <a
-          href="/pricing"
+        <Link
+          to="/pricing"
           className="group inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-full bg-primary py-2 ps-5 pe-2 text-sm font-medium text-primary-foreground transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-primary/90 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none active:scale-[0.98] sm:self-center"
         >
           Get more Credits
           <span className="flex size-7 items-center justify-center rounded-full bg-primary-foreground/15 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5 group-hover:-translate-y-px">
             <ArrowUpRight className="size-4" strokeWidth={1.75} aria-hidden />
           </span>
-        </a>
+        </Link>
       </div>
     </section>
   )

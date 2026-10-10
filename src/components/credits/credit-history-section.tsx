@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import {
   ChevronLeft,
   ChevronRight,
@@ -182,13 +183,12 @@ function NoCreditsYet() {
       title="No Credits yet — see plans"
       description="Buy a Credit plan to start unlocking Sensitive fields. Every Credit added or spent will be listed here."
     >
-      {/* Plain link until the Pricing route exists on this branch (ticket 05). */}
-      <a
-        href="/pricing"
+      <Link
+        to="/pricing"
         className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
       >
         See plans
-      </a>
+      </Link>
     </StatePanel>
   )
 }
