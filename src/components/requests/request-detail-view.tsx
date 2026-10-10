@@ -15,22 +15,21 @@ import {
   getInvoiceDisplay,
   isRequestPayable,
 } from '@/lib/request-billing'
+import { formatRequestId } from '@/lib/request-display'
+import { getNextStep } from '@/lib/request-next-step'
+import { buildRequestTimeline } from '@/lib/request-timeline'
 import { REQUEST_STATUS } from '@/types/request'
-import { buildRequestDetailSubjects } from './build-request-detail-subjects'
-import { RequestDetailActiveSubjectSection } from './request-detail-active-subject-section'
+import { buildRequestDetailGroups } from './build-request-detail-groups'
 import { RequestDetailBreadcrumb } from './request-detail-breadcrumb'
 import {
   OWNER_CANCELLABLE_STATUSES,
   RequestDetailCancelButton,
 } from './request-detail-cancel-button'
-import { formatRequestDate, formatRequestId } from './request-detail-formatters'
+import { formatRequestDate } from './request-detail-formatters'
 import { RequestDetailHero } from './request-detail-hero'
+import { RequestDetailLinesSection } from './request-detail-lines-section'
 import { RequestDetailMessagesCard } from './request-detail-messages-card'
-import { RequestDetailPaymentProcessingBanner } from './request-detail-payment-processing-banner'
-import { RequestDetailStatusDescriptionCard } from './request-detail-status-description-card'
-import { RequestDetailSubjectsSidebar } from './request-detail-subjects-sidebar'
 import { RequestDetailTimelineNav } from './request-detail-timeline-nav'
-import { useRequestDetailTimeline } from './use-request-detail-timeline'
 
 const routeApi = getRouteApi('/_protected/requests/$requestId')
 
@@ -91,7 +90,7 @@ export function RequestDetailView() {
     if (!returnedFromPayment) return
     if (request.status === REQUEST_STATUS.INVOICE_GENERATED) return
     if (request.status === REQUEST_STATUS.PAID) {
-      toast.success('Payment received. Thank you!')
+      toast.success('Payment received.')
     }
     queryClient.invalidateQueries({ queryKey: ['requests'] })
     navigate({
@@ -101,30 +100,18 @@ export function RequestDetailView() {
     })
   }, [returnedFromPayment, request.status, queryClient, navigate])
 
-  const subjects = buildRequestDetailSubjects(request)
-  const [activeSubjectId, setActiveSubjectId] = useState('')
-
-  useEffect(() => {
-    if (subjects.length > 0) {
-      setActiveSubjectId((prev) =>
-        subjects.some((s) => s.id === prev) ? prev : subjects[0].id,
-      )
-    } else {
-      setActiveSubjectId('')
-    }
-  }, [subjects])
+  const groups = buildRequestDetailGroups(request)
+  const lineCount = groups.reduce((n, g) => n + g.lines.length, 0)
 
   const formattedId = formatRequestId(request.id)
   const submittedDate = formatRequestDate(request.createdAt)
-  const timeline = useRequestDetailTimeline(
-    request.status,
-    request.createdAt,
-    request.updatedAt,
-  )
-
-  const foundSubject = subjects.find((s) => s.id === activeSubjectId)
-  const activeSubject = foundSubject ?? subjects[0]
-  const selectedSubject = subjects.length > 0 ? activeSubject : null
+  const timeline = buildRequestTimeline(request)
+  const nextStep = getNextStep(request)
+  const meta = [
+    `${lineCount} report${lineCount === 1 ? '' : 's'}`,
+    `${groups.length} compan${groups.length === 1 ? 'y' : 'ies'}`,
+    `Submitted ${submittedDate}`,
+  ].join(' · ')
 
   const totalEstimatedPrice = request.totalEstimatedPrice
   const invoiceDisplay = getInvoiceDisplay(request)
@@ -198,24 +185,28 @@ export function RequestDetailView() {
     })
   }
 
-  const setActiveSubject = (subjectId: string) => {
-    setActiveSubjectId(subjectId)
-  }
-
   return (
-    <div className="space-y-6 pb-12">
+    <div className="mx-auto max-w-6xl space-y-6 pb-12">
       <RequestDetailBreadcrumb formattedId={formattedId} />
 
       <RequestDetailHero
         formattedId={formattedId}
         status={request.status}
-        subjectsCount={subjects.length}
-        submittedDate={submittedDate}
+        nextStep={nextStep}
+        meta={meta}
         totalEstimatedPrice={totalEstimatedPrice}
         invoiceDisplay={invoiceDisplay}
         canDownloadInvoice={canDownloadInvoice(request)}
         canPay={canPay}
-        isPaymentProcessing={isPaymentProcessing}
+        paymentProcessing={
+          isPaymentProcessing
+            ? {
+                delayed: paymentPollTimedOut,
+                isChecking: isRefetchingRequest,
+                onCheckAgain: () => refetchRequest(),
+              }
+            : null
+        }
         isPaymentRedirecting={isPaymentRedirecting}
         isDownloadingInvoice={isDownloadingInvoice}
         onDownloadInvoice={handleDownloadInvoice}
@@ -231,45 +222,28 @@ export function RequestDetailView() {
         }
       />
 
-      {isPaymentProcessing && (
-        <RequestDetailPaymentProcessingBanner
-          delayed={paymentPollTimedOut}
-          isChecking={isRefetchingRequest}
-          onCheckAgain={() => refetchRequest()}
+      <div className="rounded-xl border bg-card px-4 py-5 sm:px-6">
+        <RequestDetailTimelineNav
+          timeline={timeline}
+          submittedDate={submittedDate}
+          updatedDate={formatRequestDate(request.updatedAt)}
         />
-      )}
-
-      <RequestDetailTimelineNav timeline={timeline} status={request.status} />
-
-      <div className="grid gap-4 sm:gap-6 xl:grid-cols-[280px_1fr]">
-        <RequestDetailSubjectsSidebar
-          subjects={subjects}
-          activeSubjectId={activeSubjectId}
-          onSelectSubject={setActiveSubject}
-        />
-
-        <main className="space-y-6 min-w-0">
-          <RequestDetailActiveSubjectSection
-            selectedSubject={selectedSubject}
-            subjectCount={subjects.length}
-            status={request.status}
-          />
-
-          <div className="grid gap-4 sm:gap-6 items-start grid-cols-1 lg:grid-cols-2">
-            <RequestDetailStatusDescriptionCard status={request.status} />
-
-            <RequestDetailMessagesCard
-              requestUserId={request.userId}
-              messages={messages}
-              messagesLoading={messagesLoading}
-              messageDraft={messageDraft}
-              onMessageDraftChange={setMessageDraft}
-              isSendPending={sendMessageMutation.isPending}
-              onSubmitMessage={handleSubmitMessage}
-            />
-          </div>
-        </main>
       </div>
+
+      <RequestDetailLinesSection
+        groups={groups}
+        inProgress={nextStep.kind === 'in-progress'}
+      />
+
+      <RequestDetailMessagesCard
+        requestUserId={request.userId}
+        messages={messages}
+        messagesLoading={messagesLoading}
+        messageDraft={messageDraft}
+        onMessageDraftChange={setMessageDraft}
+        isSendPending={sendMessageMutation.isPending}
+        onSubmitMessage={handleSubmitMessage}
+      />
     </div>
   )
 }

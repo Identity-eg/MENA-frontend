@@ -60,12 +60,12 @@ export function RequestDetailCancelButton({
         render={
           <Button
             size="sm"
-            variant="destructive"
-            className="flex-1 sm:flex-none gap-2"
+            variant="ghost"
+            className="gap-2 text-muted-foreground hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-400/10 dark:hover:text-red-300"
           />
         }
       >
-        <XCircle className="h-4 w-4" />
+        <XCircle aria-hidden className="h-4 w-4" />
         Cancel request
       </AlertDialogTrigger>
       <AlertDialogContent>

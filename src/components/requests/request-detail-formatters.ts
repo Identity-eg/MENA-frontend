@@ -1,7 +1,3 @@
-export function formatRequestId(id: number) {
-  return `REQ-${String(id).padStart(6, '0')}`
-}
-
 export function formatRequestDate(iso: string) {
   try {
     const d = new Date(iso)

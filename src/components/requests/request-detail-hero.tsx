@@ -1,18 +1,36 @@
-import { CreditCard, FileDown, FileText, Loader2 } from 'lucide-react'
+import {
+  ArrowDown,
+  Clock,
+  CreditCard,
+  FileDown,
+  Loader2,
+  RefreshCw,
+} from 'lucide-react'
 import { memo, type ReactNode } from 'react'
 
 import { StatusPill } from '@/components/StatusPill'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 
 import type { InvoiceDisplay } from '@/lib/request-billing'
+import { formatUsd } from '@/lib/request-display'
+import type { NextStep } from '@/lib/request-next-step'
 import { cn } from '@/lib/utils'
 import type { RequestStatusValue } from '@/types/request'
+import { getNextStepCopy } from './request-next-step-label'
+
+export type PaymentProcessingState = {
+  /** Polling gave up before the payment was confirmed. */
+  delayed: boolean
+  isChecking: boolean
+  onCheckAgain: () => void
+}
 
 type RequestDetailHeroProps = {
   formattedId: string
   status: RequestStatusValue
-  subjectsCount: number
-  submittedDate: string
+  nextStep: NextStep
+  /** "2 reports · 1 company · Submitted Oct 3, 2026" */
+  meta: string
   totalEstimatedPrice: number
   /** Derived from request.status + invoice.status (see lib/request-billing). */
   invoiceDisplay: InvoiceDisplay
@@ -20,166 +38,219 @@ type RequestDetailHeroProps = {
   /** Payable and no payment currently being confirmed. */
   canPay: boolean
   /** Returned from Stripe; waiting for the payment webhook to land. */
-  isPaymentProcessing: boolean
+  paymentProcessing: PaymentProcessingState | null
   isPaymentRedirecting: boolean
   isDownloadingInvoice: boolean
   onDownloadInvoice: () => void
   onPay: () => void
-  /** Extra action (e.g. the owner's Cancel request button). */
+  /** The owner's Cancel request button, when allowed. */
   cancelAction?: ReactNode
 }
 
-function InvoiceAmountTile({ display }: { display: InvoiceDisplay }) {
-  if (display.kind === 'none') return null
-
-  if (display.kind === 'withdrawn') {
-    return (
-      <div className="flex-1 sm:flex-none rounded-lg border border-dashed px-3 py-2">
-        <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-          Invoice
-        </p>
-        <p className="text-sm font-semibold text-muted-foreground">
-          Invoice withdrawn
-        </p>
-      </div>
-    )
-  }
-
+/** One amount: the invoice once there is one, the estimate before that. */
+function AmountBlock({
+  display,
+  estimate,
+}: {
+  display: InvoiceDisplay
+  estimate: number
+}) {
+  const invoiced =
+    display.kind === 'due' ||
+    display.kind === 'paid' ||
+    display.kind === 'issued'
   const label =
     display.kind === 'due'
       ? display.overdue
-        ? 'Amount due · Overdue'
+        ? 'Amount due · overdue'
         : 'Amount due'
       : display.kind === 'paid'
         ? 'Paid'
-        : 'Invoice'
+        : display.kind === 'issued'
+          ? 'Invoiced'
+          : 'Estimated total'
+  const amount = invoiced ? display.amount : estimate
 
   return (
-    <div
-      className={cn(
-        'flex-1 sm:flex-none rounded-lg border px-3 py-2',
-        display.kind === 'due' && 'border-primary/30 bg-primary/5',
-        display.kind === 'paid' &&
-          'border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10',
-      )}
-    >
-      <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-        {label}
-      </p>
+    <div className="sm:text-right">
       <p
         className={cn(
-          'text-base font-bold tabular-nums tracking-tight',
-          display.kind === 'due' && 'text-primary',
-          display.kind === 'paid' && 'text-emerald-700 dark:text-emerald-400',
+          'text-xs text-muted-foreground',
+          display.kind === 'due' &&
+            display.overdue &&
+            'font-medium text-red-700 dark:text-red-300',
         )}
       >
-        ${display.amount.toLocaleString()}
+        {label}
       </p>
+      <p className="text-2xl font-semibold tracking-tight tabular-nums">
+        {formatUsd(amount)}
+      </p>
+      {invoiced && estimate > 0 && estimate !== display.amount && (
+        <p className="text-xs text-muted-foreground tabular-nums">
+          Estimated <span className="line-through">{formatUsd(estimate)}</span>
+        </p>
+      )}
+      {display.kind === 'withdrawn' && (
+        <p className="text-xs text-muted-foreground">Invoice withdrawn</p>
+      )}
     </div>
   )
+}
+
+const stepTone: Record<NextStep['kind'], string> = {
+  review: 'bg-muted text-muted-foreground',
+  'invoice-pending': 'bg-muted text-muted-foreground',
+  pay: 'bg-amber-100 text-amber-800 dark:bg-amber-400/15 dark:text-amber-300',
+  'in-progress': 'bg-sky-100 text-sky-800 dark:bg-sky-400/15 dark:text-sky-300',
+  download:
+    'bg-emerald-100 text-emerald-800 dark:bg-emerald-400/15 dark:text-emerald-300',
+  rejected: 'bg-red-100 text-red-800 dark:bg-red-400/15 dark:text-red-300',
+  cancelled: 'bg-muted text-muted-foreground',
 }
 
 export const RequestDetailHero = memo(function RequestDetailHero({
   formattedId,
   status,
-  subjectsCount,
-  submittedDate,
+  nextStep,
+  meta,
   totalEstimatedPrice,
   invoiceDisplay,
   canDownloadInvoice,
   canPay,
-  isPaymentProcessing,
+  paymentProcessing,
   isPaymentRedirecting,
   isDownloadingInvoice,
   onDownloadInvoice,
   onPay,
   cancelAction,
 }: RequestDetailHeroProps) {
-  const hasActions =
-    canDownloadInvoice || canPay || isPaymentProcessing || cancelAction != null
+  const copy = paymentProcessing
+    ? {
+        ...getNextStepCopy(nextStep),
+        icon: paymentProcessing.delayed ? Clock : Loader2,
+        label: 'Confirming your payment',
+        description: paymentProcessing.delayed
+          ? 'Confirmation is taking longer than usual. You do not need to pay again — this page updates once the payment is confirmed.'
+          : 'We are confirming your payment with our payment provider. This usually takes a few seconds.',
+      }
+    : getNextStepCopy(nextStep)
+  const Icon = copy.icon
+  const tone = paymentProcessing
+    ? stepTone['in-progress']
+    : stepTone[nextStep.kind]
 
   return (
-    <header className="relative overflow-hidden rounded-xl sm:rounded-2xl border bg-linear-to-br from-card via-card to-muted/30 px-4 py-5 shadow-sm sm:px-8 sm:py-7">
-      <div className="absolute right-0 top-0 h-24 w-40 bg-linear-to-bl from-primary/5 to-transparent rounded-bl-full pointer-events-none" />
-      <div className="relative flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <FileText className="h-5 w-5" />
-          </div>
-          <div className="min-w-0">
-            <h1 className="text-lg font-bold tracking-tight sm:text-2xl lg:text-3xl truncate">
+    <header className="overflow-hidden rounded-xl border bg-card">
+      <div className="flex flex-col gap-4 px-4 py-5 sm:flex-row sm:items-start sm:justify-between sm:px-6">
+        <div className="min-w-0 space-y-1.5">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <h1 className="text-2xl font-semibold tracking-tight tabular-nums">
               {formattedId}
             </h1>
-            <div className="mt-1 flex flex-wrap items-center gap-1.5">
-              <StatusPill status={status} className="shrink-0" />
-              <span className="text-xs text-muted-foreground">
-                {subjectsCount > 0
-                  ? `${subjectsCount} subject${subjectsCount === 1 ? '' : 's'} · ${submittedDate}`
-                  : submittedDate}
-              </span>
-            </div>
+            <StatusPill status={status} />
+          </div>
+          <p className="text-sm text-muted-foreground">{meta}</p>
+        </div>
+        <AmountBlock display={invoiceDisplay} estimate={totalEstimatedPrice} />
+      </div>
+
+      <div
+        role="status"
+        aria-live="polite"
+        className="flex flex-col gap-4 border-t bg-muted/40 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between"
+      >
+        <div className="flex min-w-0 items-start gap-3">
+          <span
+            className={cn(
+              'flex size-9 shrink-0 items-center justify-center rounded-lg',
+              tone,
+            )}
+          >
+            <Icon
+              aria-hidden
+              className={cn(
+                'size-4.5',
+                paymentProcessing &&
+                  !paymentProcessing.delayed &&
+                  'animate-spin motion-reduce:animate-none',
+              )}
+            />
+          </span>
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground">
+              {nextStep.kind === 'rejected' || nextStep.kind === 'cancelled'
+                ? 'Status'
+                : 'Next step'}
+            </p>
+            <p className="font-medium text-foreground">{copy.label}</p>
+            <p className="mt-0.5 max-w-prose text-sm text-pretty text-muted-foreground">
+              {copy.description}
+            </p>
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-          {hasActions && (
-            <div className="flex flex-wrap items-center gap-2">
-              {cancelAction}
-              {canDownloadInvoice && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="flex-1 sm:flex-none gap-2"
-                  disabled={isDownloadingInvoice}
-                  onClick={onDownloadInvoice}
-                >
-                  {isDownloadingInvoice ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <FileDown className="h-4 w-4" />
-                  )}
-                  Download Invoice
-                </Button>
-              )}
-              {isPaymentProcessing ? (
-                <span
-                  role="status"
-                  className="inline-flex flex-1 sm:flex-none items-center justify-center gap-2 rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300"
-                >
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  Payment processing
-                </span>
+        <div className="flex flex-wrap items-center gap-2 lg:shrink-0 lg:justify-end">
+          {cancelAction}
+          {canDownloadInvoice && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="gap-2"
+              disabled={isDownloadingInvoice}
+              onClick={onDownloadInvoice}
+            >
+              {isDownloadingInvoice ? (
+                <Loader2 aria-hidden className="size-4 animate-spin" />
               ) : (
-                canPay &&
-                invoiceDisplay.kind === 'due' && (
-                  <Button
-                    size="sm"
-                    className="flex-1 sm:flex-none gap-2 bg-orange-500 hover:bg-orange-600 focus-visible:ring-orange-500 border-none shadow-sm"
-                    disabled={isPaymentRedirecting}
-                    onClick={onPay}
-                  >
-                    {isPaymentRedirecting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <CreditCard className="h-4 w-4" />
-                    )}{' '}
-                    Pay ${invoiceDisplay.amount.toLocaleString()}
-                  </Button>
-                )
+                <FileDown aria-hidden className="size-4" />
               )}
-            </div>
+              Invoice PDF
+            </Button>
           )}
-          <div className="flex items-center gap-2">
-            <div className="flex-1 sm:flex-none rounded-lg border px-3 py-2">
-              <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                Estimated
-              </p>
-              <p className="text-base font-bold tabular-nums tracking-tight">
-                ${totalEstimatedPrice.toLocaleString()}
-              </p>
-            </div>
-            <InvoiceAmountTile display={invoiceDisplay} />
-          </div>
+          {paymentProcessing?.delayed && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-2"
+              disabled={paymentProcessing.isChecking}
+              onClick={paymentProcessing.onCheckAgain}
+            >
+              {paymentProcessing.isChecking ? (
+                <Loader2 aria-hidden className="size-4 animate-spin" />
+              ) : (
+                <RefreshCw aria-hidden className="size-4" />
+              )}
+              Check again
+            </Button>
+          )}
+          {canPay && invoiceDisplay.kind === 'due' && (
+            <Button
+              size="lg"
+              className="w-full gap-2 px-4 hover:bg-primary/90 active:translate-y-px sm:w-auto"
+              disabled={isPaymentRedirecting}
+              onClick={onPay}
+            >
+              {isPaymentRedirecting ? (
+                <Loader2 aria-hidden className="size-4 animate-spin" />
+              ) : (
+                <CreditCard aria-hidden className="size-4" />
+              )}
+              Pay {formatUsd(invoiceDisplay.amount)}
+            </Button>
+          )}
+          {nextStep.kind === 'download' && (
+            <a
+              href="#request-reports"
+              className={buttonVariants({
+                size: 'lg',
+                className: 'w-full gap-2 px-4 sm:w-auto',
+              })}
+            >
+              <ArrowDown aria-hidden className="size-4" />
+              Go to reports
+            </a>
+          )}
         </div>
       </div>
     </header>

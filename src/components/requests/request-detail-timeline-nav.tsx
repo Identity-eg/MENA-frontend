@@ -1,79 +1,110 @@
+import { Check, X } from 'lucide-react'
 import { memo } from 'react'
 
+import type { TimelineStep } from '@/lib/request-timeline'
 import { cn } from '@/lib/utils'
-import type { RequestStatusValue } from '@/types/request'
-import type { RequestDetailTimelineStep } from './use-request-detail-timeline'
 
 type RequestDetailTimelineNavProps = {
-  timeline: RequestDetailTimelineStep[]
-  status: RequestStatusValue
+  timeline: Array<TimelineStep>
+  submittedDate: string
+  updatedDate: string
 }
 
 export const RequestDetailTimelineNav = memo(function RequestDetailTimelineNav({
   timeline,
-  status,
+  submittedDate,
+  updatedDate,
 }: RequestDetailTimelineNavProps) {
   return (
-    <nav
-      aria-label="Request status"
-      className="rounded-xl border bg-card px-3 py-4 overflow-x-auto"
-    >
-      <div
-        className="flex items-start"
-        style={{ minWidth: `${timeline.length * 90}px` }}
-      >
-        {timeline.map((step, idx) => (
-          <div
-            key={step.status}
-            className="relative flex flex-1 flex-col items-center gap-2 text-center"
-          >
-            {idx < timeline.length - 1 && (
-              <div
-                className={cn(
-                  'absolute top-4 left-1/2 h-0.5',
-                  step.active ? 'bg-primary/50' : 'bg-muted',
-                )}
-                style={{ width: '100%', left: '50%' }}
-              />
-            )}
-
-            <div
-              role="listitem"
-              aria-current={status === step.status ? 'step' : undefined}
-              className="relative z-10 flex flex-col items-center gap-2"
+    <nav aria-label="Request progress">
+      <ol className="flex flex-col sm:flex-row sm:items-start">
+        {timeline.map((step, idx) => {
+          const isLast = idx === timeline.length - 1
+          const note =
+            idx === 0
+              ? submittedDate
+              : step.state === 'current' || step.state === 'stopped'
+                ? `Since ${updatedDate}`
+                : null
+          return (
+            <li
+              key={step.status}
+              aria-current={step.state === 'current' ? 'step' : undefined}
+              className="relative flex flex-1 gap-3 pb-5 last:pb-0 sm:flex-col sm:gap-2 sm:pr-3 sm:pb-0"
             >
-              <div className="relative flex flex-col items-center">
-                {status === step.status && (
-                  <span className="absolute inset-0 z-0 h-8 w-8 animate-ping rounded-full bg-primary/40" />
-                )}
+              {!isLast && (
+                <span
+                  aria-hidden
+                  className={cn(
+                    'absolute top-7 bottom-1 left-3 w-px sm:hidden',
+                    step.state === 'done' ? 'bg-primary/60' : 'bg-border',
+                  )}
+                />
+              )}
+              <div className="flex items-center">
                 <span
                   className={cn(
-                    'relative z-0 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-[10px] font-bold transition-all',
-                    step.active
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-muted bg-card text-muted-foreground',
-                    status === step.status &&
-                      'ring-2 ring-primary ring-offset-2 ring-offset-background',
+                    'flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold tabular-nums',
+                    step.state === 'done' &&
+                      'bg-primary text-primary-foreground',
+                    step.state === 'current' &&
+                      'bg-background text-primary ring-2 ring-primary',
+                    step.state === 'upcoming' &&
+                      'bg-muted text-muted-foreground',
+                    step.state === 'stopped' &&
+                      'bg-red-600 text-white dark:bg-red-500',
                   )}
                 >
-                  {idx + 1}
+                  {step.state === 'done' ? (
+                    <Check aria-hidden className="size-3.5" strokeWidth={3} />
+                  ) : step.state === 'stopped' ? (
+                    <X aria-hidden className="size-3.5" strokeWidth={3} />
+                  ) : (
+                    idx + 1
+                  )}
                 </span>
-              </div>
-              <span
-                className={cn(
-                  'text-[10px] font-medium leading-tight px-1 max-w-20',
-                  step.active ? 'text-foreground' : 'text-muted-foreground',
+                {!isLast && (
+                  <span
+                    aria-hidden
+                    className={cn(
+                      'ml-3 hidden h-px flex-1 sm:block',
+                      step.state === 'done' ? 'bg-primary/60' : 'bg-border',
+                    )}
+                  />
                 )}
-              >
-                {step.label}
-              </span>
-              <span className="text-[10px] text-muted-foreground hidden sm:block">
-                {step.date}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
+              </div>
+              <div className="space-y-0.5">
+                <p
+                  className={cn(
+                    'text-sm leading-tight',
+                    step.state === 'upcoming'
+                      ? 'text-muted-foreground'
+                      : 'font-medium text-foreground',
+                    step.state === 'stopped' &&
+                      'text-red-700 dark:text-red-300',
+                  )}
+                >
+                  {step.label}
+                  <span className="sr-only">
+                    {step.state === 'done'
+                      ? ' (done)'
+                      : step.state === 'current'
+                        ? ' (current step)'
+                        : step.state === 'stopped'
+                          ? ' (request closed)'
+                          : ' (upcoming)'}
+                  </span>
+                </p>
+                {note && (
+                  <p className="text-xs text-muted-foreground tabular-nums">
+                    {note}
+                  </p>
+                )}
+              </div>
+            </li>
+          )
+        })}
+      </ol>
     </nav>
   )
 })

@@ -2,7 +2,7 @@ import { Loader2, MessageCircle, Send } from 'lucide-react'
 import { memo, useEffect, useRef } from 'react'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
 import { cn } from '@/lib/utils'
@@ -11,7 +11,7 @@ import { formatMessageTime } from './request-detail-formatters'
 
 type RequestDetailMessagesCardProps = {
   requestUserId: number
-  messages: TMessage[]
+  messages: Array<TMessage>
   messagesLoading: boolean
   messageDraft: string
   onMessageDraftChange: (value: string) => void
@@ -29,10 +29,12 @@ export const RequestDetailMessagesCard = memo(
     isSendPending,
     onSubmitMessage,
   }: RequestDetailMessagesCardProps) {
-    const messagesEndRef = useRef<HTMLDivElement>(null)
+    const listRef = useRef<HTMLDivElement>(null)
 
+    // Keep the newest message in view by scrolling the list, never the page.
     useEffect(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+      const list = listRef.current
+      if (list) list.scrollTop = list.scrollHeight
     }, [messages.length])
 
     return (
@@ -43,11 +45,11 @@ export const RequestDetailMessagesCard = memo(
               <MessageCircle className="h-5 w-5" />
             </div>
             <div>
-              <CardTitle className="text-base font-semibold tracking-tight">
+              <h2 className="text-base font-semibold tracking-tight">
                 Messages
-              </CardTitle>
+              </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Questions about this request? Reply here.
+                Questions about this request? Our team replies here.
               </p>
             </div>
           </div>
@@ -59,7 +61,10 @@ export const RequestDetailMessagesCard = memo(
             </div>
           ) : (
             <>
-              <div className="flex flex-col gap-3 max-h-70 min-h-30 overflow-y-auto rounded-xl border bg-muted/20 p-3">
+              <div
+                ref={listRef}
+                className="flex flex-col gap-3 max-h-96 min-h-30 overflow-y-auto rounded-xl border bg-muted/20 p-3"
+              >
                 {messages.length === 0 ? (
                   <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
                     <div className="rounded-full bg-muted p-3">
@@ -119,7 +124,6 @@ export const RequestDetailMessagesCard = memo(
                     )
                   })
                 )}
-                <div ref={messagesEndRef} />
               </div>
               <form
                 className="flex gap-2"
@@ -129,7 +133,8 @@ export const RequestDetailMessagesCard = memo(
                 }}
               >
                 <Input
-                  placeholder="Type a message…"
+                  aria-label="Message"
+                  placeholder="Write a message to our team…"
                   className="h-9 flex-1 text-sm"
                   value={messageDraft}
                   onChange={(e) => onMessageDraftChange(e.target.value)}
@@ -139,6 +144,7 @@ export const RequestDetailMessagesCard = memo(
                   type="submit"
                   size="sm"
                   className="h-9 shrink-0 px-3"
+                  aria-label="Send message"
                   disabled={!messageDraft.trim() || isSendPending}
                 >
                   {isSendPending ? (

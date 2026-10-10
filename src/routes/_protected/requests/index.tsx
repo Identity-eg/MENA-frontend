@@ -1,413 +1,193 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Eye, Search } from 'lucide-react'
+import { FileSearch, Search } from 'lucide-react'
 import { useState } from 'react'
 
 import { PageHeader } from '@/components/page-header'
-import { StatusPill } from '@/components/StatusPill'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import {
+  RequestListHeader,
+  RequestListItem,
+} from '@/components/requests/request-list-item'
+import { buttonVariants } from '@/components/ui/button'
 import { FullPageLoading } from '@/components/ui/full-page-loading'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import {
   getRequestsQueryOptions,
   useGetRequests,
 } from '@/apis/requests/get-requests'
-import {
-  formatInvoiceSummary,
-  isLineRefundDue,
-  isLineRejected,
-  requestHasRefundDue,
-} from '@/lib/request-billing'
-import { cn } from '@/lib/utils'
-import {
-  REQUEST_STATUS,
-  type RequestReportItem,
-  type TRequest,
-} from '@/types/request'
+import { formatRequestId, getRequestCompanies } from '@/lib/request-display'
+import { getRequestGroup, type RequestGroup } from '@/lib/request-next-step'
+import type { TRequest } from '@/types/request'
+
+type RequestsTab = 'all' | RequestGroup
+
+const TABS: Array<{ value: RequestsTab; label: string }> = [
+  { value: 'all', label: 'All' },
+  { value: 'needs-action', label: 'Needs action' },
+  { value: 'in-progress', label: 'In progress' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'closed', label: 'Closed' },
+]
+
+type RequestsSearch = { tab?: Exclude<RequestsTab, 'all'> }
 
 export const Route = createFileRoute('/_protected/requests/')({
   component: RequestsPage,
   pendingComponent: FullPageLoading,
+  validateSearch: (search: Record<string, unknown>): RequestsSearch => ({
+    tab: TABS.some((t) => t.value === search.tab && t.value !== 'all')
+      ? (search.tab as RequestsSearch['tab'])
+      : undefined,
+  }),
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(getRequestsQueryOptions())
     return {}
   },
 })
 
-function formatRequestId(id: number) {
-  return `REQ-${String(id).padStart(6, '0')}`
+/** Requests that need the customer first, then newest first. */
+function sortRequests(requests: Array<TRequest>) {
+  return [...requests].sort((a, b) => {
+    const aAction = getRequestGroup(a) === 'needs-action' ? 0 : 1
+    const bAction = getRequestGroup(b) === 'needs-action' ? 0 : 1
+    if (aAction !== bAction) return aAction - bAction
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  })
 }
 
-/** Get request reports (Prisma RequestReport). Source of truth per schema. */
-function getRequestReports(req: TRequest): Array<RequestReportItem> {
-  return req.requestReports ?? []
-}
-
-/** Derive companies for search (from requestReports when req.companies not present) */
-function getCompaniesForSearch(
-  req: TRequest,
-): Array<{ companyNameEn: string; companyNameAr: string | null }> {
-  if (req.companies?.length) return req.companies as any
-  const reports = getRequestReports(req)
-  const seen = new Set<number>()
-  return reports
-    .filter((rr) => rr.companyId != null && rr.company != null)
-    .map((rr) => rr.company!)
-    .filter((c) => {
-      if (seen.has(c.id)) return false
-      seen.add(c.id)
-      return true
-    })
-}
-
-type RequestListReport = {
-  id: number
-  name: string
-  rejected: boolean
-  refundDue: boolean
-}
-
-/** Per-company reports (derived from requestReports) */
-function getCompanyWithReports(req: TRequest): Array<{
-  company: NonNullable<RequestReportItem['company']>
-  reports: Array<RequestListReport>
-}> {
-  const items = getRequestReports(req).filter(
-    (
-      rr,
-    ): rr is RequestReportItem & {
-      company: NonNullable<RequestReportItem['company']>
-    } => rr.companyId != null && rr.company != null,
-  )
-  const byCompany = new Map<
-    number,
-    {
-      company: NonNullable<RequestReportItem['company']>
-      reports: Map<number, RequestListReport>
-    }
-  >()
-  for (const rr of items) {
-    const key = rr.company!.id
-    if (!byCompany.has(key)) {
-      byCompany.set(key, { company: rr.company!, reports: new Map() })
-    }
-    byCompany.get(key)!.reports.set(rr.report.id, {
-      id: rr.report.id,
-      name: rr.report.name,
-      rejected: isLineRejected(rr),
-      refundDue: isLineRefundDue(rr),
-    })
-  }
-  return Array.from(byCompany.values()).map(({ company, reports }) => ({
-    company,
-    reports: Array.from(reports.values()),
-  }))
-}
-
-function ReportBadges({ reports }: { reports: Array<RequestListReport> }) {
+function matchesSearch(request: TRequest, query: string) {
+  if (!query) return true
+  const q = query.toLowerCase()
   return (
-    <div className="flex flex-wrap gap-1">
-      {reports.map((r) => (
-        <Badge
-          key={r.id}
-          variant="secondary"
-          className={cn(
-            'text-[10px]',
-            r.rejected && 'line-through text-muted-foreground',
-          )}
-          title={
-            r.refundDue
-              ? 'Rejected after payment: refund due'
-              : r.rejected
-                ? 'Rejected: not charged'
-                : undefined
-          }
-        >
-          {r.name}
-        </Badge>
-      ))}
-    </div>
-  )
-}
-
-function RefundDueBadge() {
-  return (
-    <Badge
-      variant="outline"
-      className="text-[10px] border-sky-300 bg-sky-50 text-sky-800 dark:border-sky-800 dark:bg-sky-950/50 dark:text-sky-300"
-    >
-      Refund due
-    </Badge>
+    formatRequestId(request.id).toLowerCase().includes(q) ||
+    getRequestCompanies(request).some(
+      (c) =>
+        c.companyNameEn.toLowerCase().includes(q) ||
+        (c.companyNameAr?.toLowerCase().includes(q) ?? false),
+    )
   )
 }
 
 function RequestsPage() {
+  const { tab = 'all' } = Route.useSearch()
+  const navigate = Route.useNavigate()
   const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
 
   const { data } = useGetRequests()
-  const requests: Array<TRequest> = data?.data ?? []
+  const requests: Array<TRequest> = data.data
 
-  const filtered = (() => {
-    return requests.filter((req) => {
-      const requestIdStr = formatRequestId(req.id)
-      const searchLower = search.toLowerCase()
-      const companies = getCompaniesForSearch(req)
-      const companyMatch = companies.some(
-        (c) =>
-          c.companyNameEn.toLowerCase().includes(searchLower) ||
-          (c.companyNameAr != null &&
-            c.companyNameAr.toLowerCase().includes(searchLower)),
-      )
-      const matchSearch =
-        !search ||
-        requestIdStr.toLowerCase().includes(searchLower) ||
-        companyMatch
-      const matchStatus = statusFilter === 'all' || req.status === statusFilter
-      return matchSearch && matchStatus
+  const counts = requests.reduce<Record<RequestGroup, number>>(
+    (acc, r) => {
+      acc[getRequestGroup(r)] += 1
+      return acc
+    },
+    { 'needs-action': 0, 'in-progress': 0, completed: 0, closed: 0 },
+  )
+
+  const filtered = sortRequests(
+    requests.filter(
+      (r) =>
+        (tab === 'all' || getRequestGroup(r) === tab) &&
+        matchesSearch(r, search),
+    ),
+  )
+
+  const setTab = (value: RequestsTab) =>
+    navigate({
+      search: { tab: value === 'all' ? undefined : value },
+      replace: true,
     })
-  })()
 
   return (
-    <div>
+    <div className="mx-auto max-w-6xl space-y-6">
       <PageHeader
-        title="My Requests"
-        subtitle={`${filtered.length} request${filtered.length === 1 ? '' : 's'}`}
+        title="Requests"
+        subtitle="Every report you've ordered, and what happens next."
       />
-      <div className="my-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <Tabs
+          value={tab}
+          onValueChange={(v) => setTab(v as RequestsTab)}
+          className="min-w-0"
+        >
+          <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+            <TabsList variant="line" aria-label="Filter requests">
+              {TABS.map((t) => {
+                const count = t.value === 'all' ? null : counts[t.value]
+                return (
+                  <TabsTrigger key={t.value} value={t.value} className="px-2.5">
+                    {t.label}
+                    {count != null && count > 0 && (
+                      <span
+                        className={
+                          t.value === 'needs-action'
+                            ? 'rounded-full bg-amber-100 px-1.5 text-xs font-semibold tabular-nums text-amber-800 dark:bg-amber-400/15 dark:text-amber-300'
+                            : 'text-xs tabular-nums text-muted-foreground'
+                        }
+                      >
+                        {count}
+                      </span>
+                    )}
+                  </TabsTrigger>
+                )
+              })}
+            </TabsList>
+          </div>
+        </Tabs>
+
+        <div className="relative lg:w-72">
+          <Search
+            aria-hidden
+            className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+          />
           <Input
+            type="search"
+            aria-label="Search requests"
             placeholder="Search by request ID or company"
-            className="pl-9 h-10"
+            className="h-9 pl-9"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Select
-          value={statusFilter}
-          onValueChange={(v) => setStatusFilter(v ?? 'all')}
-        >
-          <SelectTrigger className="h-10! w-full sm:w-45">
-            <SelectValue placeholder="All statuses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All statuses</SelectItem>
-            <SelectItem value={REQUEST_STATUS.UNDER_REVIEW}>
-              Under review
-            </SelectItem>
-            <SelectItem value={REQUEST_STATUS.INVOICE_GENERATED}>
-              Invoice generated
-            </SelectItem>
-            <SelectItem value={REQUEST_STATUS.PAID}>Paid</SelectItem>
-            <SelectItem value={REQUEST_STATUS.PROCESSING}>
-              Processing
-            </SelectItem>
-            <SelectItem value={REQUEST_STATUS.COMPLETED}>Completed</SelectItem>
-            <SelectItem value={REQUEST_STATUS.REJECTED}>Rejected</SelectItem>
-            <SelectItem value={REQUEST_STATUS.CANCELLED}>Cancelled</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       {filtered.length === 0 ? (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="py-12 text-center text-sm text-muted-foreground">
-              {requests.length === 0
-                ? 'You have no requests yet. Request a screening package from a company page.'
-                : 'No requests match your filters.'}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center rounded-xl border border-dashed px-6 py-16 text-center">
+          <FileSearch aria-hidden className="size-8 text-muted-foreground" />
+          <h2 className="mt-4 text-sm font-medium text-foreground">
+            {requests.length === 0
+              ? 'No requests yet'
+              : search
+                ? 'No requests match your search'
+                : 'Nothing here right now'}
+          </h2>
+          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+            {requests.length === 0
+              ? 'Find a company and order the reports you need. Your requests will appear here.'
+              : search
+                ? 'Try a different request ID or company name.'
+                : 'Requests in this group will show up here.'}
+          </p>
+          {requests.length === 0 && (
+            <Link
+              to="/companies"
+              className={buttonVariants({ className: 'mt-5 px-4' })}
+            >
+              Browse companies
+            </Link>
+          )}
+        </div>
       ) : (
-        <>
-          {/* ── Mobile: Card layout ── */}
-          <div className="flex flex-col gap-3 md:hidden">
-            {filtered.map((req) => {
-              const companyWithReports = getCompanyWithReports(req)
-              return (
-                <Card key={req.id}>
-                  <CardContent className="p-4 space-y-3">
-                    {/* Top row: ID + status */}
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-sm font-medium">
-                        {formatRequestId(req.id)}
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        {requestHasRefundDue(req) && <RefundDueBadge />}
-                        <StatusPill status={req.status} />
-                      </div>
-                    </div>
-
-                    {/* Date */}
-                    <p className="text-xs text-muted-foreground">
-                      {new Intl.DateTimeFormat('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      }).format(new Date(req.createdAt))}
-                    </p>
-
-                    {/* Companies */}
-                    {companyWithReports.length > 0 && (
-                      <div className="space-y-1.5">
-                        <p className="text-[11px] font-semibold uppercase text-muted-foreground tracking-wider">
-                          Companies
-                        </p>
-                        {companyWithReports.map(({ company, reports }) => (
-                          <div key={company.id} className="space-y-1">
-                            <span className="text-sm font-medium">
-                              {company.companyNameAr
-                                ? `${company.companyNameEn} (${company.companyNameAr})`
-                                : company.companyNameEn}
-                            </span>
-                            <ReportBadges reports={reports} />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Prices + action */}
-                    <div className="flex items-center justify-between border-t pt-3">
-                      <div className="flex gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground text-xs">
-                            Est.{' '}
-                          </span>
-                          <span className="font-medium">
-                            ${req.totalEstimatedPrice ?? 0}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground text-xs">
-                            Invoice{' '}
-                          </span>
-                          <span className="font-medium">
-                            {formatInvoiceSummary(req)}
-                          </span>
-                        </div>
-                      </div>
-                      <Link
-                        to="/requests/$requestId"
-                        params={{ requestId: String(req.id) }}
-                      >
-                        <Button variant="outline" size="sm">
-                          <Eye className="mr-1.5 h-3.5 w-3.5" />
-                          View
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
-
-          {/* ── Desktop: Table layout ── */}
-          <Card className="hidden md:block min-w-0">
-            <CardContent className="min-w-0 pt-6">
-              <div className="w-full max-w-full min-w-0 overflow-x-auto">
-                <Table className="min-w-2xl">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Request ID</TableHead>
-                      <TableHead>Date created</TableHead>
-                      <TableHead>Companies & reports</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">
-                        Estimated price
-                      </TableHead>
-                      <TableHead className="text-right">Invoice</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filtered.map((req) => {
-                      const companyWithReports = getCompanyWithReports(req)
-                      return (
-                        <TableRow key={req.id}>
-                          <TableCell className="font-mono font-medium">
-                            {formatRequestId(req.id)}
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            {new Intl.DateTimeFormat('en-US', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric',
-                            }).format(new Date(req.createdAt))}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex flex-col gap-2">
-                              {companyWithReports.length === 0 ? (
-                                <span className="text-muted-foreground">—</span>
-                              ) : (
-                                companyWithReports.map(
-                                  ({ company, reports }) => (
-                                    <div
-                                      key={company.id}
-                                      className="flex flex-col gap-1"
-                                    >
-                                      <span className="font-medium">
-                                        {company.companyNameAr
-                                          ? `${company.companyNameEn} (${company.companyNameAr})`
-                                          : company.companyNameEn}
-                                      </span>
-                                      <ReportBadges reports={reports} />
-                                    </div>
-                                  ),
-                                )
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex flex-wrap items-center gap-1.5">
-                              <StatusPill status={req.status} />
-                              {requestHasRefundDue(req) && <RefundDueBadge />}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right font-medium">
-                            ${req.totalEstimatedPrice ?? 0}
-                          </TableCell>
-                          <TableCell className="text-right font-medium">
-                            {formatInvoiceSummary(req)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Link
-                              to="/requests/$requestId"
-                              params={{ requestId: String(req.id) }}
-                            >
-                              <Button variant="ghost" size="icon">
-                                <Eye size={16} />
-                              </Button>
-                            </Link>
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </>
+        <div>
+          <RequestListHeader />
+          <ul className="divide-y overflow-hidden rounded-xl border bg-card">
+            {filtered.map((request) => (
+              <RequestListItem key={request.id} request={request} />
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   )
