@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useHydrated } from '@tanstack/react-router'
 import { Loader2, Lock, ShieldCheck } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -32,7 +32,9 @@ const setupPasswordSchema = z
       .string('Password is required')
       .min(1, 'Password is required')
       .min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string('Please confirm your password').min(1, 'Please confirm your password'),
+    confirmPassword: z
+      .string('Please confirm your password')
+      .min(1, 'Please confirm your password'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
@@ -60,6 +62,10 @@ function RouteComponent() {
 
   const isSubmitting = form.formState.isSubmitting
 
+  // Until hydration the browser would submit natively; keep Submit disabled.
+
+  const hydrated = useHydrated()
+
   return (
     <div className="min-h-screen bg-background grid place-items-center p-6 relative">
       <div className="absolute inset-0 app-grid opacity-[0.2]" />
@@ -75,6 +81,7 @@ function RouteComponent() {
         </CardHeader>
         <CardContent>
           <form
+            method="post"
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4"
             noValidate
@@ -130,7 +137,7 @@ function RouteComponent() {
               type="submit"
               size="lg"
               className="w-full"
-              disabled={isSubmitting}
+              disabled={!hydrated || isSubmitting}
               data-testid="button-submit"
             >
               {isSubmitting ? (

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useHydrated } from '@tanstack/react-router'
 import { Loader2, MailCheck } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -48,6 +48,10 @@ function ForgotPasswordPage() {
   }
 
   const isSubmitting = form.formState.isSubmitting
+
+  // Until hydration the browser would submit natively; keep Submit disabled.
+
+  const hydrated = useHydrated()
   const sentMessage = forgotPasswordMutation.isSuccess
     ? forgotPasswordMutation.data.message || GENERIC_SENT_MESSAGE
     : null
@@ -79,6 +83,7 @@ function ForgotPasswordPage() {
               </div>
             ) : (
               <form
+                method="post"
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
                 noValidate
@@ -124,7 +129,7 @@ function ForgotPasswordPage() {
                   className="w-full"
                   size="lg"
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={!hydrated || isSubmitting}
                   data-testid="button-submit"
                 >
                   {isSubmitting ? (

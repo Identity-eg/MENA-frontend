@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { usePostHog } from '@posthog/react'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useHydrated } from '@tanstack/react-router'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -71,6 +71,10 @@ function SignupPage() {
 
   const isSubmitting = form.formState.isSubmitting || registerMutation.isPending
 
+  // Until hydration the browser would submit natively; keep Submit disabled.
+
+  const hydrated = useHydrated()
+
   return (
     <div className="min-h-screen bg-background grid place-items-center p-6 relative">
       <Card className="w-full max-w-md relative z-10">
@@ -87,6 +91,7 @@ function SignupPage() {
         </CardHeader>
         <CardContent>
           <form
+            method="post"
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4"
             noValidate
@@ -203,7 +208,7 @@ function SignupPage() {
               type="submit"
               size="lg"
               className="w-full"
-              disabled={isSubmitting}
+              disabled={!hydrated || isSubmitting}
               data-testid="button-submit"
             >
               {isSubmitting ? (

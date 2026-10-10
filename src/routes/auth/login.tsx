@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useHydrated } from '@tanstack/react-router'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -86,8 +86,13 @@ const LoginForm = () => {
 
   const isSubmitting = form.formState.isSubmitting
 
+  // Until hydration the browser would submit natively; keep Submit disabled.
+
+  const hydrated = useHydrated()
+
   return (
     <form
+      method="post"
       onSubmit={form.handleSubmit(onSubmit)}
       className="space-y-4"
       noValidate
@@ -140,7 +145,7 @@ const LoginForm = () => {
         className="w-full"
         size="lg"
         type="submit"
-        disabled={isSubmitting}
+        disabled={!hydrated || isSubmitting}
         data-testid="button-next"
       >
         {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : 'Sign In'}
