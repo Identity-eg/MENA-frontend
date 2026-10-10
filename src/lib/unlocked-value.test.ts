@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { describeUnlockedPerson, formatUnlockFieldName } from './unlocked-value'
+import { describeUnlockedPerson } from './unlocked-value'
 
 describe('describeUnlockedPerson', () => {
   it('renders a partner with share and nationality, preferring English', () => {
@@ -23,11 +23,5 @@ describe('describeUnlockedPerson', () => {
         positionEn: 'General Manager',
       }),
     ).toEqual({ name: 'سارة', details: ['General Manager'] })
-  })
-
-  it('labels known fields', () => {
-    expect(formatUnlockFieldName('authSignatories')).toBe(
-      'Authorized signatories',
-    )
   })
 })

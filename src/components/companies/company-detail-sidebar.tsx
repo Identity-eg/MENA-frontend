@@ -1,9 +1,8 @@
 import { memo } from 'react'
 
+import type { TCompany } from '@/types/company'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-
-import type { TCompany } from '@/types/company'
 
 type CompanyDetailSidebarProps = Pick<
   TCompany,
@@ -56,7 +55,7 @@ export const CompanyDetailSidebar = memo(function CompanyDetailSidebar({
               {lockedFieldCount} locked
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              Unlock individually or all at once below
+              Unlock them with Credits below
             </p>
           </CardContent>
         </Card>

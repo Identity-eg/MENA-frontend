@@ -1,8 +1,4 @@
-import type { TLockedField } from './locked-field'
 import type { TReport } from './report'
-
-/** Masked value of a Sensitive field the viewer has not unlocked (also used for the array fields). */
-export const COMPANY_MASKED_VALUE = '••••••'
 
 export type TPartner = {
   id?: number
@@ -73,12 +69,28 @@ export type TAuthSignatory = {
   text?: string | null
 }
 
+export type TSensitiveFieldKey =
+  'registrationNumber' | 'partners' | 'managers' | 'authSignatories'
+
+export type TSensitiveFieldState = 'locked' | 'unlocked' | 'unavailable'
+
+/**
+ * One Sensitive field of a company as GET /api/companies/:id shows it to the viewer.
+ * Label, Field cost (in Credits) and order come from the server. `value` is sent only
+ * when the viewer may see it (unlocked, or an admin); a locked value is never sent.
+ */
+export type TSensitiveField = {
+  key: TSensitiveFieldKey
+  label: string
+  cost: number
+  state: TSensitiveFieldState
+  value?: string | Array<TPartner> | Array<TManager> | Array<TAuthSignatory>
+}
+
 export type TCompany = {
   id: number
   companyNameAr: string
   companyNameEn?: string | null
-  /** Sensitive: COMPANY_MASKED_VALUE unless unlocked */
-  registrationNumber: string
   UNN?: string | null
   centralNumber?: string | null
   civilId?: string | null
@@ -87,7 +99,7 @@ export type TCompany = {
   estDate: string
   expiryDate?: string | null
   capital?: string | null
-  branshes: string[]
+  branshes: Array<string>
   status: string
   entityNumber?: string | null
   TaxRegNumber?: string | null
@@ -126,18 +138,9 @@ export type TCompany = {
     nameEn: string
     nameAr: string
   }
-  lockedFields: Array<TLockedField>
-  /**
-   * Sensitive fields that are masked AND have no Field offer, so they cannot be
-   * bought: show "Not available for purchase" (never an unlock button).
-   * Always sent by GET /api/companies/:id; optional only for older responses.
-   */
-  unavailableFields?: Array<string>
+  /** Registration number, partners, managers and signatories live only here. */
+  sensitiveFields: Array<TSensitiveField>
   reports: Array<TReport>
-  /** Present when unlocked; masked string when locked. */
-  partners?: TPartner[] | string
-  managers?: TManager[] | string
-  authSignatories?: TAuthSignatory[] | string
   createdAt: string
   updatedAt: string
 }

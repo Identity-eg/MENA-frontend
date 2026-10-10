@@ -1,15 +1,23 @@
 import { CheckCircle2, Unlock } from 'lucide-react'
 import { memo } from 'react'
 
+import { getCompanyDetailFieldIcon } from './get-company-detail-field-icon'
+import type { TSensitiveField } from '@/types/company'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { cn } from '@/lib/utils'
-import type { CompanyProfileFieldRow } from './company-detail-types'
-import { getCompanyDetailFieldIcon } from './get-company-detail-field-icon'
 
 type CompanyDetailUnlockedFieldsCardProps = {
-  fields: CompanyProfileFieldRow[]
+  fields: Array<TSensitiveField>
+}
+
+/** A scalar value as text; people lists are shown in the company profile below. */
+function summarize(value: TSensitiveField['value']): string {
+  if (value === undefined || value === '') return '—'
+  if (typeof value === 'string') return value
+  if (value.length === 0) return 'None on record'
+  return `${value.length} listed below`
 }
 
 export const CompanyDetailUnlockedFieldsCard = memo(
@@ -64,7 +72,7 @@ export const CompanyDetailUnlockedFieldsCard = memo(
                       />
                     </div>
                     <p className="text-sm font-medium text-foreground leading-snug">
-                      {value ?? '—'}
+                      {summarize(value)}
                     </p>
                   </div>
                 </div>

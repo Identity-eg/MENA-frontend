@@ -1,6 +1,7 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { Building2, ExternalLink, Search, Unlock } from 'lucide-react'
 
+import type { TUnlock } from '@/types/unlock'
 import { PageHeader } from '@/components/page-header'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -17,11 +18,7 @@ import {
   getUnlocksQueryOptions,
   useGetUnlocks,
 } from '@/apis/unlocks/get-unlocks'
-import {
-  describeUnlockedPerson,
-  formatUnlockFieldName,
-} from '@/lib/unlocked-value'
-import type { TUnlock } from '@/types/unlock'
+import { describeUnlockedPerson } from '@/lib/unlocked-value'
 
 export const Route = createFileRoute('/_protected/unlocks/')({
   pendingComponent: FullPageLoading,
@@ -33,8 +30,8 @@ export const Route = createFileRoute('/_protected/unlocks/')({
 })
 
 function UnlockedValue({ unlock }: { unlock: TUnlock }) {
-  const value = unlock.unlockedValue
-  const fieldName = unlock.lockedField.lockedType.fieldName
+  const value = unlock.value
+  const fieldName = unlock.field.key
 
   if (value == null || value === '') {
     return <span className="font-medium">—</span>
@@ -113,26 +110,21 @@ function UnlocksPage() {
                 </div>
                 <CardTitle
                   className="text-lg mt-3 font-sans"
-                  dir={unlock.lockedField.company.nameAr ? 'rtl' : 'ltr'}
+                  dir={unlock.company.nameAr ? 'rtl' : 'ltr'}
                 >
-                  {unlock.lockedField.company.nameAr ??
-                    unlock.lockedField.company.nameEn ??
-                    '—'}
+                  {unlock.company.nameAr ?? unlock.company.nameEn ?? '—'}
                 </CardTitle>
-                {unlock.lockedField.company.nameAr &&
-                  unlock.lockedField.company.nameEn && (
-                    <div className="text-sm text-muted-foreground font-medium">
-                      {unlock.lockedField.company.nameEn}
-                    </div>
-                  )}
+                {unlock.company.nameAr && unlock.company.nameEn && (
+                  <div className="text-sm text-muted-foreground font-medium">
+                    {unlock.company.nameEn}
+                  </div>
+                )}
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="flex flex-col gap-1">
                   <span className="text-muted-foreground flex items-center gap-2">
                     <Unlock size={16} />
-                    {formatUnlockFieldName(
-                      unlock.lockedField.lockedType.fieldName,
-                    )}
+                    {unlock.field.label}
                   </span>
                   <UnlockedValue unlock={unlock} />
                 </div>
@@ -141,9 +133,8 @@ function UnlocksPage() {
                 <Link
                   to="/companies/$companyId"
                   params={{
-                    companyId: String(unlock.lockedField.company.id),
+                    companyId: String(unlock.company.id),
                   }}
-                  search={{ unlock: undefined }}
                 >
                   <Button variant="ghost">
                     View Full Profile

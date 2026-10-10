@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { ChevronRight, Loader2, Plus, Search } from 'lucide-react'
 import { Suspense, useState } from 'react'
 import z from 'zod'
@@ -82,7 +82,6 @@ function CompanySearchResults({
             key={company.id}
             to="/companies/$companyId"
             params={{ companyId: String(company.id) }}
-            search={{ unlock: undefined }}
           >
             <Card className="cursor-pointer transition-all hover:bg-accent/50 group">
               <CardContent className="flex items-center justify-between p-5">
