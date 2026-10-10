@@ -1,4 +1,4 @@
-import { Coins, Sparkles } from 'lucide-react'
+import { Coins, Loader2, Sparkles } from 'lucide-react'
 
 import type { TCreditPlan } from '@/types/credits'
 import type { PlanValue } from '@/lib/credit-plans'
@@ -14,8 +14,14 @@ const creditNumber = new Intl.NumberFormat('en-US', {
 type PricingPlanCardProps = {
   plan: TCreditPlan
   value: PlanValue | undefined
-  /** Id of the note explaining why Buy is not available yet. */
+  /** Id of the note on how plans are charged, read with the Buy button. */
   buyNoteId: string
+  /** Starts Stripe checkout for this plan. */
+  onBuy: () => void
+  /** This plan's checkout is being opened. */
+  buying: boolean
+  /** Another plan's checkout is being opened. */
+  disabled: boolean
   /** Position in the grid, for a staggered entrance. */
   index: number
 }
@@ -28,6 +34,9 @@ export function PricingPlanCard({
   plan,
   value,
   buyNoteId,
+  onBuy,
+  buying,
+  disabled,
   index,
 }: PricingPlanCardProps) {
   const featured = plan.badge !== null
@@ -111,11 +120,18 @@ export function PricingPlanCard({
           <Button
             size="lg"
             variant={featured ? 'default' : 'outline'}
-            className="min-h-11 w-full text-sm active:scale-[0.98]"
-            disabled
+            className="min-h-11 w-full gap-2 text-sm active:scale-[0.98]"
+            disabled={buying || disabled}
             aria-describedby={buyNoteId}
+            onClick={onBuy}
           >
-            Buy {plan.name}
+            {buying && (
+              <Loader2
+                className="size-4 animate-spin motion-reduce:animate-none"
+                aria-hidden
+              />
+            )}
+            {buying ? 'Opening secure checkout' : `Buy ${plan.name}`}
           </Button>
         </div>
       </div>

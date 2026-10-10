@@ -29,6 +29,7 @@ import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
 import { Route as ProtectedCompaniesIndexRouteImport } from './routes/_protected/companies/index'
 import { Route as ProtectedCompaniesCompanyIdRouteImport } from './routes/_protected/companies/$companyId'
 import { Route as ProtectedCreditsIndexRouteImport } from './routes/_protected/credits/index'
+import { Route as ProtectedCreditsCheckoutRouteImport } from './routes/_protected/credits/checkout'
 import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
 import { Route as ProtectedPricingIndexRouteImport } from './routes/_protected/pricing/index'
 import { Route as ProtectedRequestsIndexRouteImport } from './routes/_protected/requests/index'
@@ -136,6 +137,12 @@ const ProtectedCreditsIndexRoute = ProtectedCreditsIndexRouteImport.update({
   path: '/credits/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedCreditsCheckoutRoute =
+  ProtectedCreditsCheckoutRouteImport.update({
+    id: '/credits/checkout',
+    path: '/credits/checkout',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
 const ProtectedDashboardIndexRoute = ProtectedDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
@@ -187,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/companies/$companyId': typeof ProtectedCompaniesCompanyIdRoute
+  '/credits/checkout': typeof ProtectedCreditsCheckoutRoute
   '/requests/$requestId': typeof ProtectedRequestsRequestIdRoute
   '/companies/': typeof ProtectedCompaniesIndexRoute
   '/credits/': typeof ProtectedCreditsIndexRoute
@@ -214,6 +222,7 @@ export interface FileRoutesByTo {
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/companies/$companyId': typeof ProtectedCompaniesCompanyIdRoute
+  '/credits/checkout': typeof ProtectedCreditsCheckoutRoute
   '/requests/$requestId': typeof ProtectedRequestsRequestIdRoute
   '/companies': typeof ProtectedCompaniesIndexRoute
   '/credits': typeof ProtectedCreditsIndexRoute
@@ -243,6 +252,7 @@ export interface FileRoutesById {
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/_protected/companies/$companyId': typeof ProtectedCompaniesCompanyIdRoute
+  '/_protected/credits/checkout': typeof ProtectedCreditsCheckoutRoute
   '/_protected/requests/$requestId': typeof ProtectedRequestsRequestIdRoute
   '/_protected/companies/': typeof ProtectedCompaniesIndexRoute
   '/_protected/credits/': typeof ProtectedCreditsIndexRoute
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/auth/verify-email'
     | '/companies/$companyId'
+    | '/credits/checkout'
     | '/requests/$requestId'
     | '/companies/'
     | '/credits/'
@@ -299,6 +310,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/auth/verify-email'
     | '/companies/$companyId'
+    | '/credits/checkout'
     | '/requests/$requestId'
     | '/companies'
     | '/credits'
@@ -327,6 +339,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/auth/verify-email'
     | '/_protected/companies/$companyId'
+    | '/_protected/credits/checkout'
     | '/_protected/requests/$requestId'
     | '/_protected/companies/'
     | '/_protected/credits/'
@@ -499,6 +512,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedCreditsIndexRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/credits/checkout': {
+      id: '/_protected/credits/checkout'
+      path: '/credits/checkout'
+      fullPath: '/credits/checkout'
+      preLoaderRoute: typeof ProtectedCreditsCheckoutRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_protected/dashboard/': {
       id: '/_protected/dashboard/'
       path: '/dashboard'
@@ -546,6 +566,7 @@ declare module '@tanstack/react-router' {
 
 interface ProtectedRouteRouteChildren {
   ProtectedCompaniesCompanyIdRoute: typeof ProtectedCompaniesCompanyIdRoute
+  ProtectedCreditsCheckoutRoute: typeof ProtectedCreditsCheckoutRoute
   ProtectedRequestsRequestIdRoute: typeof ProtectedRequestsRequestIdRoute
   ProtectedCompaniesIndexRoute: typeof ProtectedCompaniesIndexRoute
   ProtectedCreditsIndexRoute: typeof ProtectedCreditsIndexRoute
@@ -558,6 +579,7 @@ interface ProtectedRouteRouteChildren {
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedCompaniesCompanyIdRoute: ProtectedCompaniesCompanyIdRoute,
+  ProtectedCreditsCheckoutRoute: ProtectedCreditsCheckoutRoute,
   ProtectedRequestsRequestIdRoute: ProtectedRequestsRequestIdRoute,
   ProtectedCompaniesIndexRoute: ProtectedCompaniesIndexRoute,
   ProtectedCreditsIndexRoute: ProtectedCreditsIndexRoute,

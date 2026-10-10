@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import {
   AlertCircle,
-  ArrowUpRight,
   Coins,
   Loader2,
   Lock,
@@ -24,7 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { buttonVariants } from '@/components/ui/button'
+import { InlinePlanOptions } from '@/components/pricing/inline-plan-options'
 
 import { getCreditBalanceQueryOptions } from '@/apis/credits/get-credit-balance'
 import { useUnlockAllFields } from '@/apis/unlocks/unlock-all-fields'
@@ -63,7 +62,7 @@ const targetCost = (target: UnlockTarget | null) =>
 /**
  * Confirms spending Credits on one Sensitive field, or on all remaining ones in one go:
  * cost, balance now and balance after. Without enough Credits the confirm action is replaced
- * by the shortfall and a link to the Credit plans. A cost that changed meanwhile is shown in
+ * by the shortfall and inline Credit plan cards that buy and come back here. A cost that changed meanwhile is shown in
  * place to confirm again.
  */
 export function UnlockDialog({
@@ -172,7 +171,7 @@ export function UnlockDialog({
       }}
     >
       <AlertDialogContent
-        className="gap-5 rounded-2xl p-5 data-[size=default]:max-w-[calc(100%-2rem)] data-[size=default]:sm:max-w-md"
+        className="max-h-[calc(100dvh-2rem)] gap-5 overflow-y-auto rounded-2xl p-5 data-[size=default]:max-w-[calc(100%-2rem)] data-[size=default]:sm:max-w-md"
         finalFocus={() =>
           (unlockedKey &&
             document.getElementById(
@@ -256,11 +255,8 @@ export function UnlockDialog({
         )}
 
         {insufficient && (
-          <div
-            role="status"
-            className="flex flex-col gap-3 rounded-xl bg-primary/6 p-4 ring-1 ring-primary/15 ring-inset dark:bg-primary/12"
-          >
-            <div className="flex items-start gap-2.5">
+          <div className="flex flex-col gap-3 rounded-xl bg-primary/6 p-4 ring-1 ring-primary/15 ring-inset dark:bg-primary/12">
+            <div role="status" className="flex items-start gap-2.5">
               <Lock
                 className="mt-0.5 size-4 shrink-0 text-primary"
                 strokeWidth={1.75}
@@ -273,11 +269,15 @@ export function UnlockDialog({
                 <p className="text-xs text-muted-foreground">
                   Nothing was charged and{' '}
                   {all ? 'the fields stay locked' : 'the field stays locked'}.
-                  Add Credits with a Credit plan, then come back to unlock{' '}
-                  {all ? 'them' : 'it'}.
+                  Buy a Credit plan and you&rsquo;ll come straight back here
+                  to unlock {all ? 'them' : 'it'}.
                 </p>
               </div>
             </div>
+            <InlinePlanOptions
+              shortfall={short}
+              returnTo={{ kind: 'company', companyId: String(companyId) }}
+            />
           </div>
         )}
 
@@ -289,21 +289,7 @@ export function UnlockDialog({
           >
             {insufficient ? 'Close' : 'Cancel'}
           </AlertDialogCancel>
-          {insufficient ? (
-            <a
-              href={`/pricing?returnTo=${encodeURIComponent(`/companies/${companyId}`)}`}
-              className={cn(
-                buttonVariants({ size: 'lg' }),
-                'group min-h-11 gap-2 active:scale-[0.98]',
-              )}
-            >
-              See Credit plans
-              <ArrowUpRight
-                className="size-4 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                aria-hidden
-              />
-            </a>
-          ) : (
+          {insufficient ? null : (
             <AlertDialogAction
               size="lg"
               className="min-h-11 gap-2 tabular-nums active:scale-[0.98]"

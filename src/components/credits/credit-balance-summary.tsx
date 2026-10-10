@@ -29,6 +29,7 @@ export function CreditBalanceSummary({ balance }: { balance: number }) {
         </div>
         <Link
           to="/pricing"
+          search={{ returnTo: '/credits' }}
           className="group inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-full bg-primary py-2 ps-5 pe-2 text-sm font-medium text-primary-foreground transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-primary/90 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none active:scale-[0.98] sm:self-center"
         >
           Get more Credits

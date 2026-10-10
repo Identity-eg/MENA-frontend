@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
-import { describePlanValues, formatPlanPrice } from './credit-plans'
+import {
+  describePlanValues,
+  formatPlanPrice,
+  smallestPlanCovering,
+} from './credit-plans'
 
 const plan = (id: number, priceCents: number, credits: number) => ({
   id,
@@ -50,5 +54,25 @@ describe('describePlanValues', () => {
     expect(describePlanValues([plan(1, 1000, 10)]).get(1)?.perCredit).toBe(
       '$1.00 per credit',
     )
+  })
+})
+
+describe('smallestPlanCovering', () => {
+  const plans = [
+    { id: 1, credits: 300 },
+    { id: 2, credits: 1000 },
+    { id: 3, credits: 3000 },
+  ]
+
+  it('picks the smallest plan that covers the shortfall, whatever the display order', () => {
+    expect(smallestPlanCovering(plans, 120)).toBe(1)
+    expect(smallestPlanCovering(plans, 300)).toBe(1)
+    expect(smallestPlanCovering(plans, 301)).toBe(2)
+    expect(smallestPlanCovering([...plans].reverse(), 900)).toBe(2)
+  })
+
+  it('is null when no single plan covers it', () => {
+    expect(smallestPlanCovering(plans, 3001)).toBeNull()
+    expect(smallestPlanCovering([], 10)).toBeNull()
   })
 })

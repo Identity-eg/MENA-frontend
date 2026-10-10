@@ -41,3 +41,13 @@ export function describePlanValues(
     }),
   )
 }
+
+/** The plan to suggest when a user is `shortfall` Credits short: the smallest one that covers it, or null. */
+export function smallestPlanCovering(
+  plans: ReadonlyArray<{ id: number; credits: number }>,
+  shortfall: number,
+): number | null {
+  const covering = plans.filter((p) => p.credits >= shortfall)
+  if (covering.length === 0) return null
+  return covering.reduce((best, p) => (p.credits < best.credits ? p : best)).id
+}

@@ -29,7 +29,7 @@ export type TCreditTransaction = {
   company: { id: number; nameEn: string | null; nameAr: string | null } | null
   /** The Sensitive fields a Spend paid for, in display order. */
   fields: Array<{ key: string; label: string }>
-  /** The Credit plan a Grant came from (null until Plan purchases exist). */
+  /** The Credit plan a Grant came from (or a Refund was recorded against). */
   plan: { id: number; name: string } | null
 }
 
@@ -58,4 +58,22 @@ export type TFieldCost = {
   key: string
   label: string
   cost: number
+}
+
+export type TPlanPurchaseStatus = 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED'
+
+/** GET /credits/purchases(/:id): one Stripe checkout for a Credit plan, with the plan as it was bought. */
+export type TPlanPurchase = {
+  id: number
+  planId: number
+  planName: string
+  priceCents: number
+  currency: 'USD'
+  credits: number
+  status: TPlanPurchaseStatus
+  /** ISO timestamps. */
+  createdAt: string
+  paidAt: string | null
+  /** The Grant that added the Credits, with the balance right after it; null until PAID. */
+  grant: { transactionId: number; balanceAfter: number } | null
 }

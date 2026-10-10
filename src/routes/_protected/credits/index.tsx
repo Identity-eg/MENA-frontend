@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import type {CreditHistorySearch} from '@/lib/credit-history';
 import { CreditBalanceSummary } from '@/components/credits/credit-balance-summary'
+import { PlanPurchasesSection } from '@/components/credits/plan-purchases-section'
 import {
   CREDIT_HISTORY_PAGE_SIZE,
   CreditHistorySection,
@@ -57,8 +58,7 @@ function CreditsPage() {
         onSearchChange={(next) => navigate({ search: next, replace: true })}
       />
 
-      {/* Ticket 06: the Purchases section (Plan purchases with status badges) goes here,
-          rendered only when the user has Plan purchases. */}
+      <PlanPurchasesSection />
     </div>
   )
 }

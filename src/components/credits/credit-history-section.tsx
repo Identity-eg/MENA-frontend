@@ -185,6 +185,7 @@ function NoCreditsYet() {
     >
       <Link
         to="/pricing"
+        search={{ returnTo: '/credits' }}
         className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
       >
         See plans
