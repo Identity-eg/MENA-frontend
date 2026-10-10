@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { Building2, ExternalLink, Search, Unlock } from 'lucide-react'
+import { Building2, Coins, ExternalLink, Search, Unlock } from 'lucide-react'
 
 import type { TUnlock } from '@/types/unlock'
 import { PageHeader } from '@/components/page-header'
@@ -18,6 +18,7 @@ import {
   getUnlocksQueryOptions,
   useGetUnlocks,
 } from '@/apis/unlocks/get-unlocks'
+import { formatCredits } from '@/lib/credits'
 import { describeUnlockedPerson } from '@/lib/unlocked-value'
 
 export const Route = createFileRoute('/_protected/unlocks/')({
@@ -28,6 +29,8 @@ export const Route = createFileRoute('/_protected/unlocks/')({
     return {}
   },
 })
+
+const unlockedOn = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' })
 
 function UnlockedValue({ unlock }: { unlock: TUnlock }) {
   const value = unlock.value
@@ -64,7 +67,7 @@ function UnlockedValue({ unlock }: { unlock: TUnlock }) {
 
 function UnlocksPage() {
   const { data } = useGetUnlocks()
-  const unlocks = data?.data ?? []
+  const unlocks = data.data
 
   return (
     <div className="space-y-8">
@@ -128,6 +131,25 @@ function UnlocksPage() {
                   </span>
                   <UnlockedValue unlock={unlock} />
                 </div>
+                <dl className="flex items-center justify-between gap-3 border-t pt-3 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <dt className="sr-only">Credits charged</dt>
+                    <Coins className="h-3.5 w-3.5 text-primary" aria-hidden />
+                    <dd className="font-medium text-foreground tabular-nums">
+                      {unlock.creditsCharged > 0
+                        ? formatCredits(unlock.creditsCharged)
+                        : 'No Credits charged'}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="sr-only">Unlocked on</dt>
+                    <dd>
+                      <time dateTime={unlock.createdAt}>
+                        {unlockedOn.format(new Date(unlock.createdAt))}
+                      </time>
+                    </dd>
+                  </div>
+                </dl>
               </CardContent>
               <CardFooter className="bg-transparent p-2">
                 <Link
