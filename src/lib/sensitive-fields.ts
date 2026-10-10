@@ -32,3 +32,8 @@ export function unlockAllTotal(fields: Array<TSensitiveField>): number {
     .filter((field) => displayState(field) === 'locked')
     .reduce((sum, field) => sum + field.cost, 0)
 }
+
+/** Whether to offer "Unlock all remaining fields": only while at least two fields remain locked. */
+export function offersUnlockAll(fields: Array<TSensitiveField>): boolean {
+  return fields.filter((field) => displayState(field) === 'locked').length >= 2
+}

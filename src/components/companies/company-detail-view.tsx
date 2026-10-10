@@ -9,9 +9,11 @@ import { CompanyDetailPremiumLockedCard } from './company-detail-premium-locked-
 import { CompanyDetailProfileCard } from './company-detail-profile-card'
 import { CompanyDetailSidebar } from './company-detail-sidebar'
 import { CompanyDetailUnlockedFieldsCard } from './company-detail-unlocked-fields-card'
-import { UnlockFieldDialog } from './unlock-field-dialog'
+import { UnlockDialog } from './unlock-dialog'
 import { useCompanyDetailDerived } from './use-company-detail-derived'
+import type { UnlockTarget } from './unlock-dialog'
 import type { TSensitiveField } from '@/types/company'
+import { offersUnlockAll } from '@/lib/sensitive-fields'
 import { useGetCompany } from '@/apis/company/get-company'
 
 const routeApi = getRouteApi('/_protected/companies/$companyId')
@@ -24,7 +26,9 @@ export function CompanyDetailView() {
   const company = companyData.data
 
   const [selectedReports, setSelectedReports] = useState<Array<number>>([])
-  const [unlockTarget, setUnlockTarget] = useState<TSensitiveField | null>(null)
+  const [unlockTarget, setUnlockTarget] = useState<
+    { kind: 'field'; field: TSensitiveField } | { kind: 'all' } | null
+  >(null)
 
   const {
     publicFields,
@@ -34,6 +38,12 @@ export function CompanyDetailView() {
     managers,
     authSignatories,
   } = useCompanyDetailDerived(company)
+
+  // "Unlock all" reads the remaining fields and total live, so a refetch after a refusal shows them.
+  const dialogTarget: UnlockTarget | null =
+    unlockTarget?.kind === 'all'
+      ? { kind: 'all', fields: sensitiveFields.locked, total: unlockAllCost }
+      : unlockTarget
 
   const toggleReport = (reportId: number) => {
     setSelectedReports((prev) =>
@@ -60,7 +70,9 @@ export function CompanyDetailView() {
             lockedFields={sensitiveFields.locked}
             unavailableFields={sensitiveFields.unavailable}
             unlockAllCost={unlockAllCost}
-            onUnlockField={setUnlockTarget}
+            offerUnlockAll={offersUnlockAll(company.sensitiveFields)}
+            onUnlockField={(field) => setUnlockTarget({ kind: 'field', field })}
+            onUnlockAll={() => setUnlockTarget({ kind: 'all' })}
           />
 
           <CompanyDetailUnlockedFieldsCard fields={sensitiveFields.unlocked} />
@@ -92,9 +104,9 @@ export function CompanyDetailView() {
       </div>
 
       {/* Lives outside the locked card so it stays mounted when the field it unlocks moves to "Unlocked details". */}
-      <UnlockFieldDialog
+      <UnlockDialog
         companyId={id}
-        field={unlockTarget}
+        target={dialogTarget}
         onClose={() => setUnlockTarget(null)}
       />
     </div>

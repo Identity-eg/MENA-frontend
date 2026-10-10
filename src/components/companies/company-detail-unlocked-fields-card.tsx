@@ -2,7 +2,7 @@ import { CheckCircle2, Unlock } from 'lucide-react'
 import { memo } from 'react'
 
 import { getCompanyDetailFieldIcon } from './get-company-detail-field-icon'
-import { unlockedFieldElementId } from './unlock-field-dialog'
+import { unlockedFieldElementId } from './unlock-dialog'
 import type { TSensitiveField } from '@/types/company'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

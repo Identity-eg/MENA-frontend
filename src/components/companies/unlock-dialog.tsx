@@ -1,5 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
-import { AlertCircle, ArrowUpRight, Coins, Loader2, Lock } from 'lucide-react'
+import {
+  AlertCircle,
+  ArrowUpRight,
+  Coins,
+  Loader2,
+  Lock,
+  Sparkles,
+} from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -20,6 +27,7 @@ import {
 import { buttonVariants } from '@/components/ui/button'
 
 import { getCreditBalanceQueryOptions } from '@/apis/credits/get-credit-balance'
+import { useUnlockAllFields } from '@/apis/unlocks/unlock-all-fields'
 import { useUnlockField } from '@/apis/unlocks/unlock-field'
 import {
   balanceAfter,
@@ -30,10 +38,15 @@ import {
 import { readUnlockRefusal } from '@/lib/unlock-refusal'
 import { cn } from '@/lib/utils'
 
-type UnlockFieldDialogProps = {
+/** What the dialog unlocks: one locked field, or every remaining locked field at their summed cost. */
+export type UnlockTarget =
+  | { kind: 'field'; field: TSensitiveField }
+  | { kind: 'all'; fields: Array<TSensitiveField>; total: number }
+
+type UnlockDialogProps = {
   companyId: number
-  /** The locked field being unlocked; null closes the dialog. */
-  field: TSensitiveField | null
+  /** null closes the dialog. */
+  target: UnlockTarget | null
   onClose: () => void
 }
 
@@ -41,31 +54,38 @@ type UnlockFieldDialogProps = {
 export const unlockedFieldElementId = (key: TSensitiveField['key']) =>
   `unlocked-field-${key}`
 
+const targetKey = (target: UnlockTarget | null) =>
+  target === null ? null : target.kind === 'all' ? 'all' : target.field.key
+
+const targetCost = (target: UnlockTarget | null) =>
+  target === null ? 0 : target.kind === 'all' ? target.total : target.field.cost
+
 /**
- * Confirms spending Credits on one Sensitive field: cost, balance now and balance after.
- * Without enough Credits the confirm action is replaced by the shortfall and a link to the
- * Credit plans. A Field cost that changed meanwhile is shown in place to confirm again.
+ * Confirms spending Credits on one Sensitive field, or on all remaining ones in one go:
+ * cost, balance now and balance after. Without enough Credits the confirm action is replaced
+ * by the shortfall and a link to the Credit plans. A cost that changed meanwhile is shown in
+ * place to confirm again.
  */
-export function UnlockFieldDialog({
+export function UnlockDialog({
   companyId,
-  field,
+  target,
   onClose,
-}: UnlockFieldDialogProps) {
-  // `shown` keeps the last field on screen while the dialog animates closed.
-  const [shown, setShown] = useState(field)
-  const [cost, setCost] = useState(field?.cost ?? 0)
+}: UnlockDialogProps) {
+  // `shown` keeps the last target on screen while the dialog animates closed.
+  const [shown, setShown] = useState(target)
+  const [cost, setCost] = useState(targetCost(target))
   const [refusal, setRefusal] = useState<UnlockRefusal | null>(null)
   const [unlockedKey, setUnlockedKey] = useState<string | null>(null)
   const [openedKey, setOpenedKey] = useState<string | null>(null)
 
-  // Each opening starts afresh at the displayed Field cost. A field refetched while the dialog
-  // is open (e.g. after a refusal) keeps the dialog's state.
-  const fieldKey = field?.key ?? null
-  if (fieldKey !== openedKey) {
-    setOpenedKey(fieldKey)
-    if (field) {
-      setShown(field)
-      setCost(field.cost)
+  // Each opening starts afresh at the displayed cost. A target refetched while the dialog is
+  // open (e.g. after a refusal) keeps the dialog's state.
+  const key = targetKey(target)
+  if (key !== openedKey) {
+    setOpenedKey(key)
+    if (target) {
+      setShown(target)
+      setCost(targetCost(target))
       setRefusal(null)
       setUnlockedKey(null)
     }
@@ -73,9 +93,11 @@ export function UnlockFieldDialog({
 
   const balanceQuery = useQuery({
     ...getCreditBalanceQueryOptions(),
-    enabled: field !== null,
+    enabled: target !== null,
   })
-  const { mutate, isPending, reset } = useUnlockField()
+  const unlockOne = useUnlockField()
+  const unlockAll = useUnlockAllFields()
+  const isPending = unlockOne.isPending || unlockAll.isPending
 
   const serverBalance =
     refusal?.kind === 'insufficient'
@@ -92,37 +114,59 @@ export function UnlockFieldDialog({
     (serverBalance !== undefined && !canAfford(serverBalance, cost))
 
   if (!shown) return null
-  const FieldIcon = getCompanyDetailFieldIcon(shown.key)
+  const all = shown.kind === 'all'
+  const Icon = all ? Sparkles : getCompanyDetailFieldIcon(shown.field.key)
+
+  const onRefused = (error: unknown) => {
+    const reason = readUnlockRefusal(error)
+    if (reason.kind === 'costChanged') setCost(reason.current)
+    setRefusal(reason)
+  }
 
   const confirm = () => {
     setRefusal(null)
-    mutate(
-      { companyId, fieldKey: shown.key, expectedCost: cost },
+    if (shown.kind === 'field') {
+      unlockOne.mutate(
+        { companyId, fieldKey: shown.field.key, expectedCost: cost },
+        {
+          onSuccess: ({ data }) => {
+            setUnlockedKey(data.field.key)
+            toast.success(
+              data.charged > 0
+                ? `${data.field.label} unlocked for ${formatCredits(data.charged)}`
+                : `${data.field.label} is already unlocked`,
+            )
+            onClose()
+          },
+          onError: onRefused,
+        },
+      )
+      return
+    }
+    unlockAll.mutate(
+      { companyId, expectedTotal: cost },
       {
         onSuccess: ({ data }) => {
-          setUnlockedKey(data.field.key)
+          setUnlockedKey(data.fields[0]?.key ?? null)
           toast.success(
             data.charged > 0
-              ? `${data.field.label} unlocked for ${formatCredits(data.charged)}`
-              : `${data.field.label} is already unlocked`,
+              ? `${fieldCount(data.fields.length)} unlocked for ${formatCredits(data.charged)}`
+              : 'Every field is already unlocked',
           )
           onClose()
         },
-        onError: (error) => {
-          const reason = readUnlockRefusal(error)
-          if (reason.kind === 'costChanged') setCost(reason.currentCost)
-          setRefusal(reason)
-        },
+        onError: onRefused,
       },
     )
   }
 
   return (
     <AlertDialog
-      open={field !== null}
+      open={target !== null}
       onOpenChange={(open) => {
         if (!open && !isPending) {
-          reset()
+          unlockOne.reset()
+          unlockAll.reset()
           onClose()
         }
       }}
@@ -139,20 +183,29 @@ export function UnlockFieldDialog({
       >
         <AlertDialogHeader className="place-items-start text-start">
           <div className="mb-1 flex size-11 items-center justify-center rounded-xl bg-primary/12 text-primary ring-1 ring-primary/15 ring-inset">
-            <FieldIcon className="size-5" strokeWidth={1.75} aria-hidden />
+            <Icon className="size-5" strokeWidth={1.75} aria-hidden />
           </div>
           <AlertDialogTitle className="text-lg font-semibold tracking-tight">
-            Unlock {shown.label}?
+            {all
+              ? `Unlock all ${shown.fields.length} remaining fields?`
+              : `Unlock ${shown.field.label}?`}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-start">
-            The current value appears right away and the Unlock is yours for
-            good. Opening it again is free.
+            {all
+              ? 'One payment for every field still locked, at the sum of their Field costs with no discount. If any part fails, nothing is charged.'
+              : 'The current value appears right away and the Unlock is yours for good. Opening it again is free.'}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <dl className="rounded-xl bg-muted/50 p-1 ring-1 ring-border/70 ring-inset">
           <div className="space-y-0 rounded-lg bg-card px-4 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] dark:shadow-none">
-            <SummaryRow label="Field cost">
+            {all &&
+              shown.fields.map((field) => (
+                <SummaryRow key={field.key} label={field.label} muted>
+                  {formatCredits(field.cost)}
+                </SummaryRow>
+              ))}
+            <SummaryRow label={all ? 'Total' : 'Field cost'} emphasis={all}>
               <span className="inline-flex items-center gap-1.5">
                 <Coins
                   className="size-3.5 text-primary"
@@ -187,8 +240,9 @@ export function UnlockFieldDialog({
 
         {refusal?.kind === 'costChanged' && (
           <InlineNotice>
-            Price changed to {formatCredits(refusal.currentCost)}. Confirm again
-            to unlock at the new cost.
+            {all ? 'The total' : 'Price'} changed to{' '}
+            {formatCredits(refusal.current)}. Confirm again to unlock at the new
+            {all ? ' total' : ' cost'}.
           </InlineNotice>
         )}
         {refusal?.kind === 'other' && (
@@ -217,8 +271,10 @@ export function UnlockFieldDialog({
                   You need {formatCredits(short)} more
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Nothing was charged and the field stays locked. Add Credits
-                  with a Credit plan, then come back to unlock it.
+                  Nothing was charged and{' '}
+                  {all ? 'the fields stay locked' : 'the field stays locked'}.
+                  Add Credits with a Credit plan, then come back to unlock{' '}
+                  {all ? 'them' : 'it'}.
                 </p>
               </div>
             </div>
@@ -257,7 +313,9 @@ export function UnlockFieldDialog({
               {isPending && (
                 <Loader2 className="size-4 animate-spin" aria-hidden />
               )}
-              {isPending ? 'Unlocking' : `Unlock for ${formatCredits(cost)}`}
+              {isPending
+                ? 'Unlocking'
+                : `Unlock${all ? ' all' : ''} for ${formatCredits(cost)}`}
             </AlertDialogAction>
           )}
         </AlertDialogFooter>
@@ -266,19 +324,27 @@ export function UnlockFieldDialog({
   )
 }
 
+/** "1 field", "3 fields". */
+function fieldCount(count: number) {
+  return `${count} ${count === 1 ? 'field' : 'fields'}`
+}
+
 function SummaryRow({
   label,
   emphasis = false,
+  muted = false,
   children,
 }: {
   label: string
   emphasis?: boolean
+  muted?: boolean
   children: ReactNode
 }) {
   return (
     <div
       className={cn(
         'flex items-center justify-between gap-4 py-2.5 text-sm',
+        muted && 'py-1.5 text-xs',
         emphasis && 'border-t border-dashed border-border',
       )}
     >

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   displayState,
   groupSensitiveFields,
+  offersUnlockAll,
   unlockAllTotal,
 } from './sensitive-fields'
 import type { TSensitiveField } from '@/types/company'
@@ -63,5 +64,17 @@ describe('unlockAllTotal', () => {
 
   it('is 0 when nothing is left to unlock', () => {
     expect(unlockAllTotal([])).toBe(0)
+  })
+})
+
+describe('offersUnlockAll', () => {
+  it('offers "Unlock all" only while at least two fields remain locked', () => {
+    const locked = field({ key: 'registrationNumber', cost: 50 })
+    const alsoLocked = field({ key: 'partners', cost: 100 })
+    const unlocked = field({ key: 'managers', state: 'unlocked', value: [] })
+    const unavailable = field({ key: 'authSignatories', state: 'unavailable' })
+    expect(offersUnlockAll([locked, alsoLocked, unlocked])).toBe(true)
+    expect(offersUnlockAll([locked, unlocked, unavailable])).toBe(false)
+    expect(offersUnlockAll([])).toBe(false)
   })
 })
