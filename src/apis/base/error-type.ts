@@ -12,4 +12,6 @@ export type TFrontendErrorResponse = {
   status?: number
   /** Business error code from the backend (e.g. NOT_PAYABLE), when present. */
   code?: string
+  /** Extras of a business error (e.g. `{ required, balance, shortfall }`), when present. */
+  details?: Record<string, unknown>
 }

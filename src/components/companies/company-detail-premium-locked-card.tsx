@@ -14,20 +14,22 @@ type CompanyDetailPremiumLockedCardProps = {
   lockedFields: Array<TSensitiveField>
   unavailableFields: Array<TSensitiveField>
   unlockAllCost: number
+  onUnlockField: (field: TSensitiveField) => void
 }
 
-const UNLOCK_SOON_ID = 'sensitive-fields-unlock-soon'
+const UNLOCK_ALL_SOON_ID = 'sensitive-fields-unlock-all-soon'
 
 /**
  * Sensitive fields the viewer can't see yet: locked ones with their Field cost in Credits,
  * and ones that can't be unlocked at the moment. Labels and costs come from the server.
- * Unlocking with Credits is not active yet, so the Unlock actions are shown disabled.
+ * Unlock opens the confirmation dialog; "Unlock all" is not active yet and shown disabled.
  */
 export const CompanyDetailPremiumLockedCard = memo(
   function CompanyDetailPremiumLockedCard({
     lockedFields,
     unavailableFields,
     unlockAllCost,
+    onUnlockField,
   }: CompanyDetailPremiumLockedCardProps) {
     const fields = [...lockedFields, ...unavailableFields]
     if (fields.length === 0) return null
@@ -110,9 +112,9 @@ export const CompanyDetailPremiumLockedCard = memo(
                     {!unavailable && (
                       <Button
                         size="lg"
-                        className="min-h-11 shrink-0"
-                        disabled
-                        aria-describedby={UNLOCK_SOON_ID}
+                        className="min-h-11 shrink-0 active:scale-[0.98]"
+                        aria-label={`Unlock ${field.label} for ${formatCredits(field.cost)}`}
+                        onClick={() => onUnlockField(field)}
                       >
                         Unlock
                       </Button>
@@ -147,18 +149,18 @@ export const CompanyDetailPremiumLockedCard = memo(
                 size="lg"
                 className="min-h-11"
                 disabled
-                aria-describedby={UNLOCK_SOON_ID}
+                aria-describedby={UNLOCK_ALL_SOON_ID}
               >
                 Unlock all
                 <ChevronRight className="h-4 w-4" aria-hidden />
               </Button>
+              <p
+                id={UNLOCK_ALL_SOON_ID}
+                className="basis-full text-xs text-muted-foreground"
+              >
+                Unlocking all fields in one step is coming soon.
+              </p>
             </div>
-          )}
-
-          {lockedFields.length > 0 && (
-            <p id={UNLOCK_SOON_ID} className="text-xs text-muted-foreground">
-              Unlocking with Credits is coming soon.
-            </p>
           )}
         </CardContent>
       </Card>

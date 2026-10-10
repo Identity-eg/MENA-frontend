@@ -9,7 +9,9 @@ import { CompanyDetailPremiumLockedCard } from './company-detail-premium-locked-
 import { CompanyDetailProfileCard } from './company-detail-profile-card'
 import { CompanyDetailSidebar } from './company-detail-sidebar'
 import { CompanyDetailUnlockedFieldsCard } from './company-detail-unlocked-fields-card'
+import { UnlockFieldDialog } from './unlock-field-dialog'
 import { useCompanyDetailDerived } from './use-company-detail-derived'
+import type { TSensitiveField } from '@/types/company'
 import { useGetCompany } from '@/apis/company/get-company'
 
 const routeApi = getRouteApi('/_protected/companies/$companyId')
@@ -22,6 +24,7 @@ export function CompanyDetailView() {
   const company = companyData.data
 
   const [selectedReports, setSelectedReports] = useState<Array<number>>([])
+  const [unlockTarget, setUnlockTarget] = useState<TSensitiveField | null>(null)
 
   const {
     publicFields,
@@ -57,6 +60,7 @@ export function CompanyDetailView() {
             lockedFields={sensitiveFields.locked}
             unavailableFields={sensitiveFields.unavailable}
             unlockAllCost={unlockAllCost}
+            onUnlockField={setUnlockTarget}
           />
 
           <CompanyDetailUnlockedFieldsCard fields={sensitiveFields.unlocked} />
@@ -86,6 +90,13 @@ export function CompanyDetailView() {
           lockedFieldCount={sensitiveFields.locked.length}
         />
       </div>
+
+      {/* Lives outside the locked card so it stays mounted when the field it unlocks moves to "Unlocked details". */}
+      <UnlockFieldDialog
+        companyId={id}
+        field={unlockTarget}
+        onClose={() => setUnlockTarget(null)}
+      />
     </div>
   )
 }
