@@ -1,8 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { LogOut, User as UserIcon } from 'lucide-react'
 
-import { useLogout } from '@/hooks/use-logout'
-import type { TUser } from '@/types/user'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
+import type { TUser } from '@/types/user'
+import { useLogout } from '@/hooks/use-logout'
 
 interface UserNavProps {
   user: TUser
@@ -28,13 +28,20 @@ export function UserNav({ user }: UserNavProps) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-3 cursor-pointer ring-offset-background transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+      <DropdownMenuTrigger
+        aria-label={`Account menu for ${user.name}`}
+        className="flex min-w-0 items-center gap-3 cursor-pointer ring-offset-background transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
           {initials}
         </div>
-        <div className="flex flex-col items-start">
-          <p className="text-sm font-medium leading-none">{user.name}</p>
-          <p className="text-xs text-muted-foreground">{user.email}</p>
+        {/* Below md the avatar alone opens the menu; name and email would crowd the Credit balance. */}
+        <div className="hidden min-w-0 flex-col items-start md:flex">
+          <p className="max-w-48 truncate text-sm font-medium leading-none">
+            {user.name}
+          </p>
+          <p className="max-w-48 truncate text-xs text-muted-foreground">
+            {user.email}
+          </p>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

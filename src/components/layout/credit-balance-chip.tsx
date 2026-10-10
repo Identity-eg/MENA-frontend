@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router'
 import { Coins } from 'lucide-react'
 
 import { getCreditBalanceQueryOptions } from '@/apis/credits/get-credit-balance'
-import { formatCredits } from '@/lib/credits'
+import { formatCreditCount, formatCredits } from '@/lib/credits'
 import { cn } from '@/lib/utils'
 
 /**
@@ -20,11 +20,11 @@ export function CreditBalanceChip() {
     <>
       <Link
         to="/credits"
-        className="group inline-flex h-11 items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="group inline-flex h-11 shrink-0 items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <span
           className={cn(
-            'inline-flex h-9 items-center gap-2 rounded-full bg-primary/8 pr-3.5 pl-1.5 text-sm font-medium text-foreground ring-1 ring-primary/15 ring-inset',
+            'inline-flex h-9 items-center gap-2 rounded-full bg-primary/8 pr-3 pl-1.5 text-sm font-medium whitespace-nowrap sm:pr-3.5 text-foreground ring-1 ring-primary/15 ring-inset',
             'transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:bg-primary/12 group-active:scale-[0.97]',
           )}
         >
@@ -35,7 +35,7 @@ export function CreditBalanceChip() {
             <>
               <span className="sr-only">Credits</span>
               <span
-                className="h-3.5 w-20 animate-pulse rounded-full bg-primary/15"
+                className="h-3.5 w-10 animate-pulse rounded-full bg-primary/15 sm:w-20"
                 aria-hidden
               />
             </>
@@ -44,7 +44,11 @@ export function CreditBalanceChip() {
           ) : (
             <span className="tabular-nums">
               <span className="sr-only">Credit balance: </span>
-              {label}
+              {/* Phones: the number only, the coin says "Credits" (the full label stays for screen readers). */}
+              <span className="sm:hidden" aria-hidden>
+                {formatCreditCount(balance!)}
+              </span>
+              <span className="sr-only sm:not-sr-only">{label}</span>
             </span>
           )}
         </span>

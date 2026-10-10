@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { balanceAfter, canAfford, formatCredits, shortfall } from './credits'
+import {
+  balanceAfter,
+  canAfford,
+  formatCreditCount,
+  formatCredits,
+  shortfall,
+} from './credits'
 
 describe('formatCredits', () => {
   it('groups thousands and pluralises', () => {
@@ -11,6 +17,13 @@ describe('formatCredits', () => {
 
   it('uses the singular for exactly one Credit', () => {
     expect(formatCredits(1)).toBe('1 credit')
+  })
+})
+
+describe('formatCreditCount', () => {
+  it('is the bare grouped number, for tight spaces where an icon says "Credits"', () => {
+    expect(formatCreditCount(12500)).toBe('12,500')
+    expect(formatCreditCount(1)).toBe('1')
   })
 })
 

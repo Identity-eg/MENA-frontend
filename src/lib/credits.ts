@@ -4,7 +4,12 @@ const creditNumber = new Intl.NumberFormat('en-US', {
 
 /** "1,000 credits", "1 credit". */
 export function formatCredits(amount: number): string {
-  return `${creditNumber.format(amount)} ${amount === 1 ? 'credit' : 'credits'}`
+  return `${formatCreditCount(amount)} ${amount === 1 ? 'credit' : 'credits'}`
+}
+
+/** "1,000": the bare number, where an icon or label already says "Credits". */
+export function formatCreditCount(amount: number): string {
+  return creditNumber.format(amount)
 }
 
 /** Whether a Credit balance covers a cost. */
