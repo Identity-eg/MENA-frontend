@@ -141,13 +141,13 @@ export const CompanyDetailPremiumLockedCard = memo(
                     fields.length === 1 && 'sm:col-span-2',
                   )}
                 >
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-4">
                     <div className="flex min-w-0 flex-1 items-start gap-3">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors group-hover:bg-primary/10 group-hover:text-primary">
                         <FieldIcon className="h-4 w-4" aria-hidden />
                       </div>
                       <div className="min-w-0 flex-1 space-y-1">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        <span className="block text-xs font-semibold uppercase tracking-wider wrap-break-word text-muted-foreground">
                           {field.label}
                         </span>
                         {unavailable ? (
@@ -156,7 +156,7 @@ export const CompanyDetailPremiumLockedCard = memo(
                             Not available
                           </p>
                         ) : (
-                          <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground tabular-nums">
+                          <p className="flex items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-foreground tabular-nums">
                             <Coins
                               className="h-3.5 w-3.5 text-primary"
                               aria-hidden
@@ -165,6 +165,15 @@ export const CompanyDetailPremiumLockedCard = memo(
                           </p>
                         )}
                       </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      {unavailable ? (
+                        <span>This field can&rsquo;t be unlocked right now</span>
+                      ) : (
+                        <Coverage balance={balance} cost={field.cost} />
+                      )}
                     </div>
                     {!unavailable && (
                       <Button
@@ -176,13 +185,6 @@ export const CompanyDetailPremiumLockedCard = memo(
                         <span className="sr-only"> {field.label}</span> ·{' '}
                         {formatCredits(field.cost)}
                       </Button>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    {unavailable ? (
-                      <span>This field can&rsquo;t be unlocked right now</span>
-                    ) : (
-                      <Coverage balance={balance} cost={field.cost} />
                     )}
                   </div>
                 </li>
