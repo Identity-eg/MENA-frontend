@@ -81,11 +81,17 @@ export function checkoutReturnState(
   )
 }
 
-/** How long until the return page asks again (a `refetchInterval`), or false once there's no point. */
+/**
+ * How long until the return page asks again (a `refetchInterval`), or false once there's no point:
+ * the webhook decided the purchase, the wait timed out, or the purchase couldn't be read (`failed`;
+ * polling on would swap the error for the spinner again).
+ */
 export function checkoutPollInterval(
   status: TPlanPurchaseStatus | undefined,
   elapsedMs: number,
+  { failed = false }: { failed?: boolean } = {},
 ): number | false {
+  if (failed) return false
   if (status !== undefined && PURCHASE_STATUSES[status].returnState !== null)
     return false
   return elapsedMs >= CHECKOUT_TIMEOUT_MS ? false : CHECKOUT_POLL_INTERVAL_MS

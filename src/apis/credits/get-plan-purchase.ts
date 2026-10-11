@@ -35,6 +35,10 @@ export const useGetPlanPurchase = (
         query.state.data?.data.status,
         Math.max(query.state.dataUpdatedAt, query.state.errorUpdatedAt) -
           startedAt,
+        { failed: query.state.status === 'error' },
       ),
+    // A purchase that isn't on this account won't appear by asking again.
+    retry: (failureCount, error: { status?: number }) =>
+      error.status !== 404 && failureCount < 3,
     refetchIntervalInBackground: true,
   })

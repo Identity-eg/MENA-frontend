@@ -91,6 +91,11 @@ describe('checkoutPollInterval', () => {
     expect(checkoutPollInterval('FAILED', 0)).toBe(false)
     expect(checkoutPollInterval('EXPIRED', 0)).toBe(false)
   })
+
+  it('stops once the purchase could not be read, so the error stays on screen', () => {
+    expect(checkoutPollInterval(undefined, 0, { failed: true })).toBe(false)
+    expect(checkoutPollInterval('PENDING', 0, { failed: true })).toBe(false)
+  })
 })
 
 describe('describePurchaseStatus', () => {
