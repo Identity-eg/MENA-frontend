@@ -51,40 +51,50 @@ export const CHECKOUT_TIMEOUT_MS = 60_000
 export type CheckoutReturnState =
   'processing' | 'paid' | 'failed' | 'expired' | 'timedOut'
 
+export type PurchaseStatusDisplay = {
+  label: string
+  tone: 'pending' | 'success' | 'failure' | 'muted'
+}
+
+/** Each Plan purchase status: how customers read it, and what the checkout return page shows for it. */
+const PURCHASE_STATUSES: Record<
+  TPlanPurchaseStatus,
+  PurchaseStatusDisplay & {
+    /** null while the webhook hasn't decided the purchase yet. */
+    returnState: Exclude<CheckoutReturnState, 'processing' | 'timedOut'> | null
+  }
+> = {
+  PENDING: { label: 'Processing', tone: 'pending', returnState: null },
+  PAID: { label: 'Paid', tone: 'success', returnState: 'paid' },
+  FAILED: { label: 'Failed', tone: 'failure', returnState: 'failed' },
+  EXPIRED: { label: 'Expired', tone: 'muted', returnState: 'expired' },
+}
+
 /** What the checkout return page shows for a Plan purchase status after waiting `elapsedMs`. */
 export function checkoutReturnState(
   status: TPlanPurchaseStatus,
   elapsedMs: number,
 ): CheckoutReturnState {
-  switch (status) {
-    case 'PAID':
-      return 'paid'
-    case 'FAILED':
-      return 'failed'
-    case 'EXPIRED':
-      return 'expired'
-    case 'PENDING':
-      return elapsedMs >= CHECKOUT_TIMEOUT_MS ? 'timedOut' : 'processing'
-  }
+  return (
+    PURCHASE_STATUSES[status].returnState ??
+    (elapsedMs >= CHECKOUT_TIMEOUT_MS ? 'timedOut' : 'processing')
+  )
 }
 
-export type PurchaseStatusDisplay = {
-  label: string
-  tone: 'pending' | 'success' | 'failure' | 'muted'
+/** How long until the return page asks again (a `refetchInterval`), or false once there's no point. */
+export function checkoutPollInterval(
+  status: TPlanPurchaseStatus | undefined,
+  elapsedMs: number,
+): number | false {
+  if (status !== undefined && PURCHASE_STATUSES[status].returnState !== null)
+    return false
+  return elapsedMs >= CHECKOUT_TIMEOUT_MS ? false : CHECKOUT_POLL_INTERVAL_MS
 }
 
 /** A Plan purchase status as customers read it. */
 export function describePurchaseStatus(
   status: TPlanPurchaseStatus,
 ): PurchaseStatusDisplay {
-  switch (status) {
-    case 'PENDING':
-      return { label: 'Processing', tone: 'pending' }
-    case 'PAID':
-      return { label: 'Paid', tone: 'success' }
-    case 'FAILED':
-      return { label: 'Failed', tone: 'failure' }
-    case 'EXPIRED':
-      return { label: 'Expired', tone: 'muted' }
-  }
+  const { label, tone } = PURCHASE_STATUSES[status]
+  return { label, tone }
 }

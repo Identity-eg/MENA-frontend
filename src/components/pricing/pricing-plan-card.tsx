@@ -98,7 +98,7 @@ export function PricingPlanCard({
           <div className="flex items-baseline justify-between gap-3">
             <dt className="text-muted-foreground">One-time price</dt>
             <dd className="text-lg font-semibold text-foreground tabular-nums">
-              {formatPlanPrice(plan.priceCents)}
+              {formatPlanPrice(plan.priceCents, plan.currency)}
             </dd>
           </div>
           {value && (

@@ -1,13 +1,11 @@
-const usd = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
-})
-
-/** A plan price in cents as USD: "$29", "$79.50". */
-export function formatPlanPrice(priceCents: number): string {
-  const text = usd.format(priceCents / 100)
+/** A plan price in cents, in the currency the plan is sold in (from the server): "$29", "$79.50". */
+export function formatPlanPrice(priceCents: number, currency: string): string {
+  const text = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency.toUpperCase(),
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(priceCents / 100)
   // Intl drops a trailing zero ("$79.5"); prices always show whole cents.
   return /\.\d$/.test(text) ? `${text}0` : text
 }

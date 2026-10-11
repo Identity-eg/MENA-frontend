@@ -3,10 +3,11 @@ import { Link } from '@tanstack/react-router'
 import { AlertCircle, ArrowUpRight, Loader2 } from 'lucide-react'
 
 import type {ReturnTarget} from '@/lib/plan-checkout';
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
 import { getCreditPlansQueryOptions } from '@/apis/credits/get-credit-plans'
-import { useStartPlanCheckout } from '@/apis/credits/start-plan-checkout'
+import { usePlanCheckout } from '@/apis/credits/start-plan-checkout'
 import { formatPlanPrice, smallestPlanCovering } from '@/lib/credit-plans'
 import { formatCredits } from '@/lib/credits'
 import {  returnToPath } from '@/lib/plan-checkout'
@@ -28,9 +29,8 @@ export function InlinePlanOptions({
   returnTo,
 }: InlinePlanOptionsProps) {
   const plans = useQuery(getCreditPlansQueryOptions())
-  const checkout = useStartPlanCheckout()
-  const buyingPlanId =
-    checkout.isPending || checkout.isSuccess ? checkout.variables.planId : null
+  const checkout = usePlanCheckout(returnTo)
+  const buyingPlanId = checkout.buyingPlanId
 
   const allPlansLink = (
     <Link
@@ -82,13 +82,13 @@ export function InlinePlanOptions({
 
   return (
     <div className="flex flex-col gap-2">
-      {checkout.isError && (
+      {checkout.error && (
         <p
           role="alert"
           className="flex items-start gap-2 text-xs text-destructive"
         >
           <AlertCircle className="mt-px size-3.5 shrink-0" aria-hidden />
-          {checkout.error.code === 'PLAN_INACTIVE'
+          {checkout.error === 'planInactive'
             ? 'That plan is no longer for sale. Pick another one.'
             : "We couldn't open checkout, and nothing was charged. Please try again."}
         </p>
@@ -98,6 +98,7 @@ export function InlinePlanOptions({
           const isSuggested = plan.id === suggested
           const covers = plan.credits >= shortfall
           const buying = buyingPlanId === plan.id
+          const price = formatPlanPrice(plan.priceCents, plan.currency)
           return (
             <li
               key={plan.id}
@@ -126,7 +127,7 @@ export function InlinePlanOptions({
                   )}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {plan.name}, {formatPlanPrice(plan.priceCents)} once
+                  {plan.name}, {price} once
                   {!covers && (
                     <span className="sr-only">
                       , not enough on its own for this Unlock
@@ -134,25 +135,15 @@ export function InlinePlanOptions({
                   )}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() =>
-                  checkout.mutate(
-                    { planId: plan.id, returnTo },
-                    {
-                      onError: (error) => {
-                        if (error.code === 'PLAN_INACTIVE') void plans.refetch()
-                      },
-                    },
-                  )
-                }
+              <Button
+                variant={isSuggested ? 'default' : 'secondary'}
+                size="lg"
+                onClick={() => checkout.buy(plan.id)}
                 disabled={buyingPlanId !== null}
-                aria-label={`Buy ${plan.name}, ${formatCredits(plan.credits)} for ${formatPlanPrice(plan.priceCents)}`}
+                aria-label={`Buy ${plan.name}, ${formatCredits(plan.credits)} for ${price}`}
                 className={cn(
-                  'inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-lg px-4 text-sm font-medium outline-none transition-[background-color,transform] duration-200 focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60',
-                  isSuggested
-                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                    : 'bg-muted text-foreground hover:bg-muted/70',
+                  'min-h-11 gap-1.5 px-4 active:scale-[0.98]',
+                  isSuggested && 'hover:bg-primary/90',
                 )}
               >
                 {buying && (
@@ -161,8 +152,8 @@ export function InlinePlanOptions({
                     aria-hidden
                   />
                 )}
-                {buying ? 'Opening' : `Buy ${formatPlanPrice(plan.priceCents)}`}
-              </button>
+                {buying ? 'Opening' : `Buy ${price}`}
+              </Button>
             </li>
           )
         })}

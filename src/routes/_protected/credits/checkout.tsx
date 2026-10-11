@@ -17,7 +17,7 @@ import type {ReactNode} from 'react';
 
 import type { TPlanPurchase } from '@/types/credits'
 import type {ReturnTarget} from '@/lib/plan-checkout';
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
 import { getCreditBalanceQueryOptions } from '@/apis/credits/get-credit-balance'
@@ -25,8 +25,6 @@ import { useGetPlanPurchase } from '@/apis/credits/get-plan-purchase'
 import { formatPlanPrice } from '@/lib/credit-plans'
 import { formatCredits } from '@/lib/credits'
 import {
-  CHECKOUT_POLL_INTERVAL_MS,
-  CHECKOUT_TIMEOUT_MS,
   
   checkoutReturnState,
   parseReturnTo,
@@ -113,33 +111,14 @@ function PaymentProgress({
 }) {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const [timedOut, setTimedOut] = useState(false)
-  const [attempt, setAttempt] = useState(0)
+  // When this round of waiting began; "Check again" starts a new one.
+  const [startedAt, setStartedAt] = useState(() => Date.now())
 
-  useEffect(() => {
-    setTimedOut(false)
-    const timer = window.setTimeout(
-      () => setTimedOut(true),
-      CHECKOUT_TIMEOUT_MS,
-    )
-    return () => window.clearTimeout(timer)
-  }, [attempt])
-
-  const query = useGetPlanPurchase(purchaseId, {
-    poll: !timedOut,
-    pollMs: CHECKOUT_POLL_INTERVAL_MS,
-  })
+  const query = useGetPlanPurchase(purchaseId, { startedAt })
   const purchase = query.data?.data
   const state = purchase
-    ? checkoutReturnState(purchase.status, timedOut ? CHECKOUT_TIMEOUT_MS : 0)
+    ? checkoutReturnState(purchase.status, query.dataUpdatedAt - startedAt)
     : null
-
-  // Stop polling as soon as the purchase is decided.
-  const settled =
-    state !== null && state !== 'processing' && state !== 'timedOut'
-  useEffect(() => {
-    if (settled) setTimedOut(true)
-  }, [settled])
 
   const announced = useRef(false)
   useEffect(() => {
@@ -174,13 +153,13 @@ function PaymentProgress({
         actions={
           <>
             {query.error.status !== 404 && (
-              <button
-                type="button"
+              <Button
+                size="lg"
+                className="min-h-11"
                 onClick={() => void query.refetch()}
-                className={cn(buttonVariants({ size: 'lg' }), 'min-h-11')}
               >
                 Try again
-              </button>
+              </Button>
             )}
             <CreditsLink primary={query.error.status === 404} />
           </>
@@ -219,16 +198,17 @@ function PaymentProgress({
         actions={
           <>
             <CreditsLink primary />
-            <button
-              type="button"
-              onClick={() => setAttempt((n) => n + 1)}
-              className={cn(
-                buttonVariants({ variant: 'outline', size: 'lg' }),
-                'min-h-11',
-              )}
+            <Button
+              variant="outline"
+              size="lg"
+              className="min-h-11"
+              onClick={() => {
+                setStartedAt(Date.now())
+                void query.refetch()
+              }}
             >
               Check again
-            </button>
+            </Button>
           </>
         }
       />
@@ -397,7 +377,7 @@ function PurchaseSummary({ purchase }: { purchase: TPlanPurchase }) {
       </span>
       <span className="text-muted-foreground tabular-nums">
         {formatCredits(purchase.credits)} for{' '}
-        {formatPlanPrice(purchase.priceCents)}
+        {formatPlanPrice(purchase.priceCents, purchase.currency)}
       </span>
     </p>
   )

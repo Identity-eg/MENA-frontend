@@ -14,11 +14,15 @@ const plan = (id: number, priceCents: number, credits: number) => ({
 
 describe('formatPlanPrice', () => {
   it('shows whole-dollar prices without cents', () => {
-    expect(formatPlanPrice(2900)).toBe('$29')
-    expect(formatPlanPrice(19900)).toBe('$199')
+    expect(formatPlanPrice(2900, 'USD')).toBe('$29')
+    expect(formatPlanPrice(19900, 'USD')).toBe('$199')
   })
   it('keeps cents when there are some', () => {
-    expect(formatPlanPrice(7950)).toBe('$79.50')
+    expect(formatPlanPrice(7950, 'USD')).toBe('$79.50')
+  })
+  it('prices in the currency the plan is sold in', () => {
+    expect(formatPlanPrice(2900, 'EUR')).toBe('€29')
+    expect(formatPlanPrice(7950, 'eur')).toBe('€79.50')
   })
 })
 

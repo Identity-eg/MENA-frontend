@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { ArrowRight, Coins, Layers, LockOpen } from 'lucide-react'
 
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
 import { getFieldCostsQueryOptions } from '@/apis/credits/get-field-costs'
@@ -91,13 +92,14 @@ export function CreditsExplainer() {
               <span className="text-muted-foreground" role="alert">
                 Couldn&rsquo;t load Field costs.
               </span>
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="lg"
+                className="min-h-11 px-3 text-primary"
                 onClick={() => refetch()}
-                className="min-h-11 rounded-lg px-3 font-medium text-primary outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
               >
                 Try again
-              </button>
+              </Button>
             </div>
           ) : fieldCosts.length === 0 ? (
             <p className="px-4 py-3 text-sm text-muted-foreground">

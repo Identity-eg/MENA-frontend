@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  CHECKOUT_POLL_INTERVAL_MS,
   CHECKOUT_TIMEOUT_MS,
+  checkoutPollInterval,
   checkoutReturnState,
   checkoutReturnUrls,
   describePurchaseStatus,
@@ -72,6 +74,22 @@ describe('checkoutReturnState', () => {
     expect(checkoutReturnState('PAID', CHECKOUT_TIMEOUT_MS * 2)).toBe('paid')
     expect(checkoutReturnState('FAILED', 10)).toBe('failed')
     expect(checkoutReturnState('EXPIRED', 10)).toBe('expired')
+  })
+})
+
+describe('checkoutPollInterval', () => {
+  it('polls while the purchase is unknown or pending, until the timeout', () => {
+    expect(checkoutPollInterval(undefined, 0)).toBe(CHECKOUT_POLL_INTERVAL_MS)
+    expect(checkoutPollInterval('PENDING', CHECKOUT_TIMEOUT_MS - 1)).toBe(
+      CHECKOUT_POLL_INTERVAL_MS,
+    )
+    expect(checkoutPollInterval('PENDING', CHECKOUT_TIMEOUT_MS)).toBe(false)
+  })
+
+  it('stops as soon as the webhook decided the purchase', () => {
+    expect(checkoutPollInterval('PAID', 0)).toBe(false)
+    expect(checkoutPollInterval('FAILED', 0)).toBe(false)
+    expect(checkoutPollInterval('EXPIRED', 0)).toBe(false)
   })
 })
 

@@ -40,13 +40,14 @@ export type TPagePagination = {
   totalPages: number
 }
 
-/** GET /credit-plans: a Credit plan on sale, a one-time pack of Credits for a USD price. */
+/** GET /credit-plans: a Credit plan on sale, a one-time pack of Credits for a price in `currency`. */
 export type TCreditPlan = {
   id: number
   name: string
   description: string
   priceCents: number
-  currency: 'USD'
+  /** ISO 4217 code, e.g. "USD". */
+  currency: string
   credits: number
   validityDays: number | null
   badge: string | null
@@ -68,7 +69,8 @@ export type TPlanPurchase = {
   planId: number
   planName: string
   priceCents: number
-  currency: 'USD'
+  /** ISO 4217 code, e.g. "USD". */
+  currency: string
   credits: number
   status: TPlanPurchaseStatus
   /** ISO timestamps. */

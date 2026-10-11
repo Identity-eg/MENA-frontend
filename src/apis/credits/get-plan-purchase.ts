@@ -3,6 +3,7 @@ import { queryOptions, useQuery } from '@tanstack/react-query'
 import { request } from '../base'
 import type { TApiResponseSingle } from '@/types/api-response-single'
 import type { TPlanPurchase } from '@/types/credits'
+import { checkoutPollInterval } from '@/lib/plan-checkout'
 
 type GetPlanPurchaseData = TApiResponseSingle<TPlanPurchase>
 
@@ -18,13 +19,22 @@ export const getPlanPurchaseQueryOptions = (id: number) =>
     staleTime: 0,
   })
 
-/** Polls every `pollMs` while `poll` is true: the checkout return page waits for the webhook this way. */
+/**
+ * Polls the purchase until the webhook decides it, or for CHECKOUT_TIMEOUT_MS from `startedAt`
+ * (the checkout return page waits for Stripe this way). Elapsed time is measured to the last
+ * response, so the page's timed-out state and the end of polling always agree.
+ */
 export const useGetPlanPurchase = (
   id: number,
-  { poll, pollMs }: { poll: boolean; pollMs: number },
+  { startedAt }: { startedAt: number },
 ) =>
   useQuery({
     ...getPlanPurchaseQueryOptions(id),
-    refetchInterval: poll ? pollMs : false,
+    refetchInterval: (query) =>
+      checkoutPollInterval(
+        query.state.data?.data.status,
+        Math.max(query.state.dataUpdatedAt, query.state.errorUpdatedAt) -
+          startedAt,
+      ),
     refetchIntervalInBackground: true,
   })

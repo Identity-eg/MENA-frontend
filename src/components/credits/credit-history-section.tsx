@@ -1,22 +1,14 @@
 import { Link } from '@tanstack/react-router'
-import {
-  ChevronLeft,
-  ChevronRight,
-  History,
-  RotateCw,
-  SearchX,
-} from 'lucide-react'
+import { History, RotateCw, SearchX } from 'lucide-react'
 
 import { CreditHistoryFilters } from './credit-history-filters'
 import { CreditHistoryList, CreditHistorySkeleton } from './credit-history-list'
-import type {CreditHistorySearch} from '@/lib/credit-history';
+import type { CreditHistorySearch } from '@/lib/credit-history'
+import { Pager } from '@/components/pager'
 import { Button } from '@/components/ui/button'
 
 import { useGetCreditTransactions } from '@/apis/credits/get-credit-transactions'
-import {
-  
-  creditHistoryParams
-} from '@/lib/credit-history'
+import { creditHistoryParams } from '@/lib/credit-history'
 import { cn } from '@/lib/utils'
 
 export const CREDIT_HISTORY_PAGE_SIZE = 20
@@ -76,7 +68,8 @@ export function CreditHistorySection({
             )}
           >
             <CreditHistoryList transactions={query.data.data} />
-            <Pagination
+            <Pager
+              label="Credit history pages"
               page={query.data.pagination.page}
               totalPages={query.data.pagination.totalPages}
               total={query.data.pagination.total}
@@ -90,60 +83,6 @@ export function CreditHistorySection({
         )}
       </div>
     </section>
-  )
-}
-
-function Pagination({
-  page,
-  totalPages,
-  total,
-  pageSize,
-  disabled,
-  onPageChange,
-}: {
-  page: number
-  totalPages: number
-  total: number
-  pageSize: number
-  disabled: boolean
-  onPageChange: (page: number) => void
-}) {
-  if (totalPages <= 1) return null
-  const first = (page - 1) * pageSize + 1
-  const last = Math.min(total, page * pageSize)
-
-  return (
-    <nav
-      aria-label="Credit history pages"
-      className="mt-5 flex flex-col items-center justify-between gap-3 border-t pt-4 sm:flex-row"
-    >
-      <p className="text-sm text-muted-foreground tabular-nums">
-        {first}–{last} of {total.toLocaleString('en-US')}
-      </p>
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          className="h-11 sm:h-9"
-          disabled={disabled || page <= 1}
-          onClick={() => onPageChange(page - 1)}
-        >
-          <ChevronLeft aria-hidden className="rtl:rotate-180" />
-          Previous
-        </Button>
-        <span className="px-2 text-sm text-muted-foreground tabular-nums">
-          Page {page} of {totalPages}
-        </span>
-        <Button
-          variant="outline"
-          className="h-11 sm:h-9"
-          disabled={disabled || page >= totalPages}
-          onClick={() => onPageChange(page + 1)}
-        >
-          Next
-          <ChevronRight aria-hidden className="rtl:rotate-180" />
-        </Button>
-      </div>
-    </nav>
   )
 }
 

@@ -14,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 import { getCreditPlansQueryOptions } from '@/apis/credits/get-credit-plans'
 import { getFieldCostsQueryOptions } from '@/apis/credits/get-field-costs'
-import { useStartPlanCheckout } from '@/apis/credits/start-plan-checkout'
+import { usePlanCheckout } from '@/apis/credits/start-plan-checkout'
 import { describePlanValues } from '@/lib/credit-plans'
 import { parseReturnTo } from '@/lib/plan-checkout'
 
@@ -74,10 +74,7 @@ function PlanGrid() {
   const { data, isPending, isError, refetch, isRefetching } = useQuery(
     getCreditPlansQueryOptions(),
   )
-  const checkout = useStartPlanCheckout()
-  // Stays set after success too: the page is on its way to Stripe.
-  const buyingPlanId =
-    checkout.isPending || checkout.isSuccess ? checkout.variables.planId : null
+  const checkout = usePlanCheckout(returnTo)
 
   if (isPending) return <PlanGridSkeleton />
 
@@ -131,7 +128,7 @@ function PlanGrid() {
 
   return (
     <section aria-label="Credit plans" className="space-y-4">
-      {checkout.isError && (
+      {checkout.error && (
         <p
           role="alert"
           className="flex items-start gap-2 rounded-xl bg-destructive/5 px-4 py-3 text-sm text-foreground ring-1 ring-destructive/20"
@@ -141,7 +138,7 @@ function PlanGrid() {
             aria-hidden
           />
           <span>
-            {checkout.error.code === 'PLAN_INACTIVE'
+            {checkout.error === 'planInactive'
               ? 'That plan is no longer for sale. Pick another plan below.'
               : "We couldn't open checkout, and nothing was charged. Please try again."}
           </span>
@@ -159,27 +156,17 @@ function PlanGrid() {
                 value={values.get(plan.id)}
                 buyNoteId={BUY_NOTE_ID}
                 index={index}
-                onBuy={() =>
-                  checkout.mutate(
-                    { planId: plan.id, returnTo },
-                    {
-                      // The plan went off sale meanwhile: show the current catalog.
-                      onError: (error) => {
-                        if (error.code === 'PLAN_INACTIVE') void refetch()
-                      },
-                    },
-                  )
-                }
-                buying={buyingPlanId === plan.id}
-                disabled={buyingPlanId !== null}
+                onBuy={() => checkout.buy(plan.id)}
+                buying={checkout.buyingPlanId === plan.id}
+                disabled={checkout.buyingPlanId !== null}
               />
             </div>
           </li>
         ))}
       </ul>
       <p id={BUY_NOTE_ID} className="text-sm text-muted-foreground">
-        Prices are in USD and charged once through Stripe&rsquo;s secure
-        checkout, which also emails your receipt.{' '}
+        Prices are in {plans[0].currency.toUpperCase()} and charged once through
+        Stripe&rsquo;s secure checkout, which also emails your receipt.{' '}
         <a
           href={`#${FIELD_COSTS_ID}`}
           className="font-medium text-primary underline-offset-4 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50 rounded-sm"

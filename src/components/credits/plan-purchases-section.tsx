@@ -1,6 +1,4 @@
 import {
-  ChevronLeft,
-  ChevronRight,
   CircleCheck,
   CircleSlash,
   Clock,
@@ -10,17 +8,15 @@ import {
 import { useState } from 'react'
 
 import type { TPlanPurchase } from '@/types/credits'
-import type {PurchaseStatusDisplay} from '@/lib/plan-checkout';
+import type { PurchaseStatusDisplay } from '@/lib/plan-checkout'
+import { Pager } from '@/components/pager'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
 import { useGetPlanPurchases } from '@/apis/credits/get-plan-purchases'
 import { formatPlanPrice } from '@/lib/credit-plans'
 import { formatCredits } from '@/lib/credits'
-import {
-  
-  describePurchaseStatus
-} from '@/lib/plan-checkout'
+import { describePurchaseStatus } from '@/lib/plan-checkout'
 import { cn } from '@/lib/utils'
 
 const PAGE_SIZE = 10
@@ -90,39 +86,15 @@ export function PlanPurchasesSection() {
                 <PurchaseRow key={purchase.id} purchase={purchase} />
               ))}
             </ul>
-            {query.data.pagination.totalPages > 1 && (
-              <nav
-                aria-label="Purchases pages"
-                className="mt-4 flex items-center justify-between gap-3 border-t border-border/70 pt-4"
-              >
-                <p className="text-sm text-muted-foreground tabular-nums">
-                  Page {query.data.pagination.page} of{' '}
-                  {query.data.pagination.totalPages}
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon-lg"
-                    className="size-11"
-                    aria-label="Previous page"
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => p - 1)}
-                  >
-                    <ChevronLeft aria-hidden />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon-lg"
-                    className="size-11"
-                    aria-label="Next page"
-                    disabled={page >= query.data.pagination.totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                  >
-                    <ChevronRight aria-hidden />
-                  </Button>
-                </div>
-              </nav>
-            )}
+            <Pager
+              label="Purchases pages"
+              page={query.data.pagination.page}
+              totalPages={query.data.pagination.totalPages}
+              total={query.data.pagination.total}
+              pageSize={query.data.pagination.pageSize}
+              disabled={query.isPlaceholderData}
+              onPageChange={setPage}
+            />
           </div>
         )}
       </div>
@@ -143,7 +115,7 @@ function PurchaseRow({ purchase }: { purchase: TPlanPurchase }) {
             {boughtAt.format(new Date(purchase.createdAt))}
           </time>
           {', '}
-          {formatPlanPrice(purchase.priceCents)}
+          {formatPlanPrice(purchase.priceCents, purchase.currency)}
         </p>
       </div>
       <div className="flex items-center gap-3 sm:justify-end">

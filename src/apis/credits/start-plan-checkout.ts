@@ -1,6 +1,7 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { request } from '../base'
+import { getCreditPlansQueryOptions } from './get-credit-plans'
 import type { TApiResponseSingle } from '@/types/api-response-single'
 import type {ReturnTarget} from '@/lib/plan-checkout';
 import {  checkoutReturnUrls } from '@/lib/plan-checkout'
@@ -31,11 +32,37 @@ export const startPlanCheckout = async ({
   })
 }
 
-/** Starts checkout and hands the page over to Stripe. */
-export const useStartPlanCheckout = () =>
-  useMutation({
+/**
+ * Buying a Credit plan from any plan list: starts checkout and hands the page over to Stripe.
+ * A plan that went off sale meanwhile (PLAN_INACTIVE) refreshes the plan list so the current
+ * catalog shows. `buyingPlanId` stays set after success too: the page is on its way to Stripe.
+ */
+export const usePlanCheckout = (returnTo: ReturnTarget | null) => {
+  const queryClient = useQueryClient()
+  const mutation = useMutation({
     mutationFn: startPlanCheckout,
     onSuccess: ({ data }) => {
       window.location.assign(data.url)
     },
+    onError: (error) => {
+      if (error.code === 'PLAN_INACTIVE') {
+        void queryClient.invalidateQueries({
+          queryKey: getCreditPlansQueryOptions().queryKey,
+        })
+      }
+    },
   })
+  return {
+    buy: (planId: number) => mutation.mutate({ planId, returnTo }),
+    buyingPlanId:
+      mutation.isPending || mutation.isSuccess
+        ? mutation.variables.planId
+        : null,
+    /** null, or why checkout couldn't open; nothing was charged either way. */
+    error: mutation.isError
+      ? mutation.error.code === 'PLAN_INACTIVE'
+        ? ('planInactive' as const)
+        : ('failed' as const)
+      : null,
+  }
+}
