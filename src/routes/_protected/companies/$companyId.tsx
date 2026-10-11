@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from '@tanstack/react-router'
+import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { ArrowLeft, Building2 } from 'lucide-react'
 import { Suspense } from 'react'
 
@@ -8,26 +8,8 @@ import { Button } from '@/components/ui/button'
 
 import { getCompanyQueryOptions } from '@/apis/company/get-company'
 
-type CompanyDetailSearch = {
-  /** Set by the Stripe success/cancel URLs of an unlock checkout. */
-  unlock?: 'success' | 'cancelled'
-  /** Comma-separated locked field ids bought in that checkout. */
-  fields?: string
-}
-
 export const Route = createFileRoute('/_protected/companies/$companyId')({
   component: CompanyDetailsPage,
-  validateSearch: (search: Record<string, unknown>): CompanyDetailSearch => ({
-    unlock:
-      search.unlock === 'success' || search.unlock === 'cancelled'
-        ? search.unlock
-        : undefined,
-    // A single id is parsed as a number by the default search parser.
-    fields:
-      typeof search.fields === 'string' || typeof search.fields === 'number'
-        ? String(search.fields)
-        : undefined,
-  }),
   loader: async ({ context, params }) => {
     const companyId = params.companyId
 

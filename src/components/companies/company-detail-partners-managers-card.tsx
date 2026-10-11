@@ -1,127 +1,124 @@
 import { Ban, Lock } from 'lucide-react'
 import { memo } from 'react'
 
-import type { TAuthSignatory, TManager, TPartner } from '@/types/company'
 import { CompanyDetailAuthSignatoriesTable } from './company-detail-auth-signatories-table'
 import { CompanyDetailManagersTable } from './company-detail-managers-table'
 import { CompanyDetailPartnersTable } from './company-detail-partners-table'
+import type {
+  TAuthSignatory,
+  TManager,
+  TPartner,
+  TSensitiveField,
+} from '@/types/company'
+import type { ReactNode } from 'react'
+import { displayState } from '@/lib/sensitive-fields'
+import { formatCredits } from '@/lib/credits'
 
 type CompanyDetailPartnersManagersCardProps = {
-  partnersRaw: TPartner[] | string | undefined
-  managersRaw: TManager[] | string | undefined
-  authSignatoriesRaw: TAuthSignatory[] | string | undefined
-  partnersIsList: boolean
-  managersIsList: boolean
-  authSignatoriesIsList: boolean
-  /** Masked and not offered for sale (company.unavailableFields). */
-  partnersUnavailable: boolean
-  managersUnavailable: boolean
-  authSignatoriesUnavailable: boolean
+  partners: TSensitiveField | undefined
+  managers: TSensitiveField | undefined
+  authSignatories: TSensitiveField | undefined
 }
 
-function NotAvailableForPurchase({ subject }: { subject: string }) {
+function Notice({
+  icon,
+  title,
+  children,
+}: {
+  icon: ReactNode
+  title: string
+  children: ReactNode
+}) {
   return (
     <div className="rounded-xl border border-dashed border-muted-foreground/25 bg-muted/30 px-4 py-6 text-center">
-      <Ban className="mx-auto h-6 w-6 text-muted-foreground/60 mb-2" />
-      <p className="text-sm font-medium text-foreground">
-        Not available for purchase
-      </p>
-      <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
-        {subject} for this company are not offered at the moment.
+      <div className="mx-auto mb-2 flex justify-center text-muted-foreground/60">
+        {icon}
+      </div>
+      <p className="text-sm font-medium text-foreground">{title}</p>
+      <p className="mx-auto mt-1 max-w-sm text-xs text-muted-foreground">
+        {children}
       </p>
     </div>
   )
 }
 
+function PeopleSection({
+  title,
+  field,
+  renderTable,
+}: {
+  title: string
+  field: TSensitiveField | undefined
+  renderTable: (rows: Array<unknown>) => ReactNode
+}) {
+  if (!field) return null
+  const state = displayState(field)
+  const rows = Array.isArray(field.value) ? field.value : []
+
+  return (
+    <section className="mb-6 last:mb-0">
+      <h3 className="mb-3 px-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+        {title}
+      </h3>
+      {state === 'unlocked' ? (
+        rows.length > 0 ? (
+          renderTable(rows)
+        ) : (
+          <p className="text-sm text-muted-foreground">None on record.</p>
+        )
+      ) : state === 'locked' ? (
+        <Notice
+          icon={<Lock className="h-6 w-6" aria-hidden />}
+          title={`${field.label}: locked`}
+        >
+          Unlock &ldquo;{field.label}&rdquo; in Premium details above for{' '}
+          {formatCredits(field.cost)}.
+        </Notice>
+      ) : (
+        <Notice
+          icon={<Ban className="h-6 w-6" aria-hidden />}
+          title={`${field.label}: not available`}
+        >
+          {field.label} for this company can&rsquo;t be unlocked right now.
+        </Notice>
+      )}
+    </section>
+  )
+}
+
+/** Partners, managers and signatories: each a Sensitive field, shown as its state allows. */
 export const CompanyDetailPartnersManagersCard = memo(
   function CompanyDetailPartnersManagersCard({
-    partnersRaw,
-    managersRaw,
-    authSignatoriesRaw,
-    partnersIsList,
-    managersIsList,
-    authSignatoriesIsList,
-    partnersUnavailable,
-    managersUnavailable,
-    authSignatoriesUnavailable,
+    partners,
+    managers,
+    authSignatories,
   }: CompanyDetailPartnersManagersCardProps) {
+    if (!partners && !managers && !authSignatories) return null
     return (
       <div className="space-y-6">
-        <section className="mb-6 last:mb-0">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 px-1">
-            OWNERS/PARTNERS/SHAREHOLDERS
-          </h3>
-          {partnersIsList ? (
-            <CompanyDetailPartnersTable rows={partnersRaw as TPartner[]} />
-          ) : partnersUnavailable ? (
-            <NotAvailableForPurchase subject="Partner details" />
-          ) : typeof partnersRaw === 'string' ? (
-            <div className="rounded-xl border border-dashed border-muted-foreground/25 bg-muted/30 px-4 py-6 text-center">
-              <Lock className="mx-auto h-6 w-6 text-muted-foreground/60 mb-2" />
-              <p className="text-sm font-medium text-foreground">
-                Partner details are locked
-              </p>
-              <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
-                Unlock &ldquo;Partners, Managers & Auth. Sig.&rdquo; in Premium
-                details above to view names, IDs, and ownership.
-              </p>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">No partner data.</p>
+        <PeopleSection
+          title="Owners/Partners/Shareholders"
+          field={partners}
+          renderTable={(rows) => (
+            <CompanyDetailPartnersTable rows={rows as Array<TPartner>} />
           )}
-        </section>
-
-        <section className="mb-6 last:mb-0">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 px-1">
-            Managers/Directives
-          </h3>
-          {managersIsList ? (
-            <CompanyDetailManagersTable rows={managersRaw as TManager[]} />
-          ) : managersUnavailable ? (
-            <NotAvailableForPurchase subject="Manager details" />
-          ) : typeof managersRaw === 'string' ? (
-            <div className="rounded-xl border border-dashed border-muted-foreground/25 bg-muted/30 px-4 py-6 text-center">
-              <Lock className="mx-auto h-6 w-6 text-muted-foreground/60 mb-2" />
-              <p className="text-sm font-medium text-foreground">
-                Manager details are locked
-              </p>
-              <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
-                Unlock &ldquo;Partners, Managers & Auth. Sig.&rdquo; in Premium
-                details above to view leadership and authority.
-              </p>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">No manager data.</p>
+        />
+        <PeopleSection
+          title="Managers/Directives"
+          field={managers}
+          renderTable={(rows) => (
+            <CompanyDetailManagersTable rows={rows as Array<TManager>} />
           )}
-        </section>
-
-        <section className="mb-6 last:mb-0">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 px-1">
-            Authorized Signatories
-          </h3>
-          {authSignatoriesIsList ? (
+        />
+        <PeopleSection
+          title="Authorized Signatories"
+          field={authSignatories}
+          renderTable={(rows) => (
             <CompanyDetailAuthSignatoriesTable
-              rows={authSignatoriesRaw as TAuthSignatory[]}
+              rows={rows as Array<TAuthSignatory>}
             />
-          ) : authSignatoriesUnavailable ? (
-            <NotAvailableForPurchase subject="Authorized signatory details" />
-          ) : typeof authSignatoriesRaw === 'string' ? (
-            <div className="rounded-xl border border-dashed border-muted-foreground/25 bg-muted/30 px-4 py-6 text-center">
-              <Lock className="mx-auto h-6 w-6 text-muted-foreground/60 mb-2" />
-              <p className="text-sm font-medium text-foreground">
-                Auth. Signatory details are locked
-              </p>
-              <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
-                Unlock &ldquo;Partners, Managers & Auth. Sig.&rdquo; in Premium
-                details above to view authorized representatives.
-              </p>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              No authorized signatory data.
-            </p>
           )}
-        </section>
+        />
       </div>
     )
   },

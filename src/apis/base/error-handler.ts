@@ -30,7 +30,7 @@ export function extractBackendErrorMessage(data: unknown): string | null {
 }
 
 /**
- * Normalises any thrown API error into `{ message, status?, code? }`.
+ * Normalises any thrown API error into `{ message, status?, code?, details? }`.
  * Accepts an AxiosError, an already-normalised `TFrontendErrorResponse`
  * (what the response interceptor rejects with), an Error, or a string.
  */
@@ -52,15 +52,26 @@ export function getErrorMessage(
 
   const fromBody = extractBackendErrorMessage(response?.data)
   if (fromBody) {
-    const code = (response?.data as TBackendErrorResponse | undefined)?.code
-    return { status, message: fromBody, ...(code && { code }) }
+    const { code, details } = response?.data as TBackendErrorResponse
+    return {
+      status,
+      message: fromBody,
+      ...(code && { code }),
+      ...(details && { details }),
+    }
   }
 
   if (!response && candidate.message) {
     // Already normalised by the response interceptor (keeps its business code),
     // or a plain Error / network AxiosError (whose `code` is not a backend code).
     const code = candidate.isAxiosError ? undefined : candidate.code
-    return { status, message: candidate.message, ...(code && { code }) }
+    const details = candidate.isAxiosError ? undefined : candidate.details
+    return {
+      status,
+      message: candidate.message,
+      ...(code && { code }),
+      ...(details && { details }),
+    }
   }
 
   if (status === 500) {

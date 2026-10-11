@@ -1,18 +1,17 @@
 import { Building2 } from 'lucide-react'
-import { memo, ReactNode } from 'react'
+import { memo } from 'react'
+import type { ReactNode } from 'react'
 
+import type { CompanyProfileFieldRow } from './company-detail-types'
 import { EmptyState } from '@/components/EmptyState'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-import type { CompanyProfileFieldRow } from './company-detail-types'
-
 type CompanyDetailProfileCardProps = {
-  publicFields: CompanyProfileFieldRow[]
+  publicFields: Array<CompanyProfileFieldRow>
   children?: ReactNode
 }
 
 const REGISTRATION_KEYS = [
-  'registrationNumber',
   'UNN',
   'centralNumber',
   'civilId',
@@ -63,7 +62,7 @@ function Section({
   fields,
 }: {
   title: string
-  fields: CompanyProfileFieldRow[]
+  fields: Array<CompanyProfileFieldRow>
 }) {
   if (fields.length === 0) return null
   return (
@@ -72,7 +71,7 @@ function Section({
         {title}
       </h3>
       <div className="space-y-1">
-        {fields.map(({ key, label, value, unavailable }) => (
+        {fields.map(({ key, label, value }) => (
           <div
             key={key}
             className="flex flex-col gap-0.5 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50 sm:flex-row sm:items-baseline sm:gap-4"
@@ -80,13 +79,7 @@ function Section({
             <span className="w-36 shrink-0 text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
               {label}
             </span>
-            {unavailable ? (
-              <p className="text-sm italic text-muted-foreground">
-                Not available for purchase
-              </p>
-            ) : (
-              <p className="text-sm text-foreground wrap-break-word">{value}</p>
-            )}
+            <p className="text-sm text-foreground wrap-break-word">{value}</p>
           </div>
         ))}
       </div>
@@ -99,9 +92,7 @@ export const CompanyDetailProfileCard = memo(function CompanyDetailProfileCard({
   children,
 }: CompanyDetailProfileCardProps) {
   const fieldsWithValue = publicFields.filter(
-    (f) =>
-      f.unavailable ||
-      (f.value !== null && f.value !== undefined && f.value !== ''),
+    (f) => f.value !== null && f.value !== undefined && f.value !== '',
   )
 
   const registrationData = fieldsWithValue.filter((f) =>

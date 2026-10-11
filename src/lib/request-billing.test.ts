@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
-import { getErrorMessage } from '@/apis/base/error-handler'
-import type { InvoiceStatusValue, RequestStatusValue } from '@/types/request'
 import {
   canDownloadInvoice,
   getInvoiceDisplay,
   getLinePrice,
   isRequestPayable,
 } from './request-billing'
+import type { InvoiceStatusValue, RequestStatusValue } from '@/types/request'
+import { getErrorMessage } from '@/apis/base/error-handler'
 
 const req = (
   status: RequestStatusValue,
@@ -119,6 +119,25 @@ describe('getErrorMessage', () => {
       ).message,
     ).toBe('Too many requests')
     expect(getErrorMessage(undefined, 'Oops').message).toBe('Oops')
+  })
+
+  it('keeps the domain error details (e.g. the shortfall of INSUFFICIENT_CREDITS)', () => {
+    const details = { required: 100, balance: 60, shortfall: 40 }
+    const normalised = getErrorMessage(
+      axiosError(409, {
+        error: 'Not enough Credits',
+        code: 'INSUFFICIENT_CREDITS',
+        details,
+      }),
+    )
+    expect(normalised).toEqual({
+      status: 409,
+      message: 'Not enough Credits',
+      code: 'INSUFFICIENT_CREDITS',
+      details,
+    })
+    // Normalising twice (interceptor, then the caller) keeps them too.
+    expect(getErrorMessage(normalised)).toEqual(normalised)
   })
 
   it('passes through already-normalised errors', () => {

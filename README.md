@@ -77,6 +77,8 @@ src/
 │   │   ├── dashboard/
 │   │   ├── requests/        # List, detail, new request
 │   │   ├── companies/       # Company list, detail
+│   │   ├── pricing/         # Credit plans
+│   │   ├── credits/         # Credit balance, history, Plan purchases, checkout return
 │   │   └── unlocks/
 │   ├── about-us.tsx
 │   └── solutions.tsx
@@ -90,8 +92,9 @@ src/
 - **Dashboard:** Overview, recent requests.
 - **Requests:** List, filter, create (company/individual reports), detail with timeline, reports, messages, invoice download, payment (Stripe).
 - **Request reports:** Per-line status and final price; admin can update via PATCH.
-- **Companies:** List, detail with locked/unlocked fields and unlock payment.
-- **Unlocks:** History of unlocked fields.
+- **Companies:** List, detail with locked/unlocked Sensitive fields; Unlock one field or all remaining ones for their Field cost in Credits.
+- **Credits:** Credit balance in the top bar, Pricing page to buy a Credit plan (Stripe checkout), Credits page with Credit history and Plan purchases.
+- **Unlocks:** History of unlocked fields and the Credits spent.
 - **Messages:** Per-request thread (list, send, mark read).
 
 ## Auth Flow

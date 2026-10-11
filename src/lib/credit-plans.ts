@@ -1,0 +1,51 @@
+/** A plan price in cents, in the currency the plan is sold in (from the server): "$29", "$79.50". */
+export function formatPlanPrice(priceCents: number, currency: string): string {
+  const text = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency.toUpperCase(),
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(priceCents / 100)
+  // Intl drops a trailing zero ("$79.5"); prices always show whole cents.
+  return /\.\d$/.test(text) ? `${text}0` : text
+}
+
+type PricedPlan = { id: number; priceCents: number; credits: number }
+
+export type PlanValue = {
+  /** "$0.079 per credit". */
+  perCredit: string
+  /** Whole percent a Credit is cheaper than on the priciest plan, or null when it isn't. */
+  savingPercent: number | null
+}
+
+/** How much a Credit costs on each plan, and how that compares across the plans shown. */
+export function describePlanValues(
+  plans: ReadonlyArray<PricedPlan>,
+): Map<number, PlanValue> {
+  const rate = (p: PricedPlan) => p.priceCents / p.credits
+  const highest = Math.max(...plans.map(rate))
+  return new Map(
+    plans.map((p) => {
+      const dollars = rate(p) / 100
+      const saving = Math.floor((1 - rate(p) / highest) * 100)
+      return [
+        p.id,
+        {
+          perCredit: `$${dollars >= 1 ? dollars.toFixed(2) : dollars.toFixed(3)} per credit`,
+          savingPercent: saving >= 1 ? saving : null,
+        },
+      ]
+    }),
+  )
+}
+
+/** The plan to suggest when a user is `shortfall` Credits short: the smallest one that covers it, or null. */
+export function smallestPlanCovering(
+  plans: ReadonlyArray<{ id: number; credits: number }>,
+  shortfall: number,
+): number | null {
+  const covering = plans.filter((p) => p.credits >= shortfall)
+  if (covering.length === 0) return null
+  return covering.reduce((best, p) => (p.credits < best.credits ? p : best)).id
+}

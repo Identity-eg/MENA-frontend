@@ -1,19 +1,5 @@
 import type { TUnlockedPerson } from '@/types/unlock'
 
-const FIELD_LABELS: Record<string, string> = {
-  registrationNumber: 'Registration number',
-  partners: 'Partners',
-  managers: 'Managers',
-  authSignatories: 'Authorized signatories',
-}
-
-export function formatUnlockFieldName(fieldName: string): string {
-  return (
-    FIELD_LABELS[fieldName] ??
-    fieldName.charAt(0).toUpperCase() + fieldName.slice(1).replace(/_/g, ' ')
-  )
-}
-
 export type UnlockedPersonView = {
   name: string
   /** Role-specific details (nationality, share, position, signature level…) */

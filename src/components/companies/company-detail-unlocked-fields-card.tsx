@@ -1,15 +1,24 @@
 import { CheckCircle2, Unlock } from 'lucide-react'
 import { memo } from 'react'
 
+import { getCompanyDetailFieldIcon } from './get-company-detail-field-icon'
+import { unlockedFieldElementId } from './unlock-dialog'
+import type { TSensitiveField } from '@/types/company'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { cn } from '@/lib/utils'
-import type { CompanyProfileFieldRow } from './company-detail-types'
-import { getCompanyDetailFieldIcon } from './get-company-detail-field-icon'
 
 type CompanyDetailUnlockedFieldsCardProps = {
-  fields: CompanyProfileFieldRow[]
+  fields: Array<TSensitiveField>
+}
+
+/** A scalar value as text; people lists are shown in the company profile below. */
+function summarize(value: TSensitiveField['value']): string {
+  if (value === undefined || value === '') return '—'
+  if (typeof value === 'string') return value
+  if (value.length === 0) return 'None on record'
+  return `${value.length} listed below`
 }
 
 export const CompanyDetailUnlockedFieldsCard = memo(
@@ -45,8 +54,12 @@ export const CompanyDetailUnlockedFieldsCard = memo(
               return (
                 <div
                   key={key}
+                  // Focus lands here after unlocking this field in the dialog.
+                  id={unlockedFieldElementId(key)}
+                  tabIndex={-1}
                   className={cn(
                     'group flex items-start gap-3 rounded-xl border border-emerald-500/50 bg-white/70 p-4 transition-colors dark:border-emerald-800/40 dark:bg-white/5',
+                    'outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60',
                     'hover:border-emerald-300/60 hover:bg-white/90 dark:hover:border-emerald-700/50 dark:hover:bg-white/10',
                   )}
                 >
@@ -64,7 +77,7 @@ export const CompanyDetailUnlockedFieldsCard = memo(
                       />
                     </div>
                     <p className="text-sm font-medium text-foreground leading-snug">
-                      {value ?? '—'}
+                      {summarize(value)}
                     </p>
                   </div>
                 </div>
