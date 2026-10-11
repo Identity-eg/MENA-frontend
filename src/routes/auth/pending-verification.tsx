@@ -11,7 +11,10 @@ import {
 } from '@/components/ui/card'
 import { FullPageLoading } from '@/components/ui/full-page-loading'
 
+import { redirectIfSignedIn } from '@/lib/redirect-if-signed-in'
+
 export const Route = createFileRoute('/auth/pending-verification')({
+  beforeLoad: redirectIfSignedIn,
   pendingComponent: FullPageLoading,
   component: PendingVerificationPage,
 })

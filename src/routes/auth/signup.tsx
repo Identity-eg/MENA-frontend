@@ -20,8 +20,10 @@ import { Input } from '@/components/ui/input'
 
 import { useRegister } from '@/apis/auth/register'
 import { businessEmailSchema } from '@/lib/business-email'
+import { redirectIfSignedIn } from '@/lib/redirect-if-signed-in'
 
 export const Route = createFileRoute('/auth/signup')({
+  beforeLoad: redirectIfSignedIn,
   pendingComponent: FullPageLoading,
   component: SignupPage,
 })

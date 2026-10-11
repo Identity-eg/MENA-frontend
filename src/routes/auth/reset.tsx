@@ -14,10 +14,12 @@ import { Input } from '@/components/ui/input'
 import { useForgotPassword } from '@/apis/auth/forgot-password'
 import { getErrorMessage } from '@/apis/base/error-handler'
 import { businessEmailSchema } from '@/lib/business-email'
+import { redirectIfSignedIn } from '@/lib/redirect-if-signed-in'
 import { cn } from '@/lib/utils'
 
 /** "Forgot password": request a reset link by email. The link opens /auth/reset-password?token=… */
 export const Route = createFileRoute('/auth/reset')({
+  beforeLoad: redirectIfSignedIn,
   pendingComponent: FullPageLoading,
   component: ForgotPasswordPage,
 })

@@ -15,8 +15,10 @@ import { PasswordInput } from '@/components/ui/password-input'
 
 import { useLogin } from '@/apis/auth/login'
 import { businessEmailSchema } from '@/lib/business-email'
+import { redirectIfSignedIn } from '@/lib/redirect-if-signed-in'
 
 export const Route = createFileRoute('/auth/login')({
+  beforeLoad: redirectIfSignedIn,
   pendingComponent: FullPageLoading,
   component: LoginPage,
 })

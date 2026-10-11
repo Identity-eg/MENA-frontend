@@ -1,10 +1,11 @@
+import { useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { request } from '../base'
 import { getCreditPlansQueryOptions } from './get-credit-plans'
 import type { TApiResponseSingle } from '@/types/api-response-single'
-import type {ReturnTarget} from '@/lib/plan-checkout';
-import {  checkoutReturnUrls } from '@/lib/plan-checkout'
+import type { ReturnTarget } from '@/lib/plan-checkout'
+import { checkoutReturnUrls } from '@/lib/plan-checkout'
 
 export type TStartPlanCheckoutInput = {
   planId: number
@@ -52,10 +53,22 @@ export const usePlanCheckout = (returnTo: ReturnTarget | null) => {
       }
     },
   })
+
+  // Back from Stripe, the browser restores this page from its back/forward cache with the
+  // mutation still marked successful; reset it so the Buy buttons work again.
+  const { reset } = mutation
+  useEffect(() => {
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) reset()
+    }
+    window.addEventListener('pageshow', onPageShow)
+    return () => window.removeEventListener('pageshow', onPageShow)
+  }, [reset])
+
   return {
     buy: (planId: number) => mutation.mutate({ planId, returnTo }),
     buyingPlanId:
-      mutation.isPending || mutation.isSuccess
+      (mutation.isPending || mutation.isSuccess) && mutation.variables
         ? mutation.variables.planId
         : null,
     /** null, or why checkout couldn't open; nothing was charged either way. */
