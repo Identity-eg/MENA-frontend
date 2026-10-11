@@ -1,4 +1,8 @@
-import type { TSensitiveField, TSensitiveFieldState } from '@/types/company'
+import type {
+  TSensitiveField,
+  TSensitiveFieldState,
+  TUnlockAllOffer,
+} from '@/types/company'
 
 /**
  * How a Sensitive field is shown. The server decides; a value it sent (an admin sees every
@@ -26,14 +30,14 @@ export function groupSensitiveFields(
   return groups
 }
 
-/** What "Unlock all remaining fields" costs: the summed Field costs of locked fields, no discount. */
-export function unlockAllTotal(fields: Array<TSensitiveField>): number {
-  return fields
-    .filter((field) => displayState(field) === 'locked')
-    .reduce((sum, field) => sum + field.cost, 0)
-}
-
-/** Whether to offer "Unlock all remaining fields": only while at least two fields remain locked. */
-export function offersUnlockAll(fields: Array<TSensitiveField>): boolean {
-  return fields.filter((field) => displayState(field) === 'locked').length >= 2
+/**
+ * The fields the server offers to "Unlock all", in the offer's order. Which fields remain and
+ * what they cost together is the server's call (`company.unlockAll`); this only looks them up.
+ */
+export function unlockAllFields(
+  fields: Array<TSensitiveField>,
+  offer: TUnlockAllOffer | null,
+): Array<TSensitiveField> {
+  if (!offer) return []
+  return offer.fieldKeys.flatMap((key) => fields.filter((f) => f.key === key))
 }

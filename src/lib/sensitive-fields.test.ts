@@ -3,8 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   displayState,
   groupSensitiveFields,
-  offersUnlockAll,
-  unlockAllTotal,
+  unlockAllFields,
 } from './sensitive-fields'
 import type { TSensitiveField } from '@/types/company'
 
@@ -50,31 +49,23 @@ describe('groupSensitiveFields', () => {
   })
 })
 
-describe('unlockAllTotal', () => {
-  it('sums the Field costs of locked fields only, with no discount', () => {
+describe('unlockAllFields', () => {
+  it('lists the fields the server offers to Unlock all, in the offer order', () => {
+    const fields = [
+      field({ key: 'registrationNumber', cost: 50 }),
+      field({ key: 'partners', cost: 100, state: 'unlocked', value: [] }),
+      field({ key: 'managers', cost: 75 }),
+      field({ key: 'authSignatories', cost: 75 }),
+    ]
     expect(
-      unlockAllTotal([
-        field({ key: 'registrationNumber', cost: 50 }),
-        field({ key: 'partners', cost: 100 }),
-        field({ key: 'managers', cost: 75, state: 'unlocked', value: [] }),
-        field({ key: 'authSignatories', cost: 75, state: 'unavailable' }),
-      ]),
-    ).toBe(150)
+      unlockAllFields(fields, {
+        total: 125,
+        fieldKeys: ['managers', 'registrationNumber'],
+      }).map((f) => f.key),
+    ).toEqual(['managers', 'registrationNumber'])
   })
 
-  it('is 0 when nothing is left to unlock', () => {
-    expect(unlockAllTotal([])).toBe(0)
-  })
-})
-
-describe('offersUnlockAll', () => {
-  it('offers "Unlock all" only while at least two fields remain locked', () => {
-    const locked = field({ key: 'registrationNumber', cost: 50 })
-    const alsoLocked = field({ key: 'partners', cost: 100 })
-    const unlocked = field({ key: 'managers', state: 'unlocked', value: [] })
-    const unavailable = field({ key: 'authSignatories', state: 'unavailable' })
-    expect(offersUnlockAll([locked, alsoLocked, unlocked])).toBe(true)
-    expect(offersUnlockAll([locked, unlocked, unavailable])).toBe(false)
-    expect(offersUnlockAll([])).toBe(false)
+  it('is empty when nothing is offered', () => {
+    expect(unlockAllFields([field({})], null)).toEqual([])
   })
 })

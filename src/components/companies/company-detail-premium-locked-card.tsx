@@ -1,23 +1,76 @@
-import { Ban, ChevronRight, Coins, Lock, Sparkles } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import {
+  Ban,
+  ChevronRight,
+  CircleCheck,
+  CircleMinus,
+  Coins,
+  Lock,
+  Sparkles,
+} from 'lucide-react'
 import { memo } from 'react'
 
 import { getCompanyDetailFieldIcon } from './get-company-detail-field-icon'
-import type { TSensitiveField } from '@/types/company'
+import type { TSensitiveField, TUnlockAllOffer } from '@/types/company'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-import { formatCredits } from '@/lib/credits'
+import { getCreditBalanceQueryOptions } from '@/apis/credits/get-credit-balance'
+import { canAfford, formatCredits, shortfall } from '@/lib/credits'
 import { cn } from '@/lib/utils'
 
 type CompanyDetailPremiumLockedCardProps = {
   lockedFields: Array<TSensitiveField>
   unavailableFields: Array<TSensitiveField>
-  unlockAllCost: number
-  /** Offered only while at least two fields remain locked. */
-  offerUnlockAll: boolean
+  /** The server's "Unlock all" offer; null hides it. */
+  unlockAll: TUnlockAllOffer | null
   onUnlockField: (field: TSensitiveField) => void
   onUnlockAll: () => void
+}
+
+/**
+ * Whether the Credit balance covers a cost, as an icon and words (never colour alone). Only a
+ * hint: the server still checks the balance when the Unlock is made. Just "Locked" until the
+ * balance is known.
+ */
+function Coverage({
+  balance,
+  cost,
+}: {
+  balance: number | undefined
+  cost: number
+}) {
+  if (balance === undefined) {
+    return (
+      <>
+        <Lock className="h-3.5 w-3.5" aria-hidden />
+        <span>Locked</span>
+      </>
+    )
+  }
+  if (canAfford(balance, cost)) {
+    return (
+      <>
+        <CircleCheck
+          className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400"
+          aria-hidden
+        />
+        <span>Locked · your balance covers it</span>
+      </>
+    )
+  }
+  return (
+    <>
+      <CircleMinus
+        className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400"
+        aria-hidden
+      />
+      <span className="tabular-nums">
+        Locked · {formatCredits(shortfall(balance, cost))} short
+      </span>
+    </>
+  )
 }
 
 /**
@@ -29,11 +82,12 @@ export const CompanyDetailPremiumLockedCard = memo(
   function CompanyDetailPremiumLockedCard({
     lockedFields,
     unavailableFields,
-    unlockAllCost,
-    offerUnlockAll,
+    unlockAll,
     onUnlockField,
     onUnlockAll,
   }: CompanyDetailPremiumLockedCardProps) {
+    const balanceQuery = useQuery(getCreditBalanceQueryOptions())
+    const balance = balanceQuery.data?.data.balance
     const fields = [...lockedFields, ...unavailableFields]
     if (fields.length === 0) return null
 
@@ -115,11 +169,12 @@ export const CompanyDetailPremiumLockedCard = memo(
                     {!unavailable && (
                       <Button
                         size="lg"
-                        className="min-h-11 shrink-0 active:scale-[0.98]"
-                        aria-label={`Unlock ${field.label} for ${formatCredits(field.cost)}`}
+                        className="min-h-11 shrink-0 tabular-nums active:scale-[0.98]"
                         onClick={() => onUnlockField(field)}
                       >
                         Unlock
+                        <span className="sr-only"> {field.label}</span> ·{' '}
+                        {formatCredits(field.cost)}
                       </Button>
                     )}
                   </div>
@@ -127,10 +182,7 @@ export const CompanyDetailPremiumLockedCard = memo(
                     {unavailable ? (
                       <span>This field can&rsquo;t be unlocked right now</span>
                     ) : (
-                      <>
-                        <Lock className="h-3.5 w-3.5" aria-hidden />
-                        <span>Locked</span>
-                      </>
+                      <Coverage balance={balance} cost={field.cost} />
                     )}
                   </div>
                 </li>
@@ -138,24 +190,28 @@ export const CompanyDetailPremiumLockedCard = memo(
             })}
           </ul>
 
-          {offerUnlockAll && unlockAllCost > 0 && (
+          {unlockAll && (
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4 dark:bg-primary/10">
               <div>
                 <p className="text-sm font-semibold">
                   Unlock all remaining fields
                 </p>
                 <p className="text-xs text-muted-foreground tabular-nums">
-                  {lockedFields.length} fields, {formatCredits(unlockAllCost)}{' '}
-                  in total, no discount
+                  {unlockAll.fieldKeys.length} fields,{' '}
+                  {formatCredits(unlockAll.total)} in total, no discount
                 </p>
               </div>
               <Button
                 size="lg"
                 className="min-h-11 tabular-nums active:scale-[0.98]"
-                aria-label={`Unlock all ${lockedFields.length} remaining fields for ${formatCredits(unlockAllCost)}`}
                 onClick={onUnlockAll}
               >
-                Unlock all for {formatCredits(unlockAllCost)}
+                Unlock all
+                <span className="sr-only">
+                  {' '}
+                  {unlockAll.fieldKeys.length} remaining fields
+                </span>{' '}
+                · {formatCredits(unlockAll.total)}
                 <ChevronRight className="h-4 w-4" aria-hidden />
               </Button>
             </div>

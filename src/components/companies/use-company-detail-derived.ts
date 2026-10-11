@@ -1,15 +1,13 @@
 import type { TCompany, TSensitiveField } from '@/types/company'
 import type { CompanyProfileFieldRow } from './company-detail-types'
 import type { SensitiveFieldGroups } from '@/lib/sensitive-fields'
-import { groupSensitiveFields, unlockAllTotal } from '@/lib/sensitive-fields'
+import { groupSensitiveFields } from '@/lib/sensitive-fields'
 
 export type CompanyDetailDerived = {
   /** Public company columns; Sensitive fields are never among them. */
   publicFields: Array<CompanyProfileFieldRow>
   /** The company's Sensitive fields by how they are shown, in the server's order. */
   sensitiveFields: SensitiveFieldGroups
-  /** Credits "Unlock all remaining fields" would cost. */
-  unlockAllCost: number
   partners: TSensitiveField | undefined
   managers: TSensitiveField | undefined
   authSignatories: TSensitiveField | undefined
@@ -168,7 +166,6 @@ export function useCompanyDetailDerived(
   return {
     publicFields: profileFields,
     sensitiveFields: groupSensitiveFields(company.sensitiveFields),
-    unlockAllCost: unlockAllTotal(company.sensitiveFields),
     partners: sensitiveField('partners'),
     managers: sensitiveField('managers'),
     authSignatories: sensitiveField('authSignatories'),

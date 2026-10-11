@@ -87,6 +87,12 @@ export type TSensitiveField = {
   value?: string | Array<TPartner> | Array<TManager> | Array<TAuthSignatory>
 }
 
+/** The server's "Unlock all" offer: every locked field, in display order, for their summed Field cost. */
+export type TUnlockAllOffer = {
+  total: number
+  fieldKeys: Array<TSensitiveFieldKey>
+}
+
 export type TCompany = {
   id: number
   companyNameAr: string
@@ -140,6 +146,8 @@ export type TCompany = {
   }
   /** Registration number, partners, managers and signatories live only here. */
   sensitiveFields: Array<TSensitiveField>
+  /** null when fewer than two fields remain locked (or for admins). */
+  unlockAll: TUnlockAllOffer | null
   reports: Array<TReport>
   createdAt: string
   updatedAt: string

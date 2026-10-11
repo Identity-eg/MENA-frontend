@@ -79,7 +79,7 @@ function Description({ tx }: { tx: TCreditTransaction }) {
         <Link
           to="/companies/$companyId"
           params={{ companyId: String(company.id) }}
-          className="inline-flex min-h-6 items-center gap-1 rounded-sm text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+          className="inline-flex min-h-11 items-center gap-1 rounded-sm text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
         >
           <span dir="auto" className="wrap-break-word">
             {company.name}

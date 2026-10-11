@@ -9,11 +9,11 @@ import { CompanyDetailPremiumLockedCard } from './company-detail-premium-locked-
 import { CompanyDetailProfileCard } from './company-detail-profile-card'
 import { CompanyDetailSidebar } from './company-detail-sidebar'
 import { CompanyDetailUnlockedFieldsCard } from './company-detail-unlocked-fields-card'
-import { UnlockDialog } from './unlock-dialog'
+import { UnlockDialog  } from './unlock-dialog'
 import { useCompanyDetailDerived } from './use-company-detail-derived'
-import type { UnlockTarget } from './unlock-dialog'
+import type {UnlockTarget} from './unlock-dialog';
 import type { TSensitiveField } from '@/types/company'
-import { offersUnlockAll } from '@/lib/sensitive-fields'
+import { unlockAllFields } from '@/lib/sensitive-fields'
 import { useGetCompany } from '@/apis/company/get-company'
 
 const routeApi = getRouteApi('/_protected/companies/$companyId')
@@ -30,19 +30,20 @@ export function CompanyDetailView() {
     { kind: 'field'; field: TSensitiveField } | { kind: 'all' } | null
   >(null)
 
-  const {
-    publicFields,
-    sensitiveFields,
-    unlockAllCost,
-    partners,
-    managers,
-    authSignatories,
-  } = useCompanyDetailDerived(company)
+  const { publicFields, sensitiveFields, partners, managers, authSignatories } =
+    useCompanyDetailDerived(company)
 
-  // "Unlock all" reads the remaining fields and total live, so a refetch after a refusal shows them.
+  // "Unlock all" reads the server's offer live, so a refetch after a refusal shows the current one.
+  const unlockAll = company.unlockAll
   const dialogTarget: UnlockTarget | null =
     unlockTarget?.kind === 'all'
-      ? { kind: 'all', fields: sensitiveFields.locked, total: unlockAllCost }
+      ? unlockAll
+        ? {
+            kind: 'all',
+            fields: unlockAllFields(company.sensitiveFields, unlockAll),
+            total: unlockAll.total,
+          }
+        : null
       : unlockTarget
 
   const toggleReport = (reportId: number) => {
@@ -69,8 +70,7 @@ export function CompanyDetailView() {
           <CompanyDetailPremiumLockedCard
             lockedFields={sensitiveFields.locked}
             unavailableFields={sensitiveFields.unavailable}
-            unlockAllCost={unlockAllCost}
-            offerUnlockAll={offersUnlockAll(company.sensitiveFields)}
+            unlockAll={unlockAll}
             onUnlockField={(field) => setUnlockTarget({ kind: 'field', field })}
             onUnlockAll={() => setUnlockTarget({ kind: 'all' })}
           />
